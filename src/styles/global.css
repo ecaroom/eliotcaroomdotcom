@@ -78,10 +78,16 @@ main { padding-top: 2rem; }
   margin: 0 0 2.5rem;
 }
 
-.tagline {
+/* lowercase voice for name, headers and nav; source text stays normal case */
+.name, h1, h2, h3, .links a, .back { text-transform: lowercase; }
+
+.minor {
+  margin-top: 1.5rem;
+  font: 0.8125rem var(--mono);
   color: var(--muted);
-  margin: 0 0 2.5rem;
 }
+.minor a { color: var(--muted); }
+.minor a:hover { color: var(--text); }
 
 /* numbered link list */
 .links {

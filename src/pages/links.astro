@@ -1,0 +1,18 @@
+---
+import Base from '../layouts/Base.astro';
+
+// Add external links here: { href: 'https://...', label: 'LinkedIn' }
+const external: { href: string; label: string }[] = [];
+---
+<Base title="Links">
+  <h1>Links</h1>
+  {external.length === 0 ? (
+    <p class="muted">Coming soon.</p>
+  ) : (
+    <ul class="links">
+      {external.map((l) => (
+        <li><a class="ext" href={l.href} rel="me noopener">{l.label}</a></li>
+      ))}
+    </ul>
+  )}
+</Base>

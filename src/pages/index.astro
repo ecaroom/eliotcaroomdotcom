@@ -1,21 +1,18 @@
 ---
 import Base from '../layouts/Base.astro';
 
-// External links go here once confirmed, with ext: true.
 const links = [
   { href: '/projects/', label: 'Projects' },
-  { href: '/writing/', label: 'Writing' },
-  { href: '/podcasts/', label: 'Podcasts' },
-  { href: '/career/', label: 'Career' },
-  { href: '/archive/', label: 'Archive' },
-  { href: '/rss.xml', label: 'RSS' },
+  { href: '/work/', label: 'Work' },
+  { href: '/links/', label: 'Links' },
 ];
 ---
 <Base home>
   <h1 class="name">Eliot<br />Caroom</h1>
   <ul class="links">
     {links.map((l) => (
-      <li><a href={l.href} class={l.ext ? 'ext' : undefined}>{l.label}</a></li>
+      <li><a href={l.href}>{l.label}</a></li>
     ))}
   </ul>
+  <p class="minor"><a href="/archive/">archive</a> · <a href="/rss.xml">rss</a></p>
 </Base>
