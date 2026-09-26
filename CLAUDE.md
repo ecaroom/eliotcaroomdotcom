@@ -21,6 +21,12 @@ Eliot Caroom's personal site, v3/v4 of earlier sites. Mobile-first. Sections:
 
 DNS records: four A records on `@` (185.199.108–111.153), four AAAA on `@` (2606:50c0:8000–8003::153), CNAME `www` → `ecaroom.github.io`.
 
+## Palette (from Eliot's photos; all text meets WCAG AA)
+
+- **Light** (climbing photo): page sandstone `#ebe4d8`, header band sunlit leaf `#c1c6ad`, headers forest green `#1f3a3f`, body `#2e2a26`, muted rock brown `#6b5a4a`, links helmet blue `#3c6494`.
+- **Dark** (evening sky photo): background tree silhouette `#1a1810`, band `#24231a`, headers sky gold `#f3d29c`, body pale sky blue `#c9d3e3`, muted `#8e9dba`, links `#9fb6dd`.
+- Defaults follow the visitor's system setting; the mode button overrides it.
+
 ## Repo layout
 
 - `src/pages/` : one file per page (index, projects, work, links, writing, podcasts, archive)

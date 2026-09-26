@@ -16,6 +16,7 @@ const path = Astro.url.pathname;
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light dark" />
     <title>{pageTitle}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={new URL(path, Astro.site)} />
@@ -31,11 +32,13 @@ const path = Astro.url.pathname;
     </script>
   </head>
   <body>
-    <div class="wrap">
-      <div class="topbar">
+    <header class="band">
+      <div class="wrap topbar">
         {home ? <span class="version">v.3</span> : <a class="back" href="/">← Eliot Caroom</a>}
         <button class="mode" type="button" aria-label="Toggle light or dark mode">mode</button>
       </div>
+    </header>
+    <div class="wrap">
       <main>
         <slot />
       </main>
