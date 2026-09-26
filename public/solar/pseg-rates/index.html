@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PSE&amp;G Residential Rate History</title>
+<style>
+  .viz-root {
+    color-scheme: light;
+    --surface-1:      #fcfcfb;
+    --page:           #f9f9f7;
+    --text-primary:   #0b0b0b;
+    --text-secondary: #52514e;
+    --text-muted:     #898781;
+    --gridline:       #e1e0d9;
+    --baseline:       #c3c2b7;
+    --series-1:       #2a78d6;
+    --series-2:       #eb6834;
+    --highlight:      #7a5900;
+    --border:         rgba(11,11,11,0.10);
+    --tooltip-bg:     #ffffff;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) .viz-root {
+      color-scheme: dark;
+      --surface-1:      #1a1a19;
+      --page:           #0d0d0d;
+      --text-primary:   #ffffff;
+      --text-secondary: #c3c2b7;
+      --text-muted:     #898781;
+      --gridline:       #2c2c2a;
+      --baseline:       #383835;
+      --series-1:       #3987e5;
+      --series-2:       #d95926;
+      --highlight:      #fbbf24;
+      --border:         rgba(255,255,255,0.10);
+      --tooltip-bg:     #262625;
+    }
+  }
+  :root[data-theme="dark"] .viz-root {
+    color-scheme: dark;
+    --surface-1:      #1a1a19;
+    --page:           #0d0d0d;
+    --text-primary:   #ffffff;
+    --text-secondary: #c3c2b7;
+    --text-muted:     #898781;
+    --gridline:       #2c2c2a;
+    --baseline:       #383835;
+    --series-1:       #3987e5;
+    --series-2:       #d95926;
+    --highlight:      #fbbf24;
+    --border:         rgba(255,255,255,0.10);
+    --tooltip-bg:     #262625;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    background: var(--page);
+    color: var(--text-primary);
+  }
+  .wrap { max-width: 960px; margin: 0 auto; padding: 28px 20px 40px; }
+  h1 { font-size: 1.35rem; margin: 0 0 4px; letter-spacing: -0.01em; }
+  .sub { color: var(--text-secondary); font-size: 0.92rem; margin: 0 0 22px; line-height: 1.5; max-width: 640px; }
+
+  .card {
+    background: var(--surface-1);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 22px 12px;
+    margin-bottom: 22px;
+  }
+  .card h2 { font-size: 0.98rem; margin: 0 0 2px; color: var(--text-primary); }
+  .card .card-sub { font-size: 0.8rem; color: var(--text-muted); margin: 0 0 14px; }
+
+  svg { width: 100%; height: auto; display: block; overflow: visible; }
+  .gridline { stroke: var(--gridline); stroke-width: 1; }
+  .baseline { stroke: var(--baseline); stroke-width: 1.25; }
+  .axis-label { fill: var(--text-muted); font-size: 11px; }
+  .series-line { fill: none; stroke-width: 2; stroke-linecap: round; }
+  .marker { fill: var(--surface-1); stroke-width: 2; }
+  .marker-hit { fill: transparent; cursor: pointer; }
+  .direct-label { fill: var(--text-secondary); font-size: 10.5px; font-variant-numeric: tabular-nums; }
+  .event-note { fill: var(--highlight); font-size: 9.5px; font-style: italic; font-weight: 600; }
+
+  .legend { display: flex; gap: 18px; margin: 0 0 12px; font-size: 0.8rem; color: var(--text-secondary); }
+  .legend .item { display: flex; align-items: center; gap: 6px; }
+  .legend .swatch { width: 12px; height: 12px; border-radius: 3px; flex: none; }
+
+  .tooltip {
+    position: absolute;
+    pointer-events: none;
+    background: var(--tooltip-bg);
+    color: var(--text-primary);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 7px 10px;
+    font-size: 12px;
+    line-height: 1.4;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.12);
+    opacity: 0;
+    transition: opacity 0.1s;
+    white-space: nowrap;
+    z-index: 10;
+  }
+  .tooltip.show { opacity: 1; }
+  .tooltip .t-date { color: var(--text-muted); font-size: 10.5px; }
+  .tooltip .t-val { font-weight: 600; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 0.82rem; margin-top: 4px; }
+  th, td { text-align: left; padding: 7px 8px; border-bottom: 1px solid var(--gridline); font-variant-numeric: tabular-nums; }
+  th { color: var(--text-muted); font-weight: 600; font-size: 0.76rem; text-transform: uppercase; letter-spacing: 0.02em; }
+  td.num { text-align: right; }
+  td a { color: var(--series-1); text-decoration: none; }
+  td a:hover { text-decoration: underline; }
+
+  .note {
+    font-size: 0.82rem; color: var(--text-secondary);
+    background: var(--surface-1); border: 1px solid var(--border); border-radius: 10px;
+    padding: 12px 14px; line-height: 1.55; margin-bottom: 20px;
+  }
+  .note strong { color: var(--text-primary); }
+  .cite { font-size: 0.76rem; color: var(--text-muted); line-height: 1.7; margin-top: 6px; }
+  .cite a { color: var(--series-1); text-decoration: none; }
+  .cite a:hover { text-decoration: underline; }
+</style>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<script>try{var t=localStorage.getItem('theme');if(t)document.documentElement.dataset.theme=t;}catch(e){}</script>
+<style>.backlink{display:inline-block;margin:0 0 18px;font:0.8rem ui-monospace,Menlo,monospace;color:var(--text-muted);text-decoration:none}.backlink:hover{color:var(--text-primary)}</style>
+</head>
+<body class="viz-root">
+<div class="wrap">
+  <a class="backlink" href="/solar/">&larr; accelerating solar for roselle park</a>
+  <h1>PSE&amp;G residential &amp; commercial electricity rate, 2016–2026</h1>
+  <p class="sub">Built from PSE&amp;G's own filed tariff schedules — Residential "RS – Residential Service" and Commercial "GLP – General Lighting and Power Service," both bundled (Delivery + Basic Generation Service standard-offer), base/winter tier, NJ Sales &amp; Use Tax included — as recorded in NREL's OpenEI Utility Rate Database. Every point below is a dated tariff filing, not an estimate.</p>
+
+  <div class="card">
+    <h2>Total energy rate (delivery + default supply)</h2>
+    <p class="card-sub">¢ per kWh · base/winter tier · each point = a new PSE&amp;G tariff filing, held flat until the next · italic % = change vs. the immediately prior filing (flagged at ±15%+)</p>
+    <div class="legend">
+      <div class="item"><span class="swatch" style="background:var(--series-1)"></span>Residential (RS)</div>
+      <div class="item"><span class="swatch" style="background:var(--series-2)"></span>Commercial (GLP)</div>
+    </div>
+    <svg id="rateChart" viewBox="0 0 900 340" role="img" aria-label="PSE&G bundled residential and commercial electricity rate, cents per kWh, 2016 to 2026. Residential rises from 16.5 to 25.9 cents; commercial GLP rises from 8.5 to 19.4 cents."></svg>
+  </div>
+
+  <div class="card">
+    <h2>Fixed monthly customer charge</h2>
+    <p class="card-sub">$ per month · same tariff filings · italic % = change vs. the immediately prior filing (flagged at ±15%+)</p>
+    <div class="legend">
+      <div class="item"><span class="swatch" style="background:var(--series-1)"></span>Residential (RS)</div>
+      <div class="item"><span class="swatch" style="background:var(--series-2)"></span>Commercial (GLP)</div>
+    </div>
+    <svg id="fixedChart" viewBox="0 0 900 220" role="img" aria-label="PSE&G fixed monthly charge, dollars per month, 2016 to 2026. Residential rises from 2.43 to 6.00 dollars; commercial GLP rises from 4.24 to 7.93 dollars."></svg>
+  </div>
+
+  <div class="note">
+    <strong>What this does and doesn't cover:</strong> URDB tracks tariffs filed with the NJ Board of Public Utilities. It stores each rate class as one continuously-revised record before ~2016, so pre-2016 history isn't recoverable as discrete dated points from this dataset (only the latest snapshot survives) — that's why both series start in March 2016. No new PSE&amp;G residential or GLP rate filing appears in this database with an effective date in 2020 — the rate that took effect June 2019 stayed in force through May 2021, a two-year span, for both classes. The numbers plotted are each class's base/winter energy rate; PSE&amp;G's actual tariffs use two seasonal rate periods, and residential additionally has a summer inclining-block tier above 600 kWh/month (see the residential table). <strong>The commercial line is not a full GLP bill:</strong> unlike residential service, GLP is demand-metered — PSE&amp;G bills a separate flat demand charge of roughly $4–14 per kW of peak demand per month (lower in summer, higher in winter) on top of the per-kWh rate charted here. For a business with meaningful peak demand, that charge can be a large share of the total bill and isn't captured by this line.
+  </div>
+
+  <table id="dataTable">
+    <thead>
+      <tr><th colspan="6">Residential — RS</th></tr>
+      <tr><th>Effective</th><th>Through</th><th class="num">Base rate (¢/kWh)</th><th class="num">Summer, &gt;600 kWh (¢/kWh)</th><th class="num">Fixed ($/mo)</th><th>Source (PSE&amp;G tariff filing)</th></tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <table id="glpTable" style="margin-top:26px;">
+    <thead>
+      <tr><th colspan="5">Commercial — GLP (excludes flat demand charge)</th></tr>
+      <tr><th>Effective</th><th>Through</th><th class="num">Base energy rate (¢/kWh)</th><th class="num">Fixed ($/mo)</th><th>Source (PSE&amp;G tariff filing)</th></tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <div class="cite">
+    Source: NREL / OpenEI U.S. Utility Rate Database (USURDB), full bulk download, filtered to eiaId 15477 ("Public Service Elec &amp; Gas Co"). Residential: sector = Residential, rate = "RS – Residential Service." Commercial: sector = Commercial, rate = "Rate Schedule GLP – General Lighting and Power Service." Both filtered to service type = "Delivery with Standard Offer." Each row's own PSE&amp;G tariff PDF is linked in its table. <a href="https://apps.openei.org/USURDB/?utilRateFinder=PSEG">https://apps.openei.org/USURDB/?utilRateFinder=PSEG</a>
+  </div>
+</div>
+
+<script>
+const data = [
+  { eff: "2016-03-01", end: "2017-05-31", base: 0.16528, summer2: 0.18440, fixed: 2.43, src: "https://www.pseg.com/family/pseandg/tariffs/electric/pdf/electric_tariff.pdf" },
+  { eff: "2017-06-01", end: "2018-08-31", base: 0.16657, summer2: 0.18576, fixed: 2.43, src: "https://www.pseg.com/family/pseandg/tariffs/electric/pdf/electric_tariff.pdf" },
+  { eff: "2018-09-01", end: "2019-05-31", base: 0.16552, summer2: 0.18085, fixed: 2.42, src: "https://nj.pseg.com/-/media/pseg/public-site/documents/current-electric-tariff/electric_tariff.ashx" },
+  { eff: "2019-06-01", end: "2021-05-31", base: 0.17151, summer2: 0.18813, fixed: 4.95, src: "https://nj.pseg.com/-/media/pseg/public-site/documents/current-electric-tariff/electric_tariff.ashx" },
+  { eff: "2021-06-01", end: "2022-06-14", base: 0.17827, summer2: 0.19244, fixed: 4.95, src: "https://nj.pseg.com/-/media/pseg/public-site/documents/current-electric-tariff/electric_tariff.ashx" },
+  { eff: "2022-06-15", end: "2023-04-30", base: 0.17508, summer2: 0.19517, fixed: 4.95, src: "https://nj.pseg.com/-/media/pseg/public-site/documents/current-electric-tariff/electric-tariff-16-2021-gprc-w-community-solar-energy-prog-effective-07012022.ashx" },
+  { eff: "2023-05-01", end: "2024-12-31", base: 0.18891, summer2: 0.21113, fixed: 4.95, src: "https://nj.pseg.com/-/media/pseg/public-site/documents/current-electric-tariff/electric-tariff-16-bpu-bgs-nitstec-effective-09012023.ashx" },
+  { eff: "2025-01-01", end: "2026-03-31", base: 0.23180, summer2: 0.27663, fixed: 6.00, src: "https://nj.pseg.com/-/media/pseg/public-site/documents/current-electric-tariff/electric-tariff-17-gprc-effective-20250101.ashx" },
+  { eff: "2026-04-01", end: null,          base: 0.25876, summer2: 0.30416, fixed: 6.00, src: "https://nj.pseg.com/-/media/pseg/public-site/documents/current-electric-tariff/electric-tariff-17-sprc-effective-20260401.ashx" }
+];
+
+const glpData = [
+  { eff: "2016-03-01", end: "2017-05-31", base: 0.08502, fixed: 4.24, src: "https://www.pseg.com/family/pseandg/tariffs/electric/pdf/electric_tariff.pdf" },
+  { eff: "2017-06-01", end: "2018-08-31", base: 0.07752, fixed: 4.23, src: "https://www.pseg.com/family/pseandg/tariffs/electric/pdf/electric_tariff.pdf" },
+  { eff: "2018-09-01", end: "2019-05-31", base: 0.07346, fixed: 4.22, src: "https://nj.pseg.com/-/media/pseg/public-site/documents/current-electric-tariff/electric_tariff.ashx" },
+  { eff: "2019-06-01", end: "2021-05-31", base: 0.06575, fixed: 4.72, src: "https://nj.pseg.com/-/media/pseg/public-site/documents/current-electric-tariff/electric_tariff.ashx" },
+  { eff: "2021-06-01", end: "2022-06-14", base: 0.06211, fixed: 4.84, src: "https://nj.pseg.com/-/media/pseg/public-site/documents/current-electric-tariff/electric_tariff.ashx" },
+  { eff: "2022-06-15", end: "2023-04-30", base: 0.08132, fixed: 4.95, src: "https://nj.pseg.com/-/media/pseg/public-site/documents/current-electric-tariff/electric-tariff-16-2021-gprc-w-community-solar-energy-prog-effective-07012022.ashx" },
+  { eff: "2023-05-01", end: "2024-12-31", base: 0.09831, fixed: 5.04, src: "https://nj.pseg.com/-/media/pseg/public-site/documents/current-electric-tariff/electric-tariff-16-bpu-bgs-nitstec-effective-09012023.ashx" },
+  { eff: "2025-01-01", end: "2026-03-31", base: 0.18475, fixed: 7.89, src: "https://nj.pseg.com/-/media/pseg/public-site/documents/current-electric-tariff/electric-tariff-17-gprc-effective-20250101.ashx" },
+  { eff: "2026-04-01", end: null,          base: 0.19369, fixed: 7.93, src: "https://nj.pseg.com/-/media/pseg/public-site/documents/current-electric-tariff/electric-tariff-17-sprc-effective-20260401.ashx" }
+];
+
+// ---- populate tables ----
+const tbody = document.querySelector('#dataTable tbody');
+data.forEach(d => {
+  const tr = document.createElement('tr');
+  tr.innerHTML = `<td>${d.eff}</td><td>${d.end || 'current'}</td>` +
+    `<td class="num">${(d.base*100).toFixed(2)}</td>` +
+    `<td class="num">${d.summer2 ? (d.summer2*100).toFixed(2) : '—'}</td>` +
+    `<td class="num">$${d.fixed.toFixed(2)}</td>` +
+    `<td><a href="${d.src}" target="_blank" rel="noopener">filed tariff PDF</a></td>`;
+  tbody.appendChild(tr);
+});
+
+const glpTbody = document.querySelector('#glpTable tbody');
+glpData.forEach(d => {
+  const tr = document.createElement('tr');
+  tr.innerHTML = `<td>${d.eff}</td><td>${d.end || 'current'}</td>` +
+    `<td class="num">${(d.base*100).toFixed(2)}</td>` +
+    `<td class="num">$${d.fixed.toFixed(2)}</td>` +
+    `<td><a href="${d.src}" target="_blank" rel="noopener">filed tariff PDF</a></td>`;
+  glpTbody.appendChild(tr);
+});
+
+// ---- shared helpers ----
+function parseDate(s) { return new Date(s + "T00:00:00Z"); }
+const t0 = parseDate("2016-01-01").getTime();
+const t1 = parseDate("2026-09-19").getTime();
+function xOf(dateStr, xLeft, xRight) {
+  const t = parseDate(dateStr).getTime();
+  return xLeft + (t - t0) / (t1 - t0) * (xRight - xLeft);
+}
+
+function drawStepChart(svgId, seriesList, opts) {
+  // seriesList: [{ data, field, colorVar, name, labelAbove(i)=>bool }]
+  const svg = document.getElementById(svgId);
+  const H = svg.viewBox.baseVal.height;
+  const xLeft = 56, xRight = 872, yTop = 26, yBottom = H - 34;
+
+  const allVals = seriesList.flatMap(s => s.data.map(d => d[s.field]));
+  const vMin = opts.yMin !== undefined ? opts.yMin : Math.min(...allVals) * 0.85;
+  const vMax = opts.yMax !== undefined ? opts.yMax : Math.max(...allVals) * 1.12;
+  function yOf(v) { return yBottom - (v - vMin) / (vMax - vMin) * (yBottom - yTop); }
+
+  let svgns = "http://www.w3.org/2000/svg";
+  function el(tag, attrs) {
+    const e = document.createElementNS(svgns, tag);
+    for (const k in attrs) e.setAttribute(k, attrs[k]);
+    return e;
+  }
+
+  // gridlines + y labels
+  const gridN = opts.gridLines;
+  for (let i = 0; i <= gridN; i++) {
+    const v = vMin + (vMax - vMin) * i / gridN;
+    const y = yOf(v);
+    svg.appendChild(el('line', { class: 'gridline', x1: xLeft, y1: y, x2: xRight, y2: y }));
+    const t = el('text', { class: 'axis-label', x: xLeft - 8, y: y + 3, 'text-anchor': 'end' });
+    t.textContent = opts.yFmt(v);
+    svg.appendChild(t);
+  }
+  // baseline
+  svg.appendChild(el('line', { class: 'baseline', x1: xLeft, y1: yBottom, x2: xRight, y2: yBottom }));
+
+  // x-axis year ticks
+  for (let yr = 2016; yr <= 2026; yr++) {
+    const x = xOf(yr + "-01-01", xLeft, xRight);
+    svg.appendChild(el('line', { class: 'gridline', x1: x, y1: yTop, x2: x, y2: yBottom }));
+    const t = el('text', { class: 'axis-label', x: x, y: yBottom + 18, 'text-anchor': 'middle' });
+    t.textContent = yr;
+    svg.appendChild(t);
+  }
+
+  const tooltip = document.getElementById('viz-tooltip');
+
+  seriesList.forEach(s => {
+    const colorVar = `var(${s.colorVar})`;
+
+    // step path: hold value from eff to end (or chart-right)
+    let pathPts = [];
+    s.data.forEach(d => {
+      const xA = xOf(d.eff, xLeft, xRight);
+      const xB = d.end ? xOf(d.end, xLeft, xRight) : xRight;
+      const y = yOf(d[s.field]);
+      pathPts.push([xA, y]);
+      pathPts.push([xB, y]);
+    });
+    let pathStr = "M " + pathPts.map(p => p[0].toFixed(1) + " " + p[1].toFixed(1)).join(" L ");
+    svg.appendChild(el('path', { class: 'series-line', d: pathStr, style: `stroke:${colorVar}` }));
+
+    // selective direct labels: always first/last, plus any point that moved
+    // >=3% from the prior point in this series -- avoids label pileup where
+    // two series (or several flat periods) sit within a cent/dollar of each other
+    const vs = s.data.map(d => d[s.field]);
+    const showLabel = vs.map((v, i) => {
+      if (i === 0 || i === vs.length - 1) return true;
+      const prev = vs[i - 1];
+      return prev !== 0 && Math.abs((v - prev) / prev) >= 0.03;
+    });
+
+    // markers + labels + hover targets
+    s.data.forEach((d, i) => {
+      const x = xOf(d.eff, xLeft, xRight);
+      const y = yOf(d[s.field]);
+      svg.appendChild(el('circle', { class: 'marker', cx: x, cy: y, r: 4.5, style: `stroke:${colorVar}` }));
+
+      const labelAbove = s.labelAbove ? s.labelAbove(i) : (i % 2 === 0);
+      // offset text horizontally off the point's own x so it doesn't sit on
+      // top of the OTHER series' vertical step riser when both series change
+      // on the same filing date (common here -- both use the same 9 dates)
+      const lx = x + (s.textDx || 0);
+      const anchor = s.textAnchor || 'middle';
+      if (showLabel[i]) {
+        const ly = labelAbove ? y - 10 : y + 16;
+        const lab = el('text', { class: 'direct-label', x: lx, y: ly, 'text-anchor': anchor });
+        lab.textContent = opts.labelFmt(d[s.field]);
+        svg.appendChild(lab);
+      }
+
+      // spike annotation: a point-over-point jump of 15%+ (checked against
+      // the raw filed-tariff numbers -- see the table for the underlying values)
+      if (i > 0 && vs[i - 1] !== 0) {
+        const pct = (vs[i] - vs[i - 1]) / vs[i - 1] * 100;
+        if (Math.abs(pct) >= 15) {
+          const spikeY = Math.max(12, labelAbove ? y - 23 : y + 29);
+          const spikeLab = el('text', { class: 'event-note', x: lx, y: spikeY, 'text-anchor': anchor });
+          spikeLab.textContent = (pct >= 0 ? '+' : '−') + Math.abs(pct).toFixed(1) + '%';
+          svg.appendChild(spikeLab);
+        }
+      }
+
+      const hit = el('circle', { class: 'marker-hit', cx: x, cy: y, r: 10 });
+      hit.addEventListener('mouseenter', (ev) => {
+        const fmt = s.tooltipFmt || opts.tooltipFmt;
+        tooltip.innerHTML = `<div class="t-date">${s.name} · ${d.eff} → ${d.end || 'current'}</div><div class="t-val">${fmt(d)}</div>`;
+        tooltip.classList.add('show');
+        positionTooltip(ev, svg);
+      });
+      hit.addEventListener('mousemove', (ev) => positionTooltip(ev, svg));
+      hit.addEventListener('mouseleave', () => tooltip.classList.remove('show'));
+      svg.appendChild(hit);
+    });
+  });
+}
+
+function positionTooltip(ev, svg) {
+  const tooltip = document.getElementById('viz-tooltip');
+  const rect = svg.getBoundingClientRect();
+  const pageX = ev.clientX + window.scrollX;
+  const pageY = ev.clientY + window.scrollY;
+  tooltip.style.left = (pageX + 12) + "px";
+  tooltip.style.top = (pageY - 30) + "px";
+}
+
+// tooltip element
+const tt = document.createElement('div');
+tt.id = 'viz-tooltip';
+tt.className = 'tooltip';
+document.body.appendChild(tt);
+
+// Push each series' labels away from the OTHER series at that same date,
+// rather than a fixed above/below rule -- avoids collisions where the two
+// lines pass close to each other (e.g. the fixed-charge chart, where RS and
+// GLP briefly cross around 2019-2022).
+function awayFrom(mine, other, field) {
+  return i => mine[i][field] >= other[i][field];
+}
+
+drawStepChart('rateChart', [
+  { data: data,    field: 'base', colorVar: '--series-1', name: 'Residential (RS)',
+    labelAbove: awayFrom(data, glpData, 'base'), textDx: 9, textAnchor: 'start',
+    tooltipFmt: d => `Base energy rate: <strong>${(d.base*100).toFixed(2)}¢/kWh</strong>` + (d.summer2 ? ` &middot; summer top tier: ${(d.summer2*100).toFixed(2)}¢` : '') },
+  { data: glpData, field: 'base', colorVar: '--series-2', name: 'Commercial (GLP)',
+    labelAbove: awayFrom(glpData, data, 'base'), textDx: -9, textAnchor: 'end',
+    tooltipFmt: d => `Base energy rate: <strong>${(d.base*100).toFixed(2)}¢/kWh</strong> &middot; excludes flat demand charge` }
+], {
+  gridLines: 5,
+  yFmt: v => (v * 100).toFixed(0) + "¢",
+  labelFmt: v => (v * 100).toFixed(2) + "¢"
+});
+
+drawStepChart('fixedChart', [
+  { data: data,    field: 'fixed', colorVar: '--series-1', name: 'Residential (RS)',
+    labelAbove: awayFrom(data, glpData, 'fixed'), textDx: 9, textAnchor: 'start',
+    tooltipFmt: d => `Fixed charge: <strong>$${d.fixed.toFixed(2)}/mo</strong>` },
+  { data: glpData, field: 'fixed', colorVar: '--series-2', name: 'Commercial (GLP)',
+    labelAbove: awayFrom(glpData, data, 'fixed'), textDx: -9, textAnchor: 'end',
+    tooltipFmt: d => `Fixed charge: <strong>$${d.fixed.toFixed(2)}/mo</strong>` }
+], {
+  gridLines: 4,
+  yFmt: v => "$" + v.toFixed(0),
+  labelFmt: v => "$" + v.toFixed(2)
+});
+</script>
+</body>
+</html>

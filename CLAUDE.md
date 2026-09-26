@@ -41,6 +41,8 @@ DNS records: four A records on `@` (185.199.108–111.153), four AAAA on `@` (26
 - `src/styles/global.css` : all styles, light and dark
 - `.github/workflows/deploy.yml` : build and deploy
 - `public/CNAME` : custom domain
+- `src/pages/solar.astro` : "Accelerating solar for Roselle Park" campaign page (evidence list)
+- `public/solar/pseg-rates/index.html` : PSE&G rate history page, standalone HTML with its own styles (built in the "PSE&G electricity rate history" thread); only a back link, favicon and site theme sync were added
 
 ## Rules
 

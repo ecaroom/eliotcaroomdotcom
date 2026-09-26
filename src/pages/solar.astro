@@ -1,0 +1,28 @@
+---
+import Base from '../layouts/Base.astro';
+
+const evidence = [
+  {
+    name: 'PSE&G electricity rate history',
+    href: '/solar/pseg-rates/',
+    summary: 'What PSE&G has charged residential and commercial customers since 2016, from its own filed tariffs.',
+  },
+];
+---
+<Base title="Accelerating solar for Roselle Park" description="Evidence for why Roselle Park's mayoral candidates should support solar.">
+  <h1>Accelerating solar for Roselle Park</h1>
+  <p>
+    Evidence for why Roselle Park's mayoral candidates should support solar, starting with what the town pays for electricity.
+  </p>
+  <h2>Evidence</h2>
+  <table class="projects">
+    <tbody>
+      {evidence.map((e) => (
+        <tr>
+          <th scope="row"><a href={e.href}>{e.name}</a></th>
+          <td>{e.summary}</td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</Base>
