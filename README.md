@@ -2,6 +2,8 @@
 
 Source for [eliotcaroom.com](https://eliotcaroom.com), built with [Astro](https://astro.build) and deployed to GitHub Pages on every push to `main`.
 
+See `OPERATIONS.md` for hosting, settings, editing and troubleshooting, and `CLAUDE.md` for design decisions.
+
 ## Where things live
 
 - `src/pages/` : one file per page (Career, Projects, Podcasts, Archive)

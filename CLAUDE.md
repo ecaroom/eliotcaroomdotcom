@@ -2,6 +2,8 @@
 
 Source of truth for decisions about this site. Read this first in any thread; update it when a decision changes.
 
+**How-to (hosting, settings, editing, deploys, troubleshooting): see `OPERATIONS.md`.**
+
 ## Purpose
 
 Eliot Caroom's personal site, v3/v4 of earlier sites. Mobile-first. Sections:
@@ -66,6 +68,6 @@ Each gets its own thread in the claude.ai Project "eliotcaroom.com", with this r
 
 ## Status
 
-- 2026-09-26: Site deploying. DNS check successful; HTTPS certificate pending, then tick Enforce HTTPS. Minimalist home page shipped.
+- 2026-09-26: Site live. DNS check successful; tick Enforce HTTPS once the certificate is issued. Technical runbook written to `OPERATIONS.md`.
 - 2026-09-26 (archive): v2 (live roughly 2015-2020) is not in the backup folder. Source is the Wayback Machine (known snapshot: web.archive.org/web/20220120055504/http://www.eliotcaroom.com/; confirm it is v2 and not a later version). Claude's web tools cannot reach web.archive.org, so Eliot downloads the snapshots locally and attaches a zip.
 - 2026-09-26 (archive): v2 identified from a saved Wayback page: WordPress 4.7.22, Inkness theme (InkHive), dark teal background `#003d44`. Nav: Product Manager, ESG Research, Writing & editing (Business reporting, Poetry Preserve), projects (Left Bank '66, Video & Visual Work, external link to Rock and Ice climbing accidents report). Posts: Left Bank '66 (2014), Star-Ledger photography (2011), Nonstagram (2010), "Passing the Axe" jazz history chapter (2010), NY Press reviews (2010). Categories: projects, visual, writing. Left Bank '66 post text recovered; its second image (`Screen-Shot-2018-04-14-at-12.35.00-AM.png`) still missing.
