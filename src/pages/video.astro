@@ -1,0 +1,36 @@
+---
+import Base from '../layouts/Base.astro';
+
+// Video & visual work: one entry per video, newest first.
+// Embeds use youtube-nocookie.com so YouTube sets no cookies until the visitor presses play.
+// To add a video: copy an entry, set the YouTube ID (the part after /embed/ or ?v=), title, year and note.
+const videos = [
+  {
+    id: 'GCrc1NQcp4E',
+    title: 'Nobody',
+    year: 'YEAR',
+    note: 'A short video interview at Marco Benevento’s house in Brooklyn about his cover of Carly Simon’s “Nobody Does It Better.”',
+  },
+];
+---
+<Base title="Video & visual work" description="Short videos from Eliot Caroom’s past projects.">
+  <h1>Video &amp; visual work</h1>
+
+  {videos.map((v) => (
+    <section class="video-entry">
+      <h2>{v.title}</h2>
+      <p class="meta">{v.year}</p>
+      <p>{v.note}</p>
+      <div class="video-embed">
+        <iframe
+          src={`https://www.youtube-nocookie.com/embed/${v.id}`}
+          title={v.title}
+          loading="lazy"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          referrerpolicy="strict-origin-when-cross-origin"
+          allowfullscreen
+        ></iframe>
+      </div>
+    </section>
+  ))}
+</Base>
