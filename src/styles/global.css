@@ -1,9 +1,9 @@
 :root {
-  /* light: Pigeon Post page, Chelsea Cucumber band, Birch headers and body, Kelp secondary */
+  /* light: Pigeon Post page, Chelsea Cucumber band, dark brown headings, Birch body, Kelp secondary */
   --bg: #b0ccd9;
   --band: #9aa459;
   --band-text: #34361f;
-  --head: #34361f;
+  --head: #4e2c1c;
   --text: #34361f;
   --muted: #4f4f36;
   --rule: #9aa459;
@@ -14,29 +14,29 @@
   --mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
 }
 
-/* dark: Birch page, Kelp band, Pigeon Post headers, pale Pigeon Post body, Chelsea Cucumber secondary */
+/* dark: reddish tan page, deep brown band, Pigeon Post headings, pale Pigeon Post body, light Chelsea Cucumber secondary */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme='light']) {
-    --bg: #34361f;
-    --band: #4f4f36;
+    --bg: #6e4a36;
+    --band: #4e3326;
     --band-text: #b0ccd9;
     --head: #b0ccd9;
     --text: #d6e4eb;
-    --muted: #9aa459;
-    --rule: #4f4f36;
-    --accent: #cfe0e8;
+    --muted: #cdd494;
+    --rule: #8a634b;
+    --accent: #e4eef2;
   }
 }
 
 :root[data-theme='dark'] {
-  --bg: #34361f;
-  --band: #4f4f36;
+  --bg: #6e4a36;
+  --band: #4e3326;
   --band-text: #b0ccd9;
   --head: #b0ccd9;
   --text: #d6e4eb;
-  --muted: #9aa459;
-  --rule: #4f4f36;
-  --accent: #cfe0e8;
+  --muted: #cdd494;
+  --rule: #8a634b;
+  --accent: #e4eef2;
 }
 
 *, *::before, *::after { box-sizing: border-box; }

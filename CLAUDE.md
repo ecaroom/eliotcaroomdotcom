@@ -27,8 +27,8 @@ DNS records: four A records on `@` (185.199.108–111.153), four AAAA on `@` (26
 
 Source colors: Chelsea Cucumber `#9aa459`, Pigeon Post `#b0ccd9`, Birch `#34361f`, Kelp `#4f4f36`.
 
-- **Light:** page Pigeon Post, header band Chelsea Cucumber, headings and body Birch (7.4:1), secondary text Kelp (5.0:1), links deep blue `#2d5061` (5.1:1, derived from Pigeon Post), rules Chelsea Cucumber.
-- **Dark:** page Birch, header band Kelp, headings Pigeon Post (7.4:1), body pale Pigeon Post `#d6e4eb` (9.5:1), secondary text Chelsea Cucumber (4.6:1), links `#cfe0e8`.
+- **Light:** page Pigeon Post, header band Chelsea Cucumber, headings rich dark brown `#4e2c1c` (7.3:1), body Birch (7.4:1), secondary text Kelp (5.0:1), links deep blue `#2d5061` (5.1:1, derived from Pigeon Post), rules Chelsea Cucumber.
+- **Dark:** page reddish tan `#6e4a36` (Eliot asked for lighter tan with red; this is the lightest that keeps light text readable), header band deep brown `#4e3326`, headings Pigeon Post (4.6:1, large text), body pale Pigeon Post `#d6e4eb` (6.0:1), secondary text light Chelsea Cucumber `#cdd494` (5.0:1), links `#e4eef2`, rules `#8a634b`.
 - Defaults follow the visitor's system setting; the mode button overrides it.
 - Replaced the earlier photo-derived palette (climbing / evening sky).
 
