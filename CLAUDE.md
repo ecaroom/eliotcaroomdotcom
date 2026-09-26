@@ -49,6 +49,7 @@ Source colors: Chelsea Cucumber `#9aa459`, Pigeon Post `#b0ccd9`, Birch `#34361f
 - `src/pages/about.astro` + `public/about/climb.jpg` : About page. Photo: Eliot at the top of a climbing route (chosen over a photo with a public figure and a family photo; no child's face on the public site). Text is Eliot's own line, kept lowercase as he wrote it.
 - `src/pages/solar.astro` : "Accelerating solar for Roselle Park" campaign page (evidence list)
 - `src/pages/left-bank-66.astro` + `public/left-bank-66/cover.jpg` : Left Bank '66 write-up restored from v2 (prose page pattern: `.meta` date line, `figure`, `blockquote`, `.signoff` in global.css)
+- `src/pages/video.astro` : "Video & visual work" page (name revived from v2), one row on Projects. Videos listed in a `videos` array (YouTube ID, title, year, note), newest first.
 - `public/solar/pseg-rates/index.html` : PSE&G rate history page, standalone HTML with its own styles (built in the "PSE&G electricity rate history" thread); only a back link, favicon and site theme sync were added
 
 ## Rules
@@ -60,6 +61,7 @@ Source colors: Chelsea Cucumber `#9aa459`, Pigeon Post `#b0ccd9`, Birch `#34361f
 - **Site copy follows Eliot's style guide.** No em dashes.
 - **External links open in a new tab** (`target="_blank" rel="noopener"`) and carry a ↗ marker. Internal links open in the same tab.
 - Commit author email: the GitHub noreply address, not a personal email.
+- **Media hosting (decided 2026-09-26):** photos live in the repo, resized for web (about 2000px long edge, a few hundred KB). **Never commit video files** (GitHub's 100 MB file cap, the 1 GB Pages limit, and deleted files stay in public Git history). Video goes on YouTube, embedded via `youtube-nocookie.com` in a responsive 16:9 wrapper (`.video-embed`). Cloudflare R2 plus a plain `<video>` tag is the fallback for short clips that shouldn't be on YouTube. For work Eliot made as an employee, check ownership first; if the employer's copy is online, link or embed that rather than re-hosting.
 
 ## Workstreams
 
@@ -76,4 +78,5 @@ Each gets its own thread in the claude.ai Project "eliotcaroom.com", with this r
 - 2026-09-26: Site live. DNS check successful; tick Enforce HTTPS once the certificate is issued. Technical runbook written to `OPERATIONS.md`.
 - 2026-09-26 (archive): v2 (live roughly 2015-2020) is not in the backup folder. Source is the Wayback Machine (known snapshot: web.archive.org/web/20220120055504/http://www.eliotcaroom.com/; confirm it is v2 and not a later version). Claude's web tools cannot reach web.archive.org, so Eliot downloads the snapshots locally and attaches a zip.
 - 2026-09-26 (archive): v2 identified from a saved Wayback page: WordPress 4.7.22, Inkness theme (InkHive), dark teal background `#003d44`. Nav: Product Manager, ESG Research, Writing & editing (Business reporting, Poetry Preserve), projects (Left Bank '66, Video & Visual Work, external link to Rock and Ice climbing accidents report). Posts: Left Bank '66 (2014), Star-Ledger photography (2011), Nonstagram (2010), "Passing the Axe" jazz history chapter (2010), NY Press reviews (2010). Categories: projects, visual, writing. Left Bank '66 post text recovered; its second image (`Screen-Shot-2018-04-14-at-12.35.00-AM.png`) still missing.
+- 2026-09-26 (content): Video & visual work page built on branch `video-page` with its first entry, "Nobody" (Eliot's interview at Marco Benevento's house in Brooklyn about his cover of "Nobody Does It Better", youtube.com/@eliotter2). **Not merged: waiting on the year** (placeholder `YEAR` in `video.astro` and `projects.astro`; the year also sets the row's position on Projects).
 - 2026-09-26 (archive): Left Bank '66 ported to `/left-bank-66/` and added to Projects (2013). Dead links dropped: City Paper (domain gone), CD Baby (store closed). Amazon link could not be verified and was left out; Apple Music link verified. Kickstarter description is JS-rendered, so its text and images could not be pulled; linked instead.
