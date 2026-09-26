@@ -75,7 +75,7 @@ main { padding-top: 2rem; }
 .name {
   font: 700 clamp(2.75rem, 12vw, 4.5rem)/0.95 var(--sans);
   letter-spacing: -0.03em;
-  margin: 0 0 1rem;
+  margin: 0 0 2.5rem;
 }
 
 .tagline {

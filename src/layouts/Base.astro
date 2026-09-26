@@ -7,7 +7,7 @@ interface Props {
   home?: boolean;
 }
 
-const { title, description = 'Eliot Caroom: career, projects, writing and podcasts.', home = false } = Astro.props;
+const { title, description = 'Projects, writing and podcasts by Eliot Caroom.', home = false } = Astro.props;
 const pageTitle = title ? `${title} | Eliot Caroom` : 'Eliot Caroom';
 const path = Astro.url.pathname;
 ---
@@ -33,7 +33,7 @@ const path = Astro.url.pathname;
   <body>
     <div class="wrap">
       <div class="topbar">
-        {home ? <span class="version">v.4</span> : <a class="back" href="/">← Eliot Caroom</a>}
+        {home ? <span class="version">v.3</span> : <a class="back" href="/">← Eliot Caroom</a>}
         <button class="mode" type="button" aria-label="Toggle light or dark mode">mode</button>
       </div>
       <main>
