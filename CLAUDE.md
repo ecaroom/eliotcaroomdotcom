@@ -44,11 +44,11 @@ DNS records: four A records on `@` (185.199.108–111.153), four AAAA on `@` (26
 Each gets its own thread in the claude.ai Project "eliotcaroom.com", with this repo attached.
 
 1. **Setup and infrastructure:** done except HTTPS confirmation (see Status).
-2. **Design:** visual direction not yet chosen. Current CSS is a plain text-forward placeholder.
+2. **Design:** direction set 2026-09-26: minimalist, web-native, mainly links to other things. Reference: lynnandtonic.com (structure only: big name, numbered link list, mode toggle, version label). Home is built this way; version label "v.4" pending Eliot's confirmation.
 3. **Content:** Home intro, Career, Projects, Podcasts. Home intro is a draft Eliot hasn't approved.
 4. **Archive rebuild:** from backup files first, Wayback second.
 5. **Data journalism / coding projects:** later.
 
 ## Status
 
-- 2026-09-26: Starter site built and deploying. DNS resolves to GitHub. Custom domain check in progress; tick Enforce HTTPS once the certificate is issued.
+- 2026-09-26: Site deploying. DNS check successful; HTTPS certificate pending, then tick Enforce HTTPS. Minimalist home page shipped.
