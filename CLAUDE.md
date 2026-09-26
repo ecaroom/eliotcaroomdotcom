@@ -27,6 +27,12 @@ DNS records: four A records on `@` (185.199.108–111.153), four AAAA on `@` (26
 - **Dark** (evening sky photo): background tree silhouette `#1a1810`, band `#24231a`, headers sky gold `#f3d29c`, body pale sky blue `#c9d3e3`, muted `#8e9dba`, links `#9fb6dd`.
 - Defaults follow the visitor's system setting; the mode button overrides it.
 
+## Type
+
+- **Crimson Pro** everywhere (name, headings, nav, body), self-hosted via `@fontsource/crimson-pro`. Chosen by Eliot 2026-09-26 over EB Garamond and Newsreader for density.
+- Monospace (system) only for small UI bits: list numbers, top bar, archive/rss line.
+- Favicon: Crimson Pro bold italic lowercase "e" traced to an SVG path, white with black outline.
+
 ## Repo layout
 
 - `src/pages/` : one file per page (index, projects, work, links, writing, podcasts, archive)
