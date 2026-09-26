@@ -199,3 +199,7 @@ blockquote {
   .projects td:not(.year) { grid-column: 1 / -1; grid-row: 2; }
   .projects .year { grid-column: 2; grid-row: 1; padding-top: 0.75rem; }
 }
+
+/* about */
+.about-photo img { border-radius: 4px; }
+.about-line { font-size: 1.4rem; line-height: 1.45; color: var(--head); }

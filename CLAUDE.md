@@ -46,6 +46,7 @@ Source colors: Chelsea Cucumber `#9aa459`, Pigeon Post `#b0ccd9`, Birch `#34361f
 - `src/styles/global.css` : all styles, light and dark
 - `.github/workflows/deploy.yml` : build and deploy
 - `public/CNAME` : custom domain
+- `src/pages/about.astro` + `public/about/climb.jpg` : About page. Photo: Eliot at the top of a climbing route (chosen over a photo with a public figure and a family photo; no child's face on the public site). Text is Eliot's own line, kept lowercase as he wrote it.
 - `src/pages/solar.astro` : "Accelerating solar for Roselle Park" campaign page (evidence list)
 - `src/pages/left-bank-66.astro` + `public/left-bank-66/cover.jpg` : Left Bank '66 write-up restored from v2 (prose page pattern: `.meta` date line, `figure`, `blockquote`, `.signoff` in global.css)
 - `public/solar/pseg-rates/index.html` : PSE&G rate history page, standalone HTML with its own styles (built in the "PSE&G electricity rate history" thread); only a back link, favicon and site theme sync were added
@@ -65,7 +66,7 @@ Source colors: Chelsea Cucumber `#9aa459`, Pigeon Post `#b0ccd9`, Birch `#34361f
 Each gets its own thread in the claude.ai Project "eliotcaroom.com", with this repo attached.
 
 1. **Setup and infrastructure:** done except HTTPS confirmation (see Status).
-2. **Design:** direction set 2026-09-26: minimalist, web-native, mainly links to other things. Reference: lynnandtonic.com (structure only: big name, numbered link list, mode toggle, version label). Home is built this way; version is v.3. No tagline (Eliot: not needed). Home list: projects, work, links (archive and rss in a small line below). Lowercase name, nav and headers via CSS text-transform. Audience: mainly people interested in Eliot's projects; not primarily for job hunting (LinkedIn covers that), but nothing that would put off an employer.
+2. **Design:** direction set 2026-09-26: minimalist, web-native, mainly links to other things. Reference: lynnandtonic.com (structure only: big name, numbered link list, mode toggle, version label). Home is built this way; version is v.3. No tagline (Eliot: not needed). Home list: projects, work, links, about (archive and rss in a small line below). Lowercase name, nav and headers via CSS text-transform. Audience: mainly people interested in Eliot's projects; not primarily for job hunting (LinkedIn covers that), but nothing that would put off an employer.
 3. **Content:** Projects is a borderless table of individual projects (name, what, year), newest first, edited in `src/pages/projects.astro`. Writing and podcasts pages exist but are not linked from Projects. Work, Links pages. Tone: balance professional, side projects and creative/personal; not arrogant, not a job pitch.
 4. **Archive:** decided 2026-09-26: **no full rebuild of old sites.** Eliot picks the pieces he liked from old versions and they become individual entries on Projects (own page when there's enough content, otherwise just a row). Sources: backup files first, Wayback second. Light edits allowed when porting (style guide dashes, dead links removed, Google redirect links made direct); note edits in a comment at the top of the page.
 5. **Data journalism / coding projects:** later.
