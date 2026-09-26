@@ -44,6 +44,7 @@ DNS records: four A records on `@` (185.199.108–111.153), four AAAA on `@` (26
 - `.github/workflows/deploy.yml` : build and deploy
 - `public/CNAME` : custom domain
 - `src/pages/solar.astro` : "Accelerating solar for Roselle Park" campaign page (evidence list)
+- `src/pages/left-bank-66.astro` + `public/left-bank-66/cover.jpg` : Left Bank '66 write-up restored from v2 (prose page pattern: `.meta` date line, `figure`, `blockquote`, `.signoff` in global.css)
 - `public/solar/pseg-rates/index.html` : PSE&G rate history page, standalone HTML with its own styles (built in the "PSE&G electricity rate history" thread); only a back link, favicon and site theme sync were added
 
 ## Rules
@@ -63,7 +64,7 @@ Each gets its own thread in the claude.ai Project "eliotcaroom.com", with this r
 1. **Setup and infrastructure:** done except HTTPS confirmation (see Status).
 2. **Design:** direction set 2026-09-26: minimalist, web-native, mainly links to other things. Reference: lynnandtonic.com (structure only: big name, numbered link list, mode toggle, version label). Home is built this way; version is v.3. No tagline (Eliot: not needed). Home list: projects, work, links (archive and rss in a small line below). Lowercase name, nav and headers via CSS text-transform. Audience: mainly people interested in Eliot's projects; not primarily for job hunting (LinkedIn covers that), but nothing that would put off an employer.
 3. **Content:** Projects is a borderless table of individual projects (name, what, year), newest first, edited in `src/pages/projects.astro`. Writing and podcasts pages exist but are not linked from Projects. Work, Links pages. Tone: balance professional, side projects and creative/personal; not arrogant, not a job pitch.
-4. **Archive rebuild:** from backup files first, Wayback second.
+4. **Archive:** decided 2026-09-26: **no full rebuild of old sites.** Eliot picks the pieces he liked from old versions and they become individual entries on Projects (own page when there's enough content, otherwise just a row). Sources: backup files first, Wayback second. Light edits allowed when porting (style guide dashes, dead links removed, Google redirect links made direct); note edits in a comment at the top of the page.
 5. **Data journalism / coding projects:** later.
 
 ## Status
@@ -71,3 +72,4 @@ Each gets its own thread in the claude.ai Project "eliotcaroom.com", with this r
 - 2026-09-26: Site live. DNS check successful; tick Enforce HTTPS once the certificate is issued. Technical runbook written to `OPERATIONS.md`.
 - 2026-09-26 (archive): v2 (live roughly 2015-2020) is not in the backup folder. Source is the Wayback Machine (known snapshot: web.archive.org/web/20220120055504/http://www.eliotcaroom.com/; confirm it is v2 and not a later version). Claude's web tools cannot reach web.archive.org, so Eliot downloads the snapshots locally and attaches a zip.
 - 2026-09-26 (archive): v2 identified from a saved Wayback page: WordPress 4.7.22, Inkness theme (InkHive), dark teal background `#003d44`. Nav: Product Manager, ESG Research, Writing & editing (Business reporting, Poetry Preserve), projects (Left Bank '66, Video & Visual Work, external link to Rock and Ice climbing accidents report). Posts: Left Bank '66 (2014), Star-Ledger photography (2011), Nonstagram (2010), "Passing the Axe" jazz history chapter (2010), NY Press reviews (2010). Categories: projects, visual, writing. Left Bank '66 post text recovered; its second image (`Screen-Shot-2018-04-14-at-12.35.00-AM.png`) still missing.
+- 2026-09-26 (archive): Left Bank '66 ported to `/left-bank-66/` and added to Projects (2013). Dead links dropped: City Paper (domain gone), CD Baby (store closed). Amazon link could not be verified and was left out; Apple Music link verified. Kickstarter description is JS-rendered, so its text and images could not be pulled; linked instead.

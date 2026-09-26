@@ -159,6 +159,22 @@ a { color: var(--accent); text-underline-offset: 0.15em; }
 
 img { max-width: 100%; height: auto; }
 
+/* external link marker, inline in prose and tables */
+.ext-inline::after { content: ' ↗'; font-size: 0.8em; color: var(--muted); }
+
+/* article pages (e.g. restored project write-ups) */
+.meta { margin: -0.75rem 0 1.5rem; font: 0.8125rem var(--mono); color: var(--muted); }
+figure { margin: 0 0 1.5rem; }
+figure img { display: block; width: 100%; }
+blockquote {
+  margin: 1.25rem 0;
+  padding-left: 1rem;
+  border-left: 2px solid var(--rule);
+  color: var(--muted);
+  font-style: italic;
+}
+.signoff { margin-top: 2rem; }
+
 /* projects table: no gridlines; stacks into blocks on phones */
 .projects { width: 100%; border-collapse: collapse; }
 .projects thead th {
@@ -173,7 +189,6 @@ img { max-width: 100%; height: auto; }
 .projects tbody th { font-weight: 600; width: 30%; }
 .projects tbody th a { color: var(--head); text-decoration: none; text-transform: lowercase; }
 .projects tbody th a:hover { color: var(--accent); }
-.projects .ext-inline::after { content: ' ↗'; font-size: 0.8em; color: var(--muted); }
 .projects .year { font: 0.8125rem/2.2 var(--mono); color: var(--muted); padding-right: 0; white-space: nowrap; }
 
 @media (max-width: 560px) {
