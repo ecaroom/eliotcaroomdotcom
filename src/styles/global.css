@@ -1,42 +1,42 @@
 :root {
-  /* light: sandstone page, sunlit-leaf header band, forest-green headers (climbing photo) */
-  --bg: #ebe4d8;
-  --band: #c1c6ad;
-  --band-text: #1f3a3f;
-  --head: #1f3a3f;
-  --text: #2e2a26;
-  --muted: #6b5a4a;
-  --rule: #cdbfae;
-  --accent: #3c6494;
+  /* light: Pigeon Post page, Chelsea Cucumber band, Birch headers and body, Kelp secondary */
+  --bg: #b0ccd9;
+  --band: #9aa459;
+  --band-text: #34361f;
+  --head: #34361f;
+  --text: #34361f;
+  --muted: #4f4f36;
+  --rule: #9aa459;
+  --accent: #2d5061;
   --measure: 36rem;
   --serif: 'EB Garamond', 'Iowan Old Style', Georgia, serif;
   --sans: system-ui, -apple-system, 'Segoe UI', sans-serif;
   --mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
 }
 
-/* dark: tree-silhouette background, sky colors for text (sky photo) */
+/* dark: Birch page, Kelp band, Pigeon Post headers, pale Pigeon Post body, Chelsea Cucumber secondary */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme='light']) {
-    --bg: #1a1810;
-    --band: #24231a;
-    --band-text: #f3d29c;
-    --head: #f3d29c;
-    --text: #c9d3e3;
-    --muted: #8e9dba;
-    --rule: #34321f;
-    --accent: #9fb6dd;
+    --bg: #34361f;
+    --band: #4f4f36;
+    --band-text: #b0ccd9;
+    --head: #b0ccd9;
+    --text: #d6e4eb;
+    --muted: #9aa459;
+    --rule: #4f4f36;
+    --accent: #cfe0e8;
   }
 }
 
 :root[data-theme='dark'] {
-  --bg: #1a1810;
-  --band: #24231a;
-  --band-text: #f3d29c;
-  --head: #f3d29c;
-  --text: #c9d3e3;
-  --muted: #8e9dba;
-  --rule: #34321f;
-  --accent: #9fb6dd;
+  --bg: #34361f;
+  --band: #4f4f36;
+  --band-text: #b0ccd9;
+  --head: #b0ccd9;
+  --text: #d6e4eb;
+  --muted: #9aa459;
+  --rule: #4f4f36;
+  --accent: #cfe0e8;
 }
 
 *, *::before, *::after { box-sizing: border-box; }

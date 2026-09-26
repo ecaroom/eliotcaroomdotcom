@@ -23,11 +23,14 @@ Eliot Caroom's personal site, v3/v4 of earlier sites. Mobile-first. Sections:
 
 DNS records: four A records on `@` (185.199.108–111.153), four AAAA on `@` (2606:50c0:8000–8003::153), CNAME `www` → `ecaroom.github.io`.
 
-## Palette (from Eliot's photos; all text meets WCAG AA)
+## Palette (Eliot's named colors, 2026-09-26; all text meets WCAG AA)
 
-- **Light** (climbing photo): page sandstone `#ebe4d8`, header band sunlit leaf `#c1c6ad`, headers forest green `#1f3a3f`, body `#2e2a26`, muted rock brown `#6b5a4a`, links helmet blue `#3c6494`.
-- **Dark** (evening sky photo): background tree silhouette `#1a1810`, band `#24231a`, headers sky gold `#f3d29c`, body pale sky blue `#c9d3e3`, muted `#8e9dba`, links `#9fb6dd`.
+Source colors: Chelsea Cucumber `#9aa459`, Pigeon Post `#b0ccd9`, Birch `#34361f`, Kelp `#4f4f36`.
+
+- **Light:** page Pigeon Post, header band Chelsea Cucumber, headings and body Birch (7.4:1), secondary text Kelp (5.0:1), links deep blue `#2d5061` (5.1:1, derived from Pigeon Post), rules Chelsea Cucumber.
+- **Dark:** page Birch, header band Kelp, headings Pigeon Post (7.4:1), body pale Pigeon Post `#d6e4eb` (9.5:1), secondary text Chelsea Cucumber (4.6:1), links `#cfe0e8`.
 - Defaults follow the visitor's system setting; the mode button overrides it.
+- Replaced the earlier photo-derived palette (climbing / evening sky).
 
 ## Type
 
