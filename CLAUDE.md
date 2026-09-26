@@ -29,9 +29,9 @@ DNS records: four A records on `@` (185.199.108–111.153), four AAAA on `@` (26
 
 ## Type
 
-- **Crimson Pro** everywhere (name, headings, nav, body), self-hosted via `@fontsource/crimson-pro`. Chosen by Eliot 2026-09-26 over EB Garamond and Newsreader for density.
+- **EB Garamond** everywhere (name, headings, nav, body), self-hosted via `@fontsource/eb-garamond`. Eliot chose it 2026-09-26 (briefly used Crimson Pro first; Newsreader also considered).
 - Monospace (system) only for small UI bits: list numbers, top bar, archive/rss line.
-- Favicon: Crimson Pro bold italic lowercase "e" traced to an SVG path, white with black outline.
+- Favicon: EB Garamond bold italic lowercase "e" traced to an SVG path, white with black outline.
 
 ## Repo layout
 

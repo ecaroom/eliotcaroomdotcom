@@ -9,7 +9,7 @@
   --rule: #cdbfae;
   --accent: #3c6494;
   --measure: 36rem;
-  --serif: 'Crimson Pro', 'Iowan Old Style', Georgia, serif;
+  --serif: 'EB Garamond', 'Iowan Old Style', Georgia, serif;
   --sans: system-ui, -apple-system, 'Segoe UI', sans-serif;
   --mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
 }
@@ -47,7 +47,7 @@ body {
   margin: 0;
   background: var(--bg);
   color: var(--text);
-  font: 1.1875rem/1.6 var(--serif);
+  font: 1.25rem/1.55 var(--serif);
 }
 
 .wrap {
