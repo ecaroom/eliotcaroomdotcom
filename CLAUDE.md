@@ -66,3 +66,4 @@ Each gets its own thread in the claude.ai Project "eliotcaroom.com", with this r
 ## Status
 
 - 2026-09-26: Site deploying. DNS check successful; HTTPS certificate pending, then tick Enforce HTTPS. Minimalist home page shipped.
+- 2026-09-26 (archive): v2 (live roughly 2015-2020) is not in the backup folder. Source is the Wayback Machine (known snapshot: web.archive.org/web/20220120055504/http://www.eliotcaroom.com/; confirm it is v2 and not a later version). Claude's web tools cannot reach web.archive.org, so Eliot downloads the snapshots locally and attaches a zip.
