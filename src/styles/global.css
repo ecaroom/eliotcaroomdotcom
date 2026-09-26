@@ -158,3 +158,29 @@ a { color: var(--accent); text-underline-offset: 0.15em; }
 .list time { display: block; font: 0.8125rem var(--mono); color: var(--muted); }
 
 img { max-width: 100%; height: auto; }
+
+/* projects table: no gridlines; stacks into blocks on phones */
+.projects { width: 100%; border-collapse: collapse; }
+.projects thead th {
+  text-align: left;
+  font: 0.75rem var(--mono);
+  color: var(--muted);
+  font-weight: 400;
+  text-transform: lowercase;
+  padding: 0 1rem 0.5rem 0;
+}
+.projects tbody th, .projects td { vertical-align: top; text-align: left; padding: 0.75rem 1rem 1.25rem 0; }
+.projects tbody th { font-weight: 600; width: 30%; }
+.projects tbody th a { color: var(--head); text-decoration: none; text-transform: lowercase; }
+.projects tbody th a:hover { color: var(--accent); }
+.projects .ext-inline::after { content: ' ↗'; font-size: 0.8em; color: var(--muted); }
+.projects .year { font: 0.8125rem/2.2 var(--mono); color: var(--muted); padding-right: 0; white-space: nowrap; }
+
+@media (max-width: 560px) {
+  .projects thead { display: none; }
+  .projects tr { display: grid; grid-template-columns: 1fr auto; padding-bottom: 1.5rem; }
+  .projects tbody th { width: auto; padding-bottom: 0.25rem; }
+  .projects td { padding-top: 0; }
+  .projects td:not(.year) { grid-column: 1 / -1; grid-row: 2; }
+  .projects .year { grid-column: 2; grid-row: 1; padding-top: 0.75rem; }
+}

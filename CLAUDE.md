@@ -56,8 +56,8 @@ DNS records: four A records on `@` (185.199.108–111.153), four AAAA on `@` (26
 Each gets its own thread in the claude.ai Project "eliotcaroom.com", with this repo attached.
 
 1. **Setup and infrastructure:** done except HTTPS confirmation (see Status).
-2. **Design:** direction set 2026-09-26: minimalist, web-native, mainly links to other things. Reference: lynnandtonic.com (structure only: big name, numbered link list, mode toggle, version label). Home is built this way; version is v.3. No tagline (Eliot: not needed). Home list: projects, work, links (writing and podcasts live under projects; archive and rss in a small line below). Lowercase name, nav and headers via CSS text-transform. Audience: mainly people interested in Eliot's projects; not primarily for job hunting (LinkedIn covers that), but nothing that would put off an employer.
-3. **Content:** Projects (incl. podcasts, writing), Work, Links pages. Tone: balance professional, side projects and creative/personal; not arrogant, not a job pitch.
+2. **Design:** direction set 2026-09-26: minimalist, web-native, mainly links to other things. Reference: lynnandtonic.com (structure only: big name, numbered link list, mode toggle, version label). Home is built this way; version is v.3. No tagline (Eliot: not needed). Home list: projects, work, links (archive and rss in a small line below). Lowercase name, nav and headers via CSS text-transform. Audience: mainly people interested in Eliot's projects; not primarily for job hunting (LinkedIn covers that), but nothing that would put off an employer.
+3. **Content:** Projects is a borderless table of individual projects (name, what, year), newest first, edited in `src/pages/projects.astro`. Writing and podcasts pages exist but are not linked from Projects. Work, Links pages. Tone: balance professional, side projects and creative/personal; not arrogant, not a job pitch.
 4. **Archive rebuild:** from backup files first, Wayback second.
 5. **Data journalism / coding projects:** later.
 

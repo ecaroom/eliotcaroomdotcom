@@ -1,11 +1,32 @@
 ---
 import Base from '../layouts/Base.astro';
+
+// Newest first. External links get ext: true.
+const projects = [
+  {
+    name: 'Climbing accidents',
+    href: 'https://github.com/ecaroom/climbing-accidents',
+    ext: true,
+    year: '2020',
+    summary:
+      'Tagged 2,770 American Alpine Club accident reports from 1990 to 2019 to find patterns by discipline, experience, time of day and more. Published in Rock and Ice.',
+  },
+];
 ---
 <Base title="Projects">
   <h1>Projects</h1>
-  <ul class="links">
-    <li><a href="/podcasts/">Podcasts</a></li>
-    <li><a href="/writing/">Writing</a></li>
-  </ul>
-  <p class="muted" style="margin-top:1.5rem">More coming, including data journalism and code.</p>
+  <table class="projects">
+    <thead>
+      <tr><th scope="col">project</th><th scope="col">what</th><th scope="col">year</th></tr>
+    </thead>
+    <tbody>
+      {projects.map((p) => (
+        <tr>
+          <th scope="row"><a href={p.href} class={p.ext ? 'ext-inline' : undefined}>{p.name}</a></th>
+          <td>{p.summary}</td>
+          <td class="year">{p.year}</td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
 </Base>
