@@ -28,8 +28,8 @@ DNS records: four A records on `@` (185.199.108–111.153), four AAAA on `@` (26
 Source colors: Chelsea Cucumber `#9aa459`, Pigeon Post `#b0ccd9`, Birch `#34361f`, Kelp `#4f4f36`.
 
 - **Light:** page Pigeon Post, header band Chelsea Cucumber, headings rich dark brown `#4e2c1c` (7.3:1), body Birch (7.4:1), secondary text Kelp (5.0:1), links deep blue `#2d5061` (5.1:1, derived from Pigeon Post), rules Chelsea Cucumber.
-- **Dark:** page reddish tan `#6e4a36` (Eliot asked for lighter tan with red; this is the lightest that keeps light text readable), header band deep brown `#4e3326`, headings Pigeon Post (4.6:1, large text), body pale Pigeon Post `#d6e4eb` (6.0:1), secondary text light Chelsea Cucumber `#cdd494` (5.0:1), links `#e4eef2`, rules `#8a634b`.
-- Defaults follow the visitor's system setting; the mode button overrides it.
+- **Dark:** page dark tan-orange `#5c4126`, header band deep brown `#3e2c19`, headings Pigeon Post (5.6:1), body pale Pigeon Post `#d6e4eb` (7.2:1), secondary text light Chelsea Cucumber `#cdd494` (6.0:1), links `#e4eef2`, rules `#7a5a3c`.
+- **Visitors always start in light mode** (Eliot's choice, 2026-09-26), regardless of their system setting. Dark mode only via the mode button, remembered per visitor. The PSE&G page follows the same rule.
 - Replaced the earlier photo-derived palette (climbing / evening sky).
 
 ## Type
@@ -66,7 +66,7 @@ Source colors: Chelsea Cucumber `#9aa459`, Pigeon Post `#b0ccd9`, Birch `#34361f
 Each gets its own thread in the claude.ai Project "eliotcaroom.com", with this repo attached.
 
 1. **Setup and infrastructure:** done except HTTPS confirmation (see Status).
-2. **Design:** direction set 2026-09-26: minimalist, web-native, mainly links to other things. Reference: lynnandtonic.com (structure only: big name, numbered link list, mode toggle, version label). Home is built this way; version is v.3. No tagline (Eliot: not needed). Home list: projects, work, links, about (archive and rss in a small line below). Lowercase name, nav and headers via CSS text-transform. Audience: mainly people interested in Eliot's projects; not primarily for job hunting (LinkedIn covers that), but nothing that would put off an employer.
+2. **Design:** direction set 2026-09-26: minimalist, web-native, mainly links to other things. Reference: lynnandtonic.com (structure only: big name, numbered link list, mode toggle, version label). Home is built this way. Version label (v.3) removed 2026-09-26: not relevant to visitors; the site is still v3. No tagline (Eliot: not needed). Home list: projects, work, links, about (archive and rss in a small line below). Lowercase name, nav and headers via CSS text-transform. Audience: mainly people interested in Eliot's projects; not primarily for job hunting (LinkedIn covers that), but nothing that would put off an employer.
 3. **Content:** Projects is a borderless table of individual projects (name, what, year), newest first, edited in `src/pages/projects.astro`. Writing and podcasts pages exist but are not linked from Projects. Work, Links pages. Tone: balance professional, side projects and creative/personal; not arrogant, not a job pitch.
 4. **Archive:** decided 2026-09-26: **no full rebuild of old sites.** Eliot picks the pieces he liked from old versions and they become individual entries on Projects (own page when there's enough content, otherwise just a row). Sources: backup files first, Wayback second. Light edits allowed when porting (style guide dashes, dead links removed, Google redirect links made direct); note edits in a comment at the top of the page.
 5. **Data journalism / coding projects:** later.

@@ -92,9 +92,8 @@ Requires Node.js (version 22 is what the site is built with).
 | Add evidence to the solar campaign | `src/pages/solar.astro` | Add to `evidence`. A standalone HTML evidence page goes in `public/solar/<name>/index.html`. |
 | Publish any standalone HTML page | `public/<path>/index.html` | Served as-is at `eliotcaroom.com/<path>/`. Add the favicon link, a back link, and the theme-sync script (copy from `public/solar/pseg-rates/index.html`). |
 | Write a post | `src/content/writing/<slug>.md` | Front matter: `title`, `date`, `summary`, `draft`. `draft: true` hides it from the site but it is still public in the repo. |
-| Colors | `src/styles/global.css` | Tokens at the top: light in `:root`, dark in both dark blocks (keep them identical). |
+| Colors | `src/styles/global.css` | Tokens at the top: light in `:root`, dark in `:root[data-theme='dark']`. The site always opens in light; dark is only via the mode button. |
 | Fonts | `src/layouts/Base.astro` (imports) and `--serif` in `global.css` | Fonts are self-hosted via `@fontsource/*` npm packages. |
-| Version label (v.3) | `src/layouts/Base.astro` | |
 | Tab icon | `public/favicon.svg` | Traced from the EB Garamond bold italic "e" with fontTools. Browsers cache icons: hard refresh to see changes. |
 | Page title / link-preview text | `title` and `description` props on `<Base>` in each page | |
 

@@ -14,28 +14,16 @@
   --mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
 }
 
-/* dark: reddish tan page, deep brown band, Pigeon Post headings, pale Pigeon Post body, light Chelsea Cucumber secondary */
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme='light']) {
-    --bg: #6e4a36;
-    --band: #4e3326;
-    --band-text: #b0ccd9;
-    --head: #b0ccd9;
-    --text: #d6e4eb;
-    --muted: #cdd494;
-    --rule: #8a634b;
-    --accent: #e4eef2;
-  }
-}
-
+/* dark (via mode button only): dark tan page, deep brown band, Pigeon Post headings, pale Pigeon Post body, light Chelsea Cucumber secondary */
 :root[data-theme='dark'] {
-  --bg: #6e4a36;
-  --band: #4e3326;
+  color-scheme: dark;
+  --bg: #5c4126;
+  --band: #3e2c19;
   --band-text: #b0ccd9;
   --head: #b0ccd9;
   --text: #d6e4eb;
   --muted: #cdd494;
-  --rule: #8a634b;
+  --rule: #7a5a3c;
   --accent: #e4eef2;
 }
 
@@ -73,6 +61,7 @@ body {
 .back:hover { text-decoration: underline; }
 
 .mode {
+  margin-left: auto;
   font: inherit;
   color: var(--band-text);
   background: none;

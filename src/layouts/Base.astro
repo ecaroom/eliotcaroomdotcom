@@ -20,7 +20,7 @@ const path = Astro.url.pathname;
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="color-scheme" content="light dark" />
+    <meta name="color-scheme" content="light" />
     <title>{pageTitle}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={new URL(path, Astro.site)} />
@@ -38,7 +38,7 @@ const path = Astro.url.pathname;
   <body>
     <header class="band">
       <div class="wrap topbar">
-        {home ? <span class="version">v.3</span> : <a class="back" href="/">← Eliot Caroom</a>}
+        {!home && <a class="back" href="/">← Eliot Caroom</a>}
         <button class="mode" type="button" aria-label="Toggle light or dark mode">mode</button>
       </div>
     </header>
@@ -50,9 +50,7 @@ const path = Astro.url.pathname;
     <script is:inline>
       document.querySelector('.mode').addEventListener('click', () => {
         const root = document.documentElement;
-        const dark = root.dataset.theme
-          ? root.dataset.theme === 'dark'
-          : matchMedia('(prefers-color-scheme: dark)').matches;
+        const dark = root.dataset.theme === 'dark';
         root.dataset.theme = dark ? 'light' : 'dark';
         try { localStorage.setItem('theme', root.dataset.theme); } catch (e) {}
       });

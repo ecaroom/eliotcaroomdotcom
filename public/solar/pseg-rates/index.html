@@ -126,7 +126,7 @@
   .cite a:hover { text-decoration: underline; }
 </style>
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-<script>try{var t=localStorage.getItem('theme');if(t)document.documentElement.dataset.theme=t;}catch(e){}</script>
+<script>var t=null;try{t=localStorage.getItem('theme');}catch(e){}document.documentElement.dataset.theme=t||'light';</script>
 <style>.backlink{display:inline-block;margin:0 0 18px;font:0.8rem ui-monospace,Menlo,monospace;color:var(--text-muted);text-decoration:none}.backlink:hover{color:var(--text-primary)}</style>
 </head>
 <body class="viz-root">
