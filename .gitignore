@@ -1,0 +1,14 @@
+# build output
+dist/
+.astro/
+
+# dependencies
+node_modules/
+
+# secrets: API keys go here, never in committed files
+.env
+.env.*
+
+# OS / editor
+.DS_Store
+.vscode/
