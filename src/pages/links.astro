@@ -11,7 +11,7 @@ const external: { href: string; label: string }[] = [];
   ) : (
     <ul class="links">
       {external.map((l) => (
-        <li><a class="ext" href={l.href} rel="me noopener">{l.label}</a></li>
+        <li><a class="ext" href={l.href} target="_blank" rel="me noopener">{l.label}</a></li>
       ))}
     </ul>
   )}

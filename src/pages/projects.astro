@@ -38,7 +38,7 @@ const projects = [
     <tbody>
       {projects.map((p) => (
         <tr>
-          <th scope="row"><a href={p.href} class={p.ext ? 'ext-inline' : undefined}>{p.name}</a></th>
+          <th scope="row"><a href={p.href} class={p.ext ? 'ext-inline' : undefined} target={p.ext ? '_blank' : undefined} rel={p.ext ? 'noopener' : undefined}>{p.name}</a></th>
           <td>{p.summary}</td>
           <td class="year">{p.year}</td>
         </tr>

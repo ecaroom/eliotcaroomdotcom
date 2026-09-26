@@ -51,6 +51,7 @@ DNS records: four A records on `@` (185.199.108–111.153), four AAAA on `@` (26
 - **No raw backups of old sites.** Rebuild old sections from backups; never commit the backups themselves (they may contain passwords or personal data).
 - **No unpublished work-related material** (e.g. FactSet) until Eliot has cleared it.
 - **Site copy follows Eliot's style guide.** No em dashes.
+- **External links open in a new tab** (`target="_blank" rel="noopener"`) and carry a ↗ marker. Internal links open in the same tab.
 - Commit author email: the GitHub noreply address, not a personal email.
 
 ## Workstreams
