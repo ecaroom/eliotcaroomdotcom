@@ -192,3 +192,21 @@ blockquote {
 /* about */
 .about-photo img { border-radius: 4px; }
 .about-line { font-size: 1.4rem; line-height: 1.45; color: var(--head); }
+
+/* home badge (Wait Until 8th) */
+.badge {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  margin-top: 2rem;
+  padding: 0.7rem 1rem 0.75rem;
+  border: 2px solid var(--head);
+  border-radius: 10px;
+  color: var(--head);
+  text-decoration: none;
+  line-height: 1.2;
+}
+.badge:hover { background: var(--band); }
+.badge-kicker { font: 0.7rem var(--mono); color: var(--muted); text-transform: lowercase; }
+.badge-title { font: 700 1.35rem/1.1 var(--serif); }
+.badge-cta { font: 0.75rem var(--mono); color: var(--muted); }
