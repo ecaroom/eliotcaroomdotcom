@@ -14,16 +14,16 @@
   --mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
 }
 
-/* dark (via mode button only): dark tan page, deep brown band, Pigeon Post headings, pale Pigeon Post body, light Chelsea Cucumber secondary */
+/* dark (via mode button only): chocolate page, deep brown band, Pigeon Post headings, pale Pigeon Post body, light Chelsea Cucumber secondary */
 :root[data-theme='dark'] {
   color-scheme: dark;
-  --bg: #5c4126;
-  --band: #3e2c19;
+  --bg: #3b2418;
+  --band: #28170f;
   --band-text: #b0ccd9;
   --head: #b0ccd9;
   --text: #d6e4eb;
   --muted: #cdd494;
-  --rule: #7a5a3c;
+  --rule: #5e3d2b;
   --accent: #e4eef2;
 }
 
@@ -76,7 +76,7 @@ main { padding-top: 3rem; }
 
 /* home */
 .name {
-  font: 700 clamp(3rem, 14vw, 5rem)/0.9 var(--serif);
+  font: 700 clamp(2.1rem, 9.8vw, 3.5rem)/0.9 var(--serif);
   letter-spacing: -0.015em;
   color: var(--head);
   margin: 0 0 2.5rem;
@@ -194,6 +194,7 @@ blockquote {
 
 /* home badges (Common Sense Solar Savings, Wait Until 8th) */
 .badges { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 2rem; }
+.badges .badge { flex: 0 0 15rem; max-width: 100%; }
 .badge {
   display: inline-flex;
   flex-direction: column;
