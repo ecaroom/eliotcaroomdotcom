@@ -9,9 +9,10 @@ interface Props {
   title?: string;
   description?: string;
   home?: boolean;
+  photoPage?: boolean;
 }
 
-const { title, description = 'Projects, writing and podcasts by Eliot Caroom.', home = false } = Astro.props;
+const { title, description = 'Projects, writing and podcasts by Eliot Caroom.', home = false, photoPage = false } = Astro.props;
 const pageTitle = title ? `${title} | Eliot Caroom` : 'Eliot Caroom';
 const path = Astro.url.pathname;
 ---
@@ -35,7 +36,8 @@ const path = Astro.url.pathname;
       } catch (e) {}
     </script>
   </head>
-  <body>
+  <body class={photoPage ? 'photo-page' : undefined}>
+    <div class="backdrop" aria-hidden="true"></div>
     <header class="band">
       <div class="wrap topbar">
         {!home && <a class="back" href="/">← Eliot Caroom</a>}

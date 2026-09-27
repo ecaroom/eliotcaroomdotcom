@@ -190,7 +190,6 @@ blockquote {
 }
 
 /* about */
-.about-photo img { border-radius: 4px; }
 .about-line { font-size: 1.4rem; line-height: 1.45; color: var(--head); }
 
 /* home badge (Wait Until 8th) */
@@ -210,3 +209,51 @@ blockquote {
 .badge-kicker { font: 0.7rem var(--mono); color: var(--muted); text-transform: lowercase; }
 .badge-title { font: 700 1.35rem/1.1 var(--serif); }
 .badge-cta { font: 0.75rem var(--mono); color: var(--muted); }
+
+/* photo backdrop: the About photo sits behind every page.
+   Wide screens: it shows as borders either side of the solid text column.
+   Phones: hidden (column is full width).
+   About page (.photo-page): full background at every size, zoomed toward Eliot,
+   with text in solid panels. Eliot is at about 44% across, 59% down in the photo. */
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: url('/about/climb.jpg') 44% 59% / cover no-repeat;
+  display: none;
+}
+:root[data-theme='dark'] .backdrop::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(40, 26, 12, 0.45);
+}
+
+@media (min-width: 720px) {
+  body:not(.photo-page) { background: var(--bg); }
+  body:not(.photo-page) .backdrop { display: block; }
+  body:not(.photo-page) { background: transparent; }
+  body:not(.photo-page) > .wrap {
+    background: var(--bg);
+    min-height: calc(100vh - 3.6rem);
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+}
+
+.photo-page { background: transparent; }
+.photo-page .backdrop {
+  display: block;
+  transform: scale(1.45);
+  transform-origin: 44% 59%;
+}
+.photo-page main { padding-top: 1.5rem; }
+.photo-page .panel {
+  background: var(--bg);
+  padding: 0.6rem 0.9rem;
+  border-radius: 6px;
+  width: fit-content;
+  max-width: 100%;
+}
+.photo-page h1.panel { margin-bottom: 0; }
+.photo-page .about-line.panel { margin-top: 55vh; }
