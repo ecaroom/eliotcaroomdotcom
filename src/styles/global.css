@@ -258,3 +258,7 @@ blockquote {
 @media (max-width: 719px) {
   .photo-page .backdrop { transform: scale(1.5); }
 }
+/* numbered asks on campaign pages (e.g. /solar/) */
+.asks { padding-left: 1.4rem; }
+.asks li { margin-bottom: 0.75rem; padding-left: 0.25rem; }
+.asks li::marker { font: 0.8125rem var(--mono); color: var(--muted); }

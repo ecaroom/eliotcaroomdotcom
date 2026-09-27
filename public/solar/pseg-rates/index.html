@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>PSE&amp;G Residential Rate History</title>
+<title>PSE&amp;G Residential &amp; Commercial Rate History</title>
 <style>
   .viz-root {
     color-scheme: light;
@@ -84,9 +84,27 @@
   .direct-label { fill: var(--text-secondary); font-size: 10.5px; font-variant-numeric: tabular-nums; }
   .event-note { fill: var(--highlight); font-size: 9.5px; font-style: italic; font-weight: 600; }
 
-  .legend { display: flex; gap: 18px; margin: 0 0 12px; font-size: 0.8rem; color: var(--text-secondary); }
+  /* Charts are redrawn in JS with a viewBox that matches the SVG's actual
+     rendered pixel width (see renderAll()), so these font sizes are true
+     CSS pixels at every screen size instead of shrinking with the viewBox.
+     The .narrow variants below give a small legibility bump on phones,
+     where the chart is viewed closer up and has less width to work with. */
+  svg.narrow .axis-label { font-size: 12.5px; }
+  svg.narrow .direct-label { font-size: 11.5px; }
+  svg.narrow .event-note { font-size: 10.5px; }
+
+  .legend { display: flex; flex-wrap: wrap; gap: 18px; margin: 0 0 12px; font-size: 0.8rem; color: var(--text-secondary); }
   .legend .item { display: flex; align-items: center; gap: 6px; }
   .legend .swatch { width: 12px; height: 12px; border-radius: 3px; flex: none; }
+
+  .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .table-scroll table { min-width: 560px; }
+
+  @media (max-width: 480px) {
+    .wrap { padding: 18px 12px 30px; }
+    .card { padding: 14px 12px 8px; }
+    h1 { font-size: 1.15rem; }
+  }
 
   .tooltip {
     position: absolute;
@@ -133,7 +151,7 @@
 <div class="wrap">
   <a class="backlink" href="/solar/">&larr; accelerating solar for roselle park</a>
   <h1>PSE&amp;G residential &amp; commercial electricity rate, 2016–2026</h1>
-  <p class="sub">Built from PSE&amp;G's own filed tariff schedules — Residential "RS – Residential Service" and Commercial "GLP – General Lighting and Power Service," both bundled (Delivery + Basic Generation Service standard-offer), base/winter tier, NJ Sales &amp; Use Tax included — as recorded in NREL's OpenEI Utility Rate Database. Every point below is a dated tariff filing, not an estimate.</p>
+  <p class="sub">Built from PSE&amp;G's own filed tariff schedules, both bundled as Delivery plus Basic Generation Service standard-offer. Residential is "RS – Residential Service"; commercial is "GLP – General Lighting and Power Service." Figures are base/winter tier, NJ Sales &amp; Use Tax included, recorded in NREL's OpenEI Utility Rate Database. Every point below is a dated tariff filing, not an estimate.</p>
 
   <div class="card">
     <h2>Total energy rate (delivery + default supply)</h2>
@@ -156,27 +174,56 @@
   </div>
 
   <div class="note">
-    <strong>What this does and doesn't cover:</strong> URDB tracks tariffs filed with the NJ Board of Public Utilities. It stores each rate class as one continuously-revised record before ~2016, so pre-2016 history isn't recoverable as discrete dated points from this dataset (only the latest snapshot survives) — that's why both series start in March 2016. No new PSE&amp;G residential or GLP rate filing appears in this database with an effective date in 2020 — the rate that took effect June 2019 stayed in force through May 2021, a two-year span, for both classes. The numbers plotted are each class's base/winter energy rate; PSE&amp;G's actual tariffs use two seasonal rate periods, and residential additionally has a summer inclining-block tier above 600 kWh/month (see the residential table). <strong>The commercial line is not a full GLP bill:</strong> unlike residential service, GLP is demand-metered — PSE&amp;G bills a separate flat demand charge of roughly $4–14 per kW of peak demand per month (lower in summer, higher in winter) on top of the per-kWh rate charted here. For a business with meaningful peak demand, that charge can be a large share of the total bill and isn't captured by this line.
+    <strong>What this does and doesn't cover:</strong> URDB tracks tariffs filed with the NJ Board of Public Utilities. It stores each rate class as one continuously revised record before roughly 2016, so pre-2016 history isn't recoverable as discrete dated points from this dataset; only the latest snapshot survives. That's why both series start in March 2016. No new PSE&amp;G residential or GLP rate filing appears in this database with an effective date in 2020. The rate that took effect June 2019 stayed in force through May 2021, a two-year span, for both classes. The numbers plotted are each class's base/winter energy rate; PSE&amp;G's actual tariffs use two seasonal rate periods, and residential additionally has a summer inclining-block tier above 600 kWh/month (see the residential table). <strong>The commercial line is not a full GLP bill.</strong> Unlike residential service, GLP is demand-metered. PSE&amp;G bills a separate flat demand charge of roughly $4 to $14 per kW of peak demand per month, lower in summer and higher in winter, on top of the per-kWh rate charted here. For a business with meaningful peak demand, that charge can be a large share of the total bill, and it isn't captured by this line.
   </div>
 
+  <div class="note">
+    <strong>What this costs Roselle Park itself:</strong> the rates above are PSE&amp;G's general residential and commercial tariffs, not what the Borough pays. Municipal buildings and streetlights run on their own accounts, and PSE&amp;G bills streetlights under a separate Outdoor Lighting and Unmetered Services tariff, not the commercial GLP schedule charted here. The Borough's own budgets are the direct source for what the town spends, and they go back further than one year. Electricity actual spending was $82,461.71 in 2018, $84,688.41 in 2019, jumped to $136,822.42 in 2020, then fell to $94,214.59 in 2021 and $90,226.58 in 2022, before rising to $113,548.61 in 2024. Street Lighting followed a similar dip and rise: $178,231.01 in 2018, declining each year to $152,932.76 in 2021, then $166,642.48 in 2022 and $213,037.47 in 2024. That is not a steady climb that lines up neatly with the PSE&amp;G filings above. The 2020 spike and the 2021 to 2022 decline happened while PSE&amp;G's commercial per-kWh rate was flat or falling, so that swing looks like a change in municipal usage or billing timing, not a rate effect. The rise from 2022 to 2024 is different: electricity actual spending rose 25.8% and Street Lighting rose 27.8%, while PSE&amp;G's commercial rate went from 6.21&cent; and then 8.13&cent; during 2022 to 9.83&cent; for all of 2024. The Borough raised both 2024 lines partway through the year, electricity from $105,000 to $120,000 and Street Lighting from $205,000 to $215,000 (2025 Introduced Budget, &ldquo;Budget After Modification&rdquo;). The larger jump, an 87.9% rise in the commercial rate to 18.48&cent; in January 2025, is not in these actuals yet. The 2025 budget set electricity at $115,000, 1.3% more than the Borough spent in 2024 and below the $120,000 it ended up budgeting for that year. 2023's actual figure is missing from this table. The Borough's 2024 budget documents on file are scanned images without extractable text, so that one year needs either a records request or a readable copy of Sheet 17 of the 2024 budget. For invoice-level detail, kWh used against the filed rate rather than a lump appropriation, the route is an OPRA request to the Borough Clerk for PSE&amp;G invoices and payment records on municipal electric and streetlight accounts, itemized by year. New Jersey's Open Public Records Act sets a seven-business-day response deadline for that kind of request.
+  </div>
+
+  <div class="table-scroll" style="margin-bottom:20px;">
+  <table id="muniTable">
+    <thead>
+      <tr><th colspan="5">Roselle Park Current Fund budget – Electricity &amp; Street Lighting</th></tr>
+      <tr><th>Year</th><th class="num">Electricity approp.</th><th class="num">Electricity actual</th><th class="num">Street Lighting approp.</th><th class="num">Street Lighting actual</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>2018</td><td class="num">$100,000.00</td><td class="num">$82,461.71</td><td class="num">$218,200.00</td><td class="num">$178,231.01</td></tr>
+      <tr><td>2019</td><td class="num">$100,000.00</td><td class="num">$84,688.41</td><td class="num">$218,000.00</td><td class="num">$173,553.48</td></tr>
+      <tr><td>2020</td><td class="num">$102,000.00</td><td class="num">$136,822.42</td><td class="num">$210,000.00</td><td class="num">$166,113.06</td></tr>
+      <tr><td>2021</td><td class="num">$125,000.00</td><td class="num">$94,214.59</td><td class="num">$200,000.00</td><td class="num">$152,932.76</td></tr>
+      <tr><td>2022</td><td class="num">$119,000.00</td><td class="num">$90,226.58</td><td class="num">$190,000.00</td><td class="num">$166,642.48</td></tr>
+      <tr><td>2023</td><td class="num">$105,000.00</td><td class="num">n/a</td><td class="num">$195,000.00</td><td class="num">n/a</td></tr>
+      <tr><td>2024</td><td class="num">$105,000.00</td><td class="num">$113,548.61</td><td class="num">$205,000.00</td><td class="num">$213,037.47</td></tr>
+      <tr><td>2025</td><td class="num">$115,000.00</td><td class="num">current</td><td class="num">$218,000.00</td><td class="num">current</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p class="cite" style="margin-top:-14px;margin-bottom:20px;">Sources by year: <a href="https://www.rosellepark.gov/DocumentCenter/View/247/2019-Adopted-Budget-PDF">2019</a>, <a href="https://www.rosellepark.gov/DocumentCenter/View/248/2020-Adopted-Budget-PDF">2020</a>, <a href="https://www.rosellepark.gov/DocumentCenter/View/250/2021-Adopted-Budget-PDF">2021</a>, <a href="https://www.rosellepark.gov/DocumentCenter/View/238/2022-Adopted-Budget-PDF">2022</a> and <a href="https://www.rosellepark.gov/DocumentCenter/View/240/2023-Adopted-Budget-PDF">2023</a> Adopted Budgets (each shows the prior year's actual spending alongside its own appropriation, so the 2019 Adopted Budget is the source for 2018's actual), and the <a href="https://www.rosellepark.gov/DocumentCenter/View/244/2025-Introduced-Budget-PDF">2025 Introduced Budget</a> for 2024's actual and the 2024 to 2025 appropriations. Sheet 17, Current Fund, Unclassified, line items 31-430 (Electricity) and 31-435 (Street Lighting).</p>
+
+  <div class="table-scroll">
   <table id="dataTable">
     <thead>
-      <tr><th colspan="6">Residential — RS</th></tr>
+      <tr><th colspan="6">Residential – RS</th></tr>
       <tr><th>Effective</th><th>Through</th><th class="num">Base rate (¢/kWh)</th><th class="num">Summer, &gt;600 kWh (¢/kWh)</th><th class="num">Fixed ($/mo)</th><th>Source (PSE&amp;G tariff filing)</th></tr>
     </thead>
     <tbody></tbody>
   </table>
+  </div>
 
-  <table id="glpTable" style="margin-top:26px;">
+  <div class="table-scroll" style="margin-top:26px;">
+  <table id="glpTable">
     <thead>
-      <tr><th colspan="5">Commercial — GLP (excludes flat demand charge)</th></tr>
+      <tr><th colspan="5">Commercial – GLP (excludes flat demand charge)</th></tr>
       <tr><th>Effective</th><th>Through</th><th class="num">Base energy rate (¢/kWh)</th><th class="num">Fixed ($/mo)</th><th>Source (PSE&amp;G tariff filing)</th></tr>
     </thead>
     <tbody></tbody>
   </table>
+  </div>
 
   <div class="cite">
-    Source: NREL / OpenEI U.S. Utility Rate Database (USURDB), full bulk download, filtered to eiaId 15477 ("Public Service Elec &amp; Gas Co"). Residential: sector = Residential, rate = "RS – Residential Service." Commercial: sector = Commercial, rate = "Rate Schedule GLP – General Lighting and Power Service." Both filtered to service type = "Delivery with Standard Offer." Each row's own PSE&amp;G tariff PDF is linked in its table. <a href="https://apps.openei.org/USURDB/?utilRateFinder=PSEG">https://apps.openei.org/USURDB/?utilRateFinder=PSEG</a>
+    Source: NREL / OpenEI U.S. Utility Rate Database (USURDB), full bulk download, filtered to eiaId 15477 ("Public Service Elec &amp; Gas Co"). Residential: sector = Residential, rate = "RS – Residential Service." Commercial: sector = Commercial, rate = "Rate Schedule GLP – General Lighting and Power Service." Both filtered to service type = "Delivery with Standard Offer." Each row's own PSE&amp;G tariff PDF is linked in its table. <a href="https://apps.openei.org/USURDB/?utilRateFinder=PSEG">https://apps.openei.org/USURDB/?utilRateFinder=PSEG</a><br>
+    Roselle Park budget figures: Borough of Roselle Park Current Fund budgets, Sheet 17 (Unclassified – Electricity, Street Lighting), 2019 through 2025, individually cited above the municipal spending table. All are posted at <a href="https://www.rosellepark.gov/190/Budget">rosellepark.gov/190/Budget</a>; the statewide filing system is NJ DCA/DLGS's User Friendly Budget Database, <a href="https://datahub.dca.nj.gov/datasets/user-friendly-budget-database">datahub.dca.nj.gov/datasets/user-friendly-budget-database</a>. PSE&amp;G's separate streetlight tariff: <a href="https://nj.pseg.com/businessandcontractorservices/outdoorlightingunmeteredservices">nj.pseg.com/businessandcontractorservices/outdoorlightingunmeteredservices</a>. OPRA request contact: Roselle Park Municipal Clerk, <a href="https://www.rosellepark.gov/178/Clerk">rosellepark.gov/178/Clerk</a>; statutory response time from the NJ Government Records Council, <a href="https://www.nj.gov/grc/public/complaints/time.html">nj.gov/grc/public/complaints/time.html</a>.
   </div>
 </div>
 
@@ -211,7 +258,7 @@ data.forEach(d => {
   const tr = document.createElement('tr');
   tr.innerHTML = `<td>${d.eff}</td><td>${d.end || 'current'}</td>` +
     `<td class="num">${(d.base*100).toFixed(2)}</td>` +
-    `<td class="num">${d.summer2 ? (d.summer2*100).toFixed(2) : '—'}</td>` +
+    `<td class="num">${d.summer2 ? (d.summer2*100).toFixed(2) : 'n/a'}</td>` +
     `<td class="num">$${d.fixed.toFixed(2)}</td>` +
     `<td><a href="${d.src}" target="_blank" rel="noopener">filed tariff PDF</a></td>`;
   tbody.appendChild(tr);
@@ -236,16 +283,91 @@ function xOf(dateStr, xLeft, xRight) {
   return xLeft + (t - t0) / (t1 - t0) * (xRight - xLeft);
 }
 
+// Real text measurement (not a char-count guess) for the label-collision
+// check in drawStepChart -- digits in a tabular-nums system font run wider
+// than a naive per-character estimate, and guessing low let labels overlap.
+const measureCtx = document.createElement('canvas').getContext('2d');
+function textWidth(str, px) {
+  measureCtx.font = `${px}px system-ui, -apple-system, "Segoe UI", sans-serif`;
+  return measureCtx.measureText(str).width;
+}
+
 function drawStepChart(svgId, seriesList, opts) {
   // seriesList: [{ data, field, colorVar, name, labelAbove(i)=>bool }]
+  // opts.width is the SVG's actual rendered pixel width (measured by the
+  // caller). The viewBox is set to exactly that width, so 1 viewBox unit
+  // equals 1 real CSS pixel at every screen size -- text no longer shrinks
+  // when the chart is narrower than some fixed internal canvas. opts.narrow
+  // additionally tightens margins and thins out the x-axis tick labels so a
+  // 9-point timeline still fits a phone-width chart without overlapping text.
   const svg = document.getElementById(svgId);
-  const H = svg.viewBox.baseVal.height;
-  const xLeft = 56, xRight = 872, yTop = 26, yBottom = H - 34;
+  while (svg.firstChild) svg.removeChild(svg.firstChild);
+
+  const narrow = !!opts.narrow;
+  svg.classList.toggle('narrow', narrow);
+
+  const W = Math.max(240, Math.round(opts.width));
+  const H = Math.max(140, Math.round(W * opts.aspect));
+  svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+
+  const xLeft = narrow ? 34 : 56;
+  const xRight = W - (narrow ? 10 : 28);
+  const yTop = narrow ? 14 : 26;
+
+  // General label/annotation collision avoidance, shared across both series
+  // in this chart. A value label and a spike percentage can belong to
+  // different points (a big jump often lands close in time to the most
+  // recent filing) so per-point spacing alone doesn't prevent overlap --
+  // every placed text box is tracked here, and a new one that would overlap
+  // an existing box is nudged further from its marker (away from the line)
+  // until it clears, rather than being drawn on top of it.
+  const placedBoxes = [];
+  function boxOverlap(a, b) {
+    return a.x0 < b.x1 && a.x1 > b.x0 && a.y0 < b.y1 && a.y1 > b.y0;
+  }
+  function measureBox(x, anchor, text, fontPx, baseline) {
+    const w = textWidth(text, fontPx);
+    let x0, x1;
+    if (anchor === 'start') { x0 = x; x1 = x + w; }
+    else if (anchor === 'end') { x0 = x - w; x1 = x; }
+    else { x0 = x - w / 2; x1 = x + w / 2; }
+    return { x0, x1, y0: baseline - fontPx * 0.82, y1: baseline + fontPx * 0.25 };
+  }
+  // awayDir: -1 nudges further up (for a label placed above its point),
+  // +1 nudges further down (for one placed below).
+  function fitY(x, anchor, text, fontPx, startY, awayDir) {
+    let y = startY;
+    for (let attempt = 0; attempt < 6; attempt++) {
+      const box = measureBox(x, anchor, text, fontPx, y);
+      if (!placedBoxes.some(p => boxOverlap(box, p))) {
+        placedBoxes.push(box);
+        return y;
+      }
+      y += awayDir * 6;
+    }
+    placedBoxes.push(measureBox(x, anchor, text, fontPx, y));
+    return y;
+  }
+  const yBottom = H - (narrow ? 24 : 34);
 
   const allVals = seriesList.flatMap(s => s.data.map(d => d[s.field]));
   const vMin = opts.yMin !== undefined ? opts.yMin : Math.min(...allVals) * 0.85;
   const vMax = opts.yMax !== undefined ? opts.yMax : Math.max(...allVals) * 1.12;
   function yOf(v) { return yBottom - (v - vMin) / (vMax - vMin) * (yBottom - yTop); }
+
+  // Register every marker's footprint up front, across both series, before
+  // any label is placed. Two points close together in time (common in the
+  // last few filings here) can land a later label's box right on top of an
+  // earlier point's marker even though the two labels themselves never
+  // touch, so markers need to be in the same collision list, not just text.
+  const markerR = narrow ? 3.5 : 4.5;
+  seriesList.forEach(s => {
+    s.data.forEach(d => {
+      const mx = xOf(d.eff, xLeft, xRight);
+      const my = yOf(d[s.field]);
+      placedBoxes.push({ x0: mx - markerR - 2, x1: mx + markerR + 2, y0: my - markerR - 2, y1: my + markerR + 2 });
+    });
+  });
 
   let svgns = "http://www.w3.org/2000/svg";
   function el(tag, attrs) {
@@ -260,20 +382,24 @@ function drawStepChart(svgId, seriesList, opts) {
     const v = vMin + (vMax - vMin) * i / gridN;
     const y = yOf(v);
     svg.appendChild(el('line', { class: 'gridline', x1: xLeft, y1: y, x2: xRight, y2: y }));
-    const t = el('text', { class: 'axis-label', x: xLeft - 8, y: y + 3, 'text-anchor': 'end' });
+    const t = el('text', { class: 'axis-label', x: xLeft - (narrow ? 6 : 8), y: y + 3, 'text-anchor': 'end' });
     t.textContent = opts.yFmt(v);
     svg.appendChild(t);
   }
   // baseline
   svg.appendChild(el('line', { class: 'baseline', x1: xLeft, y1: yBottom, x2: xRight, y2: yBottom }));
 
-  // x-axis year ticks
+  // x-axis year ticks. On a narrow chart, a label every year crowds a
+  // 9-point timeline squeezed into ~300px, so only even years get text
+  // (the gridline itself still marks every year).
   for (let yr = 2016; yr <= 2026; yr++) {
     const x = xOf(yr + "-01-01", xLeft, xRight);
     svg.appendChild(el('line', { class: 'gridline', x1: x, y1: yTop, x2: x, y2: yBottom }));
-    const t = el('text', { class: 'axis-label', x: x, y: yBottom + 18, 'text-anchor': 'middle' });
-    t.textContent = yr;
-    svg.appendChild(t);
+    if (!narrow || yr % 2 === 0) {
+      const t = el('text', { class: 'axis-label', x: x, y: yBottom + (narrow ? 15 : 18), 'text-anchor': 'middle' });
+      t.textContent = narrow ? "'" + String(yr).slice(2) : yr;
+      svg.appendChild(t);
+    }
   }
 
   const tooltip = document.getElementById('viz-tooltip');
@@ -303,22 +429,57 @@ function drawStepChart(svgId, seriesList, opts) {
       return prev !== 0 && Math.abs((v - prev) / prev) >= 0.03;
     });
 
+    // Where two neighboring labels would sit close in both x and y (a big
+    // jump that lands near the most recent filing, e.g. two points that are
+    // months apart but nearly the same value), drop the earlier of the pair.
+    // The later value is the more relevant one to spell out, and the jump
+    // itself still gets called out by the spike annotation regardless of
+    // whether this value label survives.
+    for (let i = 1; i < vs.length - 1; i++) {
+      if (!showLabel[i]) continue;
+      let j = i + 1;
+      while (j < vs.length && !showLabel[j]) j++;
+      if (j >= vs.length) break;
+      const xi = xOf(s.data[i].eff, xLeft, xRight);
+      const xj = xOf(s.data[j].eff, xLeft, xRight);
+      const yi = yOf(vs[i]);
+      const yj = yOf(vs[j]);
+      const fontPx = narrow ? 11.5 : 10.5;
+      const needed = Math.max(textWidth(opts.labelFmt(vs[i]), fontPx), textWidth(opts.labelFmt(vs[j]), fontPx)) * 1.1;
+      if (Math.abs(xj - xi) < needed && Math.abs(yj - yi) < 12) {
+        showLabel[i] = false;
+      }
+    }
+
     // markers + labels + hover targets
     s.data.forEach((d, i) => {
       const x = xOf(d.eff, xLeft, xRight);
       const y = yOf(d[s.field]);
-      svg.appendChild(el('circle', { class: 'marker', cx: x, cy: y, r: 4.5, style: `stroke:${colorVar}` }));
+      svg.appendChild(el('circle', { class: 'marker', cx: x, cy: y, r: narrow ? 3.5 : 4.5, style: `stroke:${colorVar}` }));
 
       const labelAbove = s.labelAbove ? s.labelAbove(i) : (i % 2 === 0);
       // offset text horizontally off the point's own x so it doesn't sit on
       // top of the OTHER series' vertical step riser when both series change
-      // on the same filing date (common here -- both use the same 9 dates)
-      const lx = x + (s.textDx || 0);
+      // on the same filing date (common here -- both use the same 9 dates).
+      // The offset itself shrinks on narrow charts, where points sit closer
+      // together horizontally and a full-size offset would push the label
+      // into the next point.
+      const dxScale = narrow ? 0.6 : 1;
+      const lx = x + (s.textDx || 0) * dxScale;
       const anchor = s.textAnchor || 'middle';
       if (showLabel[i]) {
-        const ly = labelAbove ? y - 10 : y + 16;
+        // Vertical clearance from the marker, not the horizontal narrow
+        // scale: narrow charts use a slightly LARGER label font (see the
+        // svg.narrow CSS rules), so they need as much room as the default
+        // size, not less. fitY then nudges further out only if this would
+        // land on top of an already-placed label or spike (its own or the
+        // other series' -- both draw into the same shared box list).
+        const fontPx = narrow ? 11.5 : 10.5;
+        const text = opts.labelFmt(d[s.field]);
+        const baseLy = labelAbove ? y - (narrow ? 11 : 10) : y + (narrow ? 17 : 16);
+        const ly = fitY(lx, anchor, text, fontPx, baseLy, labelAbove ? -1 : 1);
         const lab = el('text', { class: 'direct-label', x: lx, y: ly, 'text-anchor': anchor });
-        lab.textContent = opts.labelFmt(d[s.field]);
+        lab.textContent = text;
         svg.appendChild(lab);
       }
 
@@ -327,14 +488,17 @@ function drawStepChart(svgId, seriesList, opts) {
       if (i > 0 && vs[i - 1] !== 0) {
         const pct = (vs[i] - vs[i - 1]) / vs[i - 1] * 100;
         if (Math.abs(pct) >= 15) {
-          const spikeY = Math.max(12, labelAbove ? y - 23 : y + 29);
+          const fontPx = narrow ? 10.5 : 9.5;
+          const text = (pct >= 0 ? '+' : '−') + Math.abs(pct).toFixed(1) + '%';
+          const baseSpikeY = Math.max(narrow ? 10 : 12, labelAbove ? y - (narrow ? 25 : 23) : y + (narrow ? 31 : 29));
+          const spikeY = fitY(lx, anchor, text, fontPx, baseSpikeY, labelAbove ? -1 : 1);
           const spikeLab = el('text', { class: 'event-note', x: lx, y: spikeY, 'text-anchor': anchor });
-          spikeLab.textContent = (pct >= 0 ? '+' : '−') + Math.abs(pct).toFixed(1) + '%';
+          spikeLab.textContent = text;
           svg.appendChild(spikeLab);
         }
       }
 
-      const hit = el('circle', { class: 'marker-hit', cx: x, cy: y, r: 10 });
+      const hit = el('circle', { class: 'marker-hit', cx: x, cy: y, r: narrow ? 8 : 10 });
       hit.addEventListener('mouseenter', (ev) => {
         const fmt = s.tooltipFmt || opts.tooltipFmt;
         tooltip.innerHTML = `<div class="t-date">${s.name} · ${d.eff} → ${d.end || 'current'}</div><div class="t-val">${fmt(d)}</div>`;
@@ -371,31 +535,58 @@ function awayFrom(mine, other, field) {
   return i => mine[i][field] >= other[i][field];
 }
 
-drawStepChart('rateChart', [
-  { data: data,    field: 'base', colorVar: '--series-1', name: 'Residential (RS)',
-    labelAbove: awayFrom(data, glpData, 'base'), textDx: 9, textAnchor: 'start',
-    tooltipFmt: d => `Base energy rate: <strong>${(d.base*100).toFixed(2)}¢/kWh</strong>` + (d.summer2 ? ` &middot; summer top tier: ${(d.summer2*100).toFixed(2)}¢` : '') },
-  { data: glpData, field: 'base', colorVar: '--series-2', name: 'Commercial (GLP)',
-    labelAbove: awayFrom(glpData, data, 'base'), textDx: -9, textAnchor: 'end',
-    tooltipFmt: d => `Base energy rate: <strong>${(d.base*100).toFixed(2)}¢/kWh</strong> &middot; excludes flat demand charge` }
-], {
-  gridLines: 5,
-  yFmt: v => (v * 100).toFixed(0) + "¢",
-  labelFmt: v => (v * 100).toFixed(2) + "¢"
-});
+// Redraw both charts against their SVG's actual current pixel width, rather
+// than a fixed 900-unit canvas that just scales down (and shrinks its text
+// with it) on a phone. isNarrow() picks a taller aspect ratio and denser
+// abbreviations below 480px, roughly a phone in portrait; renderAll() is
+// re-run on resize/orientation change so rotating a phone or resizing a
+// desktop window redraws rather than just rescaling.
+function isNarrow(px) { return px < 480; }
 
-drawStepChart('fixedChart', [
-  { data: data,    field: 'fixed', colorVar: '--series-1', name: 'Residential (RS)',
-    labelAbove: awayFrom(data, glpData, 'fixed'), textDx: 9, textAnchor: 'start',
-    tooltipFmt: d => `Fixed charge: <strong>$${d.fixed.toFixed(2)}/mo</strong>` },
-  { data: glpData, field: 'fixed', colorVar: '--series-2', name: 'Commercial (GLP)',
-    labelAbove: awayFrom(glpData, data, 'fixed'), textDx: -9, textAnchor: 'end',
-    tooltipFmt: d => `Fixed charge: <strong>$${d.fixed.toFixed(2)}/mo</strong>` }
-], {
-  gridLines: 4,
-  yFmt: v => "$" + v.toFixed(0),
-  labelFmt: v => "$" + v.toFixed(2)
+function renderAll() {
+  const rateW = document.getElementById('rateChart').clientWidth;
+  const fixedW = document.getElementById('fixedChart').clientWidth;
+
+  drawStepChart('rateChart', [
+    { data: data,    field: 'base', colorVar: '--series-1', name: 'Residential (RS)',
+      labelAbove: awayFrom(data, glpData, 'base'), textDx: 9, textAnchor: 'start',
+      tooltipFmt: d => `Base energy rate: <strong>${(d.base*100).toFixed(2)}¢/kWh</strong>` + (d.summer2 ? ` &middot; summer top tier: ${(d.summer2*100).toFixed(2)}¢` : '') },
+    { data: glpData, field: 'base', colorVar: '--series-2', name: 'Commercial (GLP)',
+      labelAbove: awayFrom(glpData, data, 'base'), textDx: -9, textAnchor: 'end',
+      tooltipFmt: d => `Base energy rate: <strong>${(d.base*100).toFixed(2)}¢/kWh</strong> &middot; excludes flat demand charge` }
+  ], {
+    width: rateW,
+    narrow: isNarrow(rateW),
+    aspect: isNarrow(rateW) ? 0.62 : 0.378,
+    gridLines: 5,
+    yFmt: v => (v * 100).toFixed(0) + "¢",
+    labelFmt: v => (v * 100).toFixed(2) + "¢"
+  });
+
+  drawStepChart('fixedChart', [
+    { data: data,    field: 'fixed', colorVar: '--series-1', name: 'Residential (RS)',
+      labelAbove: awayFrom(data, glpData, 'fixed'), textDx: 9, textAnchor: 'start',
+      tooltipFmt: d => `Fixed charge: <strong>$${d.fixed.toFixed(2)}/mo</strong>` },
+    { data: glpData, field: 'fixed', colorVar: '--series-2', name: 'Commercial (GLP)',
+      labelAbove: awayFrom(glpData, data, 'fixed'), textDx: -9, textAnchor: 'end',
+      tooltipFmt: d => `Fixed charge: <strong>$${d.fixed.toFixed(2)}/mo</strong>` }
+  ], {
+    width: fixedW,
+    narrow: isNarrow(fixedW),
+    aspect: isNarrow(fixedW) ? 0.48 : 0.244,
+    gridLines: 4,
+    yFmt: v => "$" + v.toFixed(0),
+    labelFmt: v => "$" + v.toFixed(2)
+  });
+}
+
+renderAll();
+let resizeTimer;
+window.addEventListener('resize', () => {
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(renderAll, 150);
 });
+window.addEventListener('orientationchange', () => setTimeout(renderAll, 250));
 </script>
 </body>
 </html>
