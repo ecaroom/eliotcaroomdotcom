@@ -2,24 +2,98 @@
 import Base from '../layouts/Base.astro';
 
 // Campaign page for the November 2026 Roselle Park mayoral and council races.
-// Figures checked 2026-09-26; each claim links to its source.
-const src = {
-  pjm2526: 'https://www.pjm.com/-/media/DotCom/markets-ops/rpm/rpm-auction-info/2025-2026/2025-2026-base-residual-auction-report.pdf',
-  pjm2728: 'https://insidelines.pjm.com/pjm-auction-procures-134479-mw-of-generation-resources/',
-  pjm2829: 'https://insidelines.pjm.com/pjm-capacity-auction-procures-138318-mw-of-generation-resources-as-work-continues-to-address-growing-electricity-demand/',
-  bgs2025: 'https://www.nj.gov/bpu/newsroom/2025/approved/20250212.html',
-  bgs2026: 'https://nj.gov/bpu/newsroom/2026/approved/20260212.html',
-  county: 'https://ucnj.org/press-releases/public-info/2012/09/21/union-county-solar-program-completes-28-installations-in-15-governmental-agencies/',
-  esip: 'https://www.sustainablejersey.com/fileadmin/media/Grants_and_Resources/ESIP_HowToGuide_V2_2019.pdf',
-  adi: 'https://www.nj.gov/bpu/pdf/boardorders/2026/20260521/8C%20ORDER%20ADI%203%20Year%20Review%20Cost%20Cap.pdf',
-  obbba: 'https://blogs.law.columbia.edu/climatechange/2025/07/07/the-one-big-beautiful-bill-act-considerations-for-cities-and-community-partners/',
-  irs: 'https://www.irs.gov/pub/irs-drop/n-25-42.pdf',
-  rutgers: 'https://njclimateresourcecenter.rutgers.edu/new-jerseys-temperatures-rise-by-4-degrees-fahrenheit-twice-the-global-average-since-1900/',
-  ncics: 'https://statesummaries.ncics.org/chapter/nj/',
-  budget2023: 'https://www.rosellepark.gov/DocumentCenter/View/240/2023-Adopted-Budget-PDF',
-  budget2025: 'https://www.rosellepark.gov/DocumentCenter/View/244/2025-Introduced-Budget-PDF',
-  imm: 'https://www.monitoringanalytics.com/reports/PJM_State_of_the_Market/2025/2025-som-pjm-vol1.pdf',
-};
+// Every figure checked 2026-09-26 against the linked document. Budget figures are
+// Sheet 17, Current Fund, Unclassified, line 31-430-2 (Electricity), "Paid or Charged."
+const pdf = (id: number, name: string) => `https://www.rosellepark.gov/DocumentCenter/View/${id}/${name}`;
+
+// Electricity line, paid or charged, by year. 2025 is the appropriation, not spending.
+const bars = [
+  { year: 2018, value: 82461.71, doc: 'b2019' },
+  { year: 2019, value: 84688.41, doc: 'b2020' },
+  { year: 2020, value: 136822.42, doc: 'b2021' },
+  { year: 2021, value: 94214.59, doc: 'b2022' },
+  { year: 2022, value: 90226.58, doc: 'b2023', label: true },
+  { year: 2023, value: null, doc: null },
+  { year: 2024, value: 113548.61, doc: 'b2025', label: true },
+  { year: 2025, value: 115000, doc: 'b2025', label: true, budgeted: true },
+];
+const axisMax = 150000;
+const ticks = [50000, 100000, 150000];
+const usd = (n: number) => '$' + Math.round(n).toLocaleString('en-US');
+const k = (n: number) => '$' + Math.round(n / 1000) + 'k';
+
+// Documents that open in the side panel: long PDFs where the figure is buried.
+const docs = [
+  {
+    id: 'b2025',
+    title: 'Roselle Park 2025 Introduced Budget',
+    href: pdf(244, '2025-Introduced-Budget-PDF'),
+    where: 'Sheet 17, Current Fund appropriations, Unclassified, line 31-430-2, Electricity.',
+    rows: [
+      ['2024 budget, as adopted', '$105,000.00'],
+      ['2024 budget after modification', '$120,000.00'],
+      ['2024 paid or charged', '$113,548.61'],
+      ['2025 appropriation', '$115,000.00'],
+    ],
+    note: 'Street Lighting is a separate line on the same sheet (31-435-2): $213,037.47 paid or charged in 2024.',
+  },
+  {
+    id: 'b2023',
+    title: 'Roselle Park 2023 Adopted Budget',
+    href: pdf(240, '2023-Adopted-Budget-PDF'),
+    where: 'Sheet 17, Current Fund appropriations, Unclassified, line 31-430-2, Electricity.',
+    rows: [
+      ['2022 paid or charged', '$90,226.58'],
+      ['2023 appropriation', '$105,000.00'],
+    ],
+  },
+  {
+    id: 'b2022',
+    title: 'Roselle Park 2022 Adopted Budget',
+    href: pdf(238, '2022-Adopted-Budget-PDF'),
+    where: 'Sheet 17, line 31-430-2, Electricity.',
+    rows: [['2021 paid or charged', '$94,214.59'], ['2022 appropriation', '$119,000.00']],
+  },
+  {
+    id: 'b2021',
+    title: 'Roselle Park 2021 Adopted Budget',
+    href: pdf(250, '2021-Adopted-Budget-PDF'),
+    where: 'Sheet 17, line 31-430-2, Electricity.',
+    rows: [
+      ['2020 budget, as adopted', '$102,000.00'],
+      ['2020 budget after modification', '$142,000.00'],
+      ['2020 paid or charged', '$136,822.42'],
+    ],
+    note: 'The budget does not say why 2020 ran high. PSE&G’s standard commercial rate did not rise that year.',
+  },
+  {
+    id: 'b2020',
+    title: 'Roselle Park 2020 Adopted Budget',
+    href: pdf(248, '2020-Adopted-Budget-PDF'),
+    where: 'Sheet 17, line 31-430-2, Electricity.',
+    rows: [['2019 paid or charged', '$84,688.41'], ['2020 appropriation', '$102,000.00']],
+  },
+  {
+    id: 'b2019',
+    title: 'Roselle Park 2019 Adopted Budget',
+    href: pdf(247, '2019-Adopted-Budget-PDF'),
+    where: 'Sheet 17, line 31-430-2, Electricity.',
+    rows: [['2018 paid or charged', '$82,461.71'], ['2019 appropriation', '$100,000.00']],
+  },
+  {
+    id: 'adi',
+    title: 'NJ Board of Public Utilities order, May 21, 2026',
+    href: 'https://www.nj.gov/bpu/pdf/boardorders/2026/20260521/8C%20ORDER%20ADI%203%20Year%20Review%20Cost%20Cap.pdf',
+    where: 'Three-year review of the Administratively Determined Incentive (ADI) program, Docket Nos. QO20020184 and QO26030096. Staff recommended no change to non-residential incentives; the Board accepted it.',
+    rows: [
+      ['Net-metered non-residential, rooftop, carport, canopy or floating, under 1 MW', '$110 per SREC-II'],
+      ['Incentive term', '15 years'],
+    ],
+    note: 'One SREC-II is earned per megawatt-hour of solar generation.',
+  },
+];
+
+const ext = { class: 'ext-inline', target: '_blank', rel: 'noopener' };
 
 const questions = [
   'Will you have the borough assess every borough-owned roof and parking lot for solar within 90 days of taking office?',
@@ -28,76 +102,100 @@ const questions = [
   'Will you publish the borough’s annual electricity use and spending?',
   'In a sentence or two: what would you do to protect Roselle Park from rising energy costs and from storms like Ida?',
 ];
-
-const evidence = [
-  {
-    name: 'PSE&G electricity rate history',
-    href: '/solar/pseg-rates/',
-    summary: 'What PSE&G has charged residential and commercial customers since 2016, from its own filed tariffs, and what the borough has spent on electricity and streetlights since 2018, from its budgets.',
-  },
-];
 ---
 <Base
   title="Accelerating solar for Roselle Park"
-  description="Solar on borough property would cut Roselle Park's electric bill, can cost taxpayers nothing up front, and is the right thing to do. Federal money for it ends in 2027."
+  description="Roselle Park's electricity bill rose 26% from 2022 to 2024, before PSE&G's biggest rate increase. Solar on borough property can cut it, at no upfront cost, and federal money for it ends in 2027."
 >
   <h1>Accelerating solar for Roselle Park</h1>
   <p class="meta">For the November 2026 election · updated September 2026</p>
 
   <p>
     I live in Roselle Park, and I’m asking both candidates for mayor, Joe Signorello Jr. and Jorge Ramirez, and everyone
-    running for borough council, to commit to solar on borough property. The case rests on three things.
+    running for borough council, to commit to solar on borough property.
   </p>
 
-  <h2>It cuts the borough’s electric bill</h2>
+  <h2>The bill solar can cut</h2>
   <p>
-    Roselle Park spent $326,586 on electricity and streetlights in 2024, 27% more than in 2022, according to the
-    borough’s own budgets (<a href={src.budget2023} class="ext-inline" target="_blank" rel="noopener">2022</a>, <a href={src.budget2025} class="ext-inline" target="_blank" rel="noopener">2024</a>). Partway through 2024 it had to add $25,000 to those two lines.
-  </p>
-  <p>
-    The biggest increase hasn’t reached those numbers yet. PSE&amp;G’s standard commercial energy rate was 9.83¢ per
-    kilowatt-hour for all of 2024, then jumped to 18.48¢ in January 2025 and 19.37¢ in April 2026, according to its <a href="/solar/pseg-rates/">filed tariffs</a>. The borough’s 2025 budget set aside $115,000 for electricity, less
-    than the $120,000 it ended up budgeting for 2024.
-  </p>
-  <p>
-    The pressure hasn’t let up. PJM, the grid operator that sets wholesale capacity prices for New Jersey, has run three
-    capacity auctions since mid-2025, and all three cleared between $325 and $334 per megawatt-day, more than 11 times the <a href={src.pjm2526} class="ext-inline" target="_blank" rel="noopener">$28.92 price</a> of the 2024/25 auction. The
-    last two fell more than 6,600 megawatts short of PJM’s reliability target
-    (<a href={src.pjm2728} class="ext-inline" target="_blank" rel="noopener">2027/28</a>, <a href={src.pjm2829} class="ext-inline" target="_blank" rel="noopener">2028/29</a>).
-  </p>
-  <p>
-    PSE&amp;G household bills rose <a href={src.bgs2025} class="ext-inline" target="_blank" rel="noopener">17% in June 2025</a> and held <a href={src.bgs2026} class="ext-inline" target="_blank" rel="noopener">roughly flat in 2026</a>, in part because of
-    a temporary cap on that auction. Power from panels on borough roofs has a price fixed for 15 years or more, by contract
-    or by ownership, whatever happens to PJM.
+    The borough paid $113,549 for electricity in 2024 (<button class="doc" data-doc="b2025">2025 budget</button>), up
+    26% from $90,227 in 2022 (<button class="doc" data-doc="b2023">2023 budget</button>). It raised that year’s
+    electricity budget from $105,000 to $120,000 partway through.
   </p>
 
-  <h2>It can cost taxpayers nothing up front, and federal money for it runs out in 2027</h2>
+  <figure class="spend" aria-labelledby="spend-cap">
+    <figcaption id="spend-cap">Roselle Park borough budget, Electricity line: paid or charged</figcaption>
+    <div class="plot" role="img" aria-label="Electricity spending by year: 2018 $82,462; 2019 $84,689; 2020 $136,822; 2021 $94,215; 2022 $90,227; 2023 not published; 2024 $113,549; 2025 budgeted $115,000.">
+      {ticks.map((t) => (
+        <div class="tick" style={`bottom:${(t / axisMax) * 100}%`}><span>{k(t)}</span></div>
+      ))}
+      <div class="cols">
+        {bars.map((b) => (
+          <div class={`col${b.budgeted ? ' budgeted' : ''}${b.value === null ? ' missing' : ''}`} tabindex={b.value === null ? undefined : 0}>
+            {b.value !== null ? (
+              <>
+                <div class="bar" style={`height:${(b.value / axisMax) * 100}%`}>
+                  {b.label && <span class="val">{k(b.value)}</span>}
+                </div>
+                <span class="tip" role="tooltip">
+                  {b.year} · {usd(b.value)}{b.budgeted ? ' budgeted' : ''}
+                </span>
+              </>
+            ) : (
+              <span class="gap">n/a</span>
+            )}
+            <span class="yr">{b.budgeted ? '’25*' : '’' + String(b.year).slice(2)}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+    <p class="fignote">
+      *2025 is the amount budgeted, not spent. 2023’s figure is in a budget posted only as scanned images. <button class="doc" data-doc="all">Where each number comes from</button>
+    </p>
+    <details class="asTable">
+      <summary>Show as a table</summary>
+      <table>
+        <thead><tr><th>Year</th><th class="num">Paid or charged</th><th>Source</th></tr></thead>
+        <tbody>
+          {bars.map((b) => (
+            <tr>
+              <td>{b.year}</td>
+              <td class="num">{b.value === null ? 'not published' : usd(b.value) + (b.budgeted ? ' (budgeted)' : '')}</td>
+              <td>{b.doc ? <button class="doc" data-doc={b.doc}>{docs.find((d) => d.id === b.doc)!.title.replace('Roselle Park ', '')}</button> : ''}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </details>
+  </figure>
+
   <p>
-    Roselle Park has done this before. In 2012 the Union County Improvement Authority put solar on 31 public buildings
-    across 15 agencies, including the Roselle Park Board of Education. A developer owned the panels and sold the power
-    below utility rates, and the county <a href={src.county} class="ext-inline" target="_blank" rel="noopener">projected about $5 million in savings</a> over 15 years. The borough government wasn’t one of the 15.
+    The largest rate increase isn’t in those numbers yet. PSE&amp;G’s standard commercial energy rate was 9.83¢ per
+    kilowatt-hour through 2024 and 18.48¢ from January 2025, according to its <a href="/solar/pseg-rates/">filed tariffs</a>.
+    The borough budgeted $115,000 for electricity in 2025, 1% more than it spent in 2024.
   </p>
   <p>
-    New Jersey also lets towns pay for solar out of the savings it produces, through the <a href={src.esip} class="ext-inline" target="_blank" rel="noopener">Energy Savings Improvement Program</a>, which
-    requires every year of the deal to be cash-positive. The state’s solar incentive pays <a href={src.adi} class="ext-inline" target="_blank" rel="noopener">$110 per megawatt-hour for 15 years</a> to
-    rooftop and parking-canopy systems under 1 megawatt.
+    Solar on borough roofs and parking lots offsets this line. It would not touch street lighting, a separate and larger
+    line that PSE&amp;G bills <a href="https://nj.pseg.com/businessandcontractorservices/outdoorlightingunmeteredservices" {...ext}>without a meter</a>.
+  </p>
+
+  <h2>It needn’t cost taxpayers anything up front</h2>
+  <p>
+    In 2012 a Union County program put solar on 31 public buildings, including the Roselle Park Board of Education’s. A
+    developer owned the panels and sold the power below utility rates, and the county <a href="https://ucnj.org/press-releases/public-info/2012/09/21/union-county-solar-program-completes-28-installations-in-15-governmental-agencies/" {...ext}>projected $5 million in savings</a> over 15 years. The borough government didn’t take part.
   </p>
   <p>
-    The deadline is federal. Under the 2025 budget law, a solar project that didn’t start construction by July 4, 2026
-    gets the clean electricity investment credit only if it’s <a href={src.obbba} class="ext-inline" target="_blank" rel="noopener">running by December 31, 2027</a>. Local
-    governments can take that credit as a direct cash payment, typically 30% of the project’s cost. Whoever takes office
-    in January has twelve months.
+    New Jersey also lets towns pay for solar out of the savings, through the <a href="https://www.sustainablejersey.com/fileadmin/media/Grants_and_Resources/ESIP_HowToGuide_V2_2019.pdf" {...ext}>Energy Savings Improvement Program</a>,
+    which requires every year to be cash-positive. The state adds <button class="doc" data-doc="adi">$110 per megawatt-hour for 15 years</button> for rooftop and canopy systems under 1 megawatt.
+  </p>
+  <p>
+    Federal money has a deadline. A solar project that didn’t start construction by July 4, 2026 gets the clean
+    electricity investment credit, which local governments can take as cash, only if it is <a href="https://blogs.law.columbia.edu/climatechange/2025/07/07/the-one-big-beautiful-bill-act-considerations-for-cities-and-community-partners/" {...ext}>running by December 31, 2027</a>.
   </p>
 
   <h2>It’s the right thing to do</h2>
   <p>
-    New Jersey has warmed about 4°F since 1900, twice the global average, according to the <a href={src.rutgers} class="ext-inline" target="_blank" rel="noopener">Office of the New Jersey State Climatologist</a>.
-    Ida killed 30 people in the state in 2021. Downpours of two inches or more were about <a href={src.ncics} class="ext-inline" target="_blank" rel="noopener">50% more frequent</a> in 2005 to 2014 than the
-    long-term average.
-  </p>
-  <p>
-    On PJM’s grid, which supplies Roselle Park, coal-fired generation rose 19% in 2025, according to the grid’s <a href={src.imm} class="ext-inline" target="_blank" rel="noopener">independent market monitor</a>. Every
-    kilowatt-hour made on a borough roof is one the town doesn’t buy from that grid.
+    New Jersey has warmed about 4°F since 1900, twice the global average, according to the <a href="https://njclimateresourcecenter.rutgers.edu/new-jerseys-temperatures-rise-by-4-degrees-fahrenheit-twice-the-global-average-since-1900/" {...ext}>state climatologist’s office</a>.
+    Ida’s flooding killed 30 people in the state in 2021, four of them <a href="https://cbsnews.com/newyork/news/elizabeth-nj-ida-flooding-victims-vigil" {...ext}>next door in Elizabeth</a>.
   </p>
 
   <h2>What I’m asking candidates</h2>
@@ -108,12 +206,143 @@ const evidence = [
   <h2>Evidence</h2>
   <table class="projects">
     <tbody>
-      {evidence.map((e) => (
-        <tr>
-          <th scope="row"><a href={e.href}>{e.name}</a></th>
-          <td>{e.summary}</td>
-        </tr>
-      ))}
+      <tr>
+        <th scope="row"><a href="/solar/pseg-rates/">PSE&amp;G rates and borough spending</a></th>
+        <td>What PSE&amp;G has charged since 2016, from its filed tariffs, and what the borough has spent on electricity and streetlights since 2018, from its budgets.</td>
+      </tr>
     </tbody>
   </table>
+
+  {docs.map((d) => (
+    <dialog class="sidecar" id={`doc-${d.id}`} aria-labelledby={`doc-${d.id}-t`}>
+      <div class="sc-head">
+        <p class="sc-kind">Source document</p>
+        <button class="sc-close" type="button" aria-label="Close">close</button>
+      </div>
+      <h3 id={`doc-${d.id}-t`}>{d.title}</h3>
+      <p class="sc-where">{d.where}</p>
+      <table class="sc-rows">
+        <tbody>
+          {d.rows.map(([a, b]) => (
+            <tr><th scope="row">{a}</th><td class="num">{b}</td></tr>
+          ))}
+        </tbody>
+      </table>
+      {d.note && <p class="sc-note">{d.note}</p>}
+      <p><a href={d.href} {...ext}>Open the full PDF</a></p>
+    </dialog>
+  ))}
+
+  <dialog class="sidecar" id="doc-all" aria-labelledby="doc-all-t">
+    <div class="sc-head">
+      <p class="sc-kind">Source documents</p>
+      <button class="sc-close" type="button" aria-label="Close">close</button>
+    </div>
+    <h3 id="doc-all-t">Where the chart’s numbers come from</h3>
+    <p class="sc-where">
+      Each adopted budget reports the previous year’s spending next to its own appropriation. All figures are Sheet 17,
+      Current Fund, Unclassified, line 31-430-2, Electricity, “Paid or Charged.”
+    </p>
+    <table class="sc-rows">
+      <tbody>
+        {bars.filter((b) => b.doc).map((b) => {
+          const d = docs.find((x) => x.id === b.doc)!;
+          return (
+            <tr>
+              <th scope="row">{b.year}{b.budgeted ? ' (budgeted)' : ''}</th>
+              <td><a href={d.href} {...ext}>{d.title.replace('Roselle Park ', '')}</a></td>
+            </tr>
+          );
+        })}
+      </tbody>
+    </table>
+    <p class="sc-note">
+      2023’s spending would appear in the 2024 budget, which the borough posted as scanned images. It is available from the <a href="https://www.rosellepark.gov/178/Clerk" {...ext}>Borough Clerk</a> by records request.
+    </p>
+  </dialog>
 </Base>
+
+<style>
+  /* inline trigger for a source that opens in the side panel */
+  .doc {
+    font: inherit;
+    color: var(--accent);
+    background: none;
+    border: 0;
+    padding: 0;
+    cursor: pointer;
+    text-decoration: underline dotted;
+    text-underline-offset: 0.15em;
+  }
+  .doc::after { content: ' ⧉'; font-size: 0.75em; color: var(--muted); }
+  .doc:hover { text-decoration-style: solid; }
+
+  /* spending chart: HTML columns so labels stay full size on phones */
+  .spend { margin: 1.5rem 0 1.75rem; --bar: #2d5061; --grid: rgba(52, 54, 31, 0.18); }
+  :global(:root[data-theme='dark']) .spend { --bar: #cdd494; --grid: rgba(214, 228, 235, 0.2); }
+  figcaption { font-size: 1rem; color: var(--muted); margin-bottom: 0.75rem; }
+  .plot { position: relative; height: 12rem; margin: 1.5rem 0 1.75rem 2.75rem; border-bottom: 1px solid var(--muted); }
+  .tick { position: absolute; left: 0; right: 0; border-top: 1px solid var(--grid); }
+  .tick span { position: absolute; right: calc(100% + 0.4rem); top: -0.55rem; font: 0.75rem var(--mono); color: var(--muted); }
+  .cols { position: absolute; inset: 0; display: flex; justify-content: space-around; align-items: flex-end; }
+  .col { position: relative; flex: 1; height: 100%; display: flex; justify-content: center; align-items: flex-end; outline: none; }
+  .bar { position: relative; width: min(24px, 60%); background: var(--bar); border-radius: 4px 4px 0 0; }
+  .budgeted .bar {
+    background: repeating-linear-gradient(135deg, var(--bar) 0 2px, transparent 2px 6px);
+    box-shadow: inset 0 0 0 1.5px var(--bar);
+  }
+  .val { position: absolute; bottom: calc(100% + 0.2rem); left: 50%; transform: translateX(-50%); font: 600 0.75rem var(--mono); color: var(--text); white-space: nowrap; }
+  .yr { position: absolute; top: calc(100% + 0.35rem); font: 0.75rem var(--mono); color: var(--muted); }
+  .gap { font: 0.7rem var(--mono); color: var(--muted); margin-bottom: 0.25rem; }
+  .tip {
+    position: absolute; bottom: calc(100% + 0.25rem); left: 50%; transform: translateX(-50%);
+    z-index: 2; padding: 0.3rem 0.5rem; white-space: nowrap;
+    font: 0.75rem var(--mono); color: var(--text); background: var(--bg);
+    border: 1px solid var(--muted); border-radius: 4px;
+    opacity: 0; pointer-events: none; transition: opacity 0.1s;
+  }
+  .col:hover .tip, .col:focus .tip { opacity: 1; }
+  .col:hover .bar, .col:focus .bar { filter: brightness(1.15); }
+  .col:first-child .tip { left: 0; transform: none; }
+  .col:last-child .tip { left: auto; right: 0; transform: none; }
+  .fignote { font-size: 1rem; color: var(--muted); margin: 0 0 0.5rem; }
+  .asTable summary { font: 0.8125rem var(--mono); color: var(--muted); cursor: pointer; }
+  .asTable table, .sc-rows { width: 100%; border-collapse: collapse; font-size: 1rem; margin-top: 0.5rem; }
+  .asTable th, .asTable td, .sc-rows th, .sc-rows td { text-align: left; padding: 0.35rem 0.5rem 0.35rem 0; border-bottom: 1px solid var(--rule); vertical-align: top; }
+  .asTable th { font: 0.75rem var(--mono); color: var(--muted); }
+  .num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .sc-rows th { font-weight: 400; }
+
+  /* side panel: slides in from the right; a bottom sheet on phones */
+  .sidecar {
+    position: fixed; margin: 0; inset: 0 0 0 auto; height: 100dvh; max-height: none; max-width: none;
+    width: min(26rem, 100vw); padding: 1.25rem 1.25rem 2rem;
+    background: var(--bg); color: var(--text); border: 0; border-left: 2px solid var(--rule);
+    box-shadow: -8px 0 24px rgba(0, 0, 0, 0.18); overflow-y: auto;
+  }
+  .sidecar::backdrop { background: rgba(0, 0, 0, 0.3); }
+  .sc-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; }
+  .sc-kind { margin: 0; font: 0.75rem var(--mono); color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
+  .sc-close { font: 0.8125rem var(--mono); color: var(--band-text); background: var(--band); border: 0; border-radius: 999px; padding: 0.3rem 0.75rem; cursor: pointer; }
+  .sidecar h3 { font-size: 1.35rem; margin: 0 0 0.5rem; }
+  .sc-where, .sc-note { font-size: 1rem; color: var(--muted); }
+  @media (max-width: 40rem) {
+    .sidecar {
+      inset: auto 0 0 0; width: 100vw; height: auto; max-height: 80dvh;
+      border-left: 0; border-top: 2px solid var(--rule); border-radius: 12px 12px 0 0;
+    }
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLButtonElement>('button.doc').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      document.querySelector<HTMLDialogElement>(`#doc-${btn.dataset.doc}`)?.showModal();
+    });
+  });
+  document.querySelectorAll<HTMLDialogElement>('dialog.sidecar').forEach((dlg) => {
+    dlg.querySelector('.sc-close')?.addEventListener('click', () => dlg.close());
+    // click on the dimmed backdrop closes the panel
+    dlg.addEventListener('click', (e) => { if (e.target === dlg) dlg.close(); });
+  });
+</script>
