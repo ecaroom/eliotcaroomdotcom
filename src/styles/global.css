@@ -192,7 +192,7 @@ blockquote {
 /* about */
 .about-line { font-size: 1.4rem; line-height: 1.45; color: var(--head); }
 
-/* home badges (Accelerating Solar, Wait Until 8th) */
+/* home badges (Common Sense Solar Savings, Wait Until 8th) */
 .badges { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 2rem; }
 .badge {
   display: inline-flex;
