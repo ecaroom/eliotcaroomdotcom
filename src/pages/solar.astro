@@ -17,8 +17,41 @@ const bars = [
   { year: 2025, value: 124730.35, doc: 'b2026', label: true },
   { year: 2026, value: 142000, doc: 'b2026', label: true, budgeted: true },
 ];
+// PSE&G rate lines on the spending chart. Set to false to remove them (Eliot may undo this).
+const showRates = true;
+
+// PSE&G bundled energy rate, cents per kWh, base/winter tier, from the filed tariffs charted on
+// /solar/pseg-rates/ (NREL/OpenEI URDB). GLP = commercial "General Lighting and Power", excludes
+// the separate demand charge; RS = residential. Each entry is [effective date, rate].
+const tariffs = {
+  glp: [['2019-06-01', 6.575], ['2021-06-01', 6.211], ['2022-06-15', 8.132], ['2023-05-01', 9.831], ['2025-01-01', 18.475], ['2026-04-01', 19.369]],
+  rs: [['2019-06-01', 17.151], ['2021-06-01', 17.827], ['2022-06-15', 17.508], ['2023-05-01', 18.891], ['2025-01-01', 23.18], ['2026-04-01', 25.876]],
+} as const;
+// Average rate in effect across the calendar year, weighted by days; 2026 runs through the build date.
+const yearAvg = (series: readonly (readonly [string, number])[], year: number) => {
+  const day = 86400000;
+  const start = Date.UTC(year, 0, 1);
+  const end = Math.min(Date.UTC(year, 11, 31), Date.now());
+  let total = 0, n = 0;
+  for (let t = start; t <= end; t += day) {
+    let v = series[0][1];
+    for (const [eff, r] of series) if (Date.parse(eff) <= t) v = r;
+    total += v; n++;
+  }
+  return total / n;
+};
+const rateMax = 30;
+const rateTicks = [10, 20, 30];
+const cents = (n: number) => n.toFixed(1) + '¢';
+// yellow to red across the years, one stop per bar
+const heat = (i: number, n: number) => `color-mix(in oklab, var(--hot) ${Math.round((i / (n - 1)) * 100)}%, var(--warm))`;
+
 const axisMax = 150000;
 const ticks = [50000, 100000, 150000];
+const rates = bars.map((b) => ({ glp: yearAvg(tariffs.glp, b.year), rs: yearAvg(tariffs.rs, b.year) }));
+const xPct = (i: number) => ((i + 0.5) / bars.length) * 100;
+const yPct = (c: number) => (c / rateMax) * 100;
+const linePts = (key: 'glp' | 'rs') => rates.map((r, i) => `${xPct(i).toFixed(2)},${(100 - yPct(r[key])).toFixed(2)}`).join(' ');
 const usd = (n: number) => '$' + Math.round(n).toLocaleString('en-US');
 const k = (n: number) => '$' + Math.round(n / 1000) + 'k';
 
@@ -151,10 +184,17 @@ const questions = [
   </p>
 
   <figure class="spend" aria-labelledby="spend-cap">
-    <figcaption id="spend-cap">Our spending on electricity, paid or charged</figcaption>
-    <div class="plot" role="img" aria-label="Electricity spending by year: 2021 $94,215; 2022 $90,227; 2023 $100,157; 2024 $113,549; 2025 $124,730; 2026 budgeted $142,000.">
-      {ticks.map((t) => (
-        <div class="tick" style={`bottom:${(t / axisMax) * 100}%`}><span>{k(t)}</span></div>
+    <figcaption id="spend-cap">{showRates ? 'Our spending on electricity, paid or charged, and PSE&G’s rates' : 'Our spending on electricity, paid or charged'}</figcaption>
+    {showRates && (
+      <ul class="legend">
+        <li><span class="key key-bar"></span>Our electricity spending (left scale)</li>
+        <li><span class="key key-line"></span>PSE&amp;G commercial rate, ¢/kWh (right scale)</li>
+        <li><span class="key key-line dashed"></span>PSE&amp;G residential rate, ¢/kWh (right scale)</li>
+      </ul>
+    )}
+    <div class={`plot${showRates ? ' with-rates' : ''}`} role="img" aria-label={'Electricity spending by year: 2021 $94,215; 2022 $90,227; 2023 $100,157; 2024 $113,549; 2025 $124,730; 2026 budgeted $142,000.' + (showRates ? ' PSE&G average commercial rate: ' + bars.map((b, i) => `${b.year} ${cents(rates[i].glp)}`).join('; ') + '. Residential: ' + bars.map((b, i) => `${b.year} ${cents(rates[i].rs)}`).join('; ') + '.' : '')}>
+      {ticks.map((t, i) => (
+        <div class="tick" style={`bottom:${(t / axisMax) * 100}%`}><span>{k(t)}</span>{showRates && <span class="r">{rateTicks[i]}¢</span>}</div>
       ))}
       <div class="cols">
         {bars.map((b) => (
@@ -166,6 +206,7 @@ const questions = [
                 </div>
                 <span class="tip" role="tooltip">
                   {b.year} · {usd(b.value)}{b.budgeted ? ' budgeted' : ''}
+                  {showRates && <><br />commercial {cents(rates[bars.indexOf(b)].glp)} · residential {cents(rates[bars.indexOf(b)].rs)}</>}
                 </span>
               </>
             ) : (
@@ -175,19 +216,44 @@ const questions = [
           </div>
         ))}
       </div>
+      {showRates && (
+        <>
+          <svg class="rates" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+            <defs>
+              <linearGradient id="heat" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="100" y2="0">
+                <stop offset="0%" stop-color="var(--warm)" />
+                <stop offset="100%" stop-color="var(--hot)" />
+              </linearGradient>
+            </defs>
+            {(['rs', 'glp'] as const).map((key) => (
+              <>
+                <polyline class="halo" points={linePts(key)} vector-effect="non-scaling-stroke" />
+                <polyline class={`line ${key}`} points={linePts(key)} vector-effect="non-scaling-stroke" />
+              </>
+            ))}
+          </svg>
+          {rates.map((r, i) => (
+            <>
+              <span class="dot rs" style={`left:${xPct(i)}%;bottom:${yPct(r.rs)}%;--c:${heat(i, bars.length)}`}></span>
+              <span class="dot glp" style={`left:${xPct(i)}%;bottom:${yPct(r.glp)}%;--c:${heat(i, bars.length)}`}></span>
+            </>
+          ))}
+        </>
+      )}
     </div>
     <p class="fignote">
-      *2026 is the amount budgeted, not spent. <button class="doc" data-doc="all">Where each number comes from</button>
+      *2026 is the amount budgeted, not spent.{showRates && ' Rates are each year’s average, weighted by days in effect; 2026 is year to date. The commercial rate excludes PSE&G’s separate demand charge.'} <button class="doc" data-doc="all">Where each number comes from</button>
     </p>
     <details class="asTable">
       <summary>Show as a table</summary>
       <table>
-        <thead><tr><th>Year</th><th class="num">Paid or charged</th><th>Source</th></tr></thead>
+        <thead><tr><th>Year</th><th class="num">Paid or charged</th>{showRates && <><th class="num">Commercial ¢/kWh</th><th class="num">Residential ¢/kWh</th></>}<th>Source</th></tr></thead>
         <tbody>
           {bars.map((b) => (
             <tr>
               <td>{b.year}</td>
               <td class="num">{usd(b.value) + (b.budgeted ? ' (budgeted)' : '')}</td>
+              {showRates && <><td class="num">{cents(rates[bars.indexOf(b)].glp)}</td><td class="num">{cents(rates[bars.indexOf(b)].rs)}</td></>}
               <td><button class="doc" data-doc={b.doc}>{docs.find((d) => d.id === b.doc)!.title.replace('Roselle Park ', '')}</button></td>
             </tr>
           ))}
@@ -340,6 +406,25 @@ const questions = [
   /* spending chart: HTML columns so labels stay full size on phones */
   .spend { margin: 1.5rem 0 1.75rem; --bar: #2d5061; --grid: rgba(52, 54, 31, 0.18); }
   :global(:root[data-theme='dark']) .spend { --bar: #cdd494; --grid: rgba(214, 228, 235, 0.2); }
+  /* rate lines: yellow to red over time; darker stops in light mode for contrast on Pigeon Post */
+  .spend { --warm: #b58900; --hot: #b3261e; }
+  :global(:root[data-theme='dark']) .spend { --warm: #f5d547; --hot: #ff7a59; }
+  .plot.with-rates { margin-right: 2.25rem; }
+  .tick .r { position: absolute; left: calc(100% + 0.4rem); top: -0.55rem; font: 0.75rem var(--mono); color: var(--muted); }
+  .rates { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; z-index: 1; }
+  .rates .halo { fill: none; stroke: var(--bg); stroke-width: 5.5; stroke-linejoin: round; stroke-linecap: round; }
+  .rates .line { fill: none; stroke: url(#heat); stroke-width: 2.5; stroke-linejoin: round; stroke-linecap: round; }
+  .rates .line.rs { stroke-dasharray: 5 4; }
+  .dot { position: absolute; width: 9px; height: 9px; margin: 0 0 -4.5px -4.5px; border-radius: 50%; z-index: 1; pointer-events: none; box-shadow: 0 0 0 2px var(--bg); }
+  .dot.glp { background: var(--c); }
+  .dot.rs { background: var(--bg); border: 2px solid var(--c); }
+  .legend { list-style: none; padding: 0; margin: 0 0 0.5rem; display: flex; flex-wrap: wrap; gap: 0.25rem 1rem; font-size: 0.95rem; color: var(--muted); }
+  .legend li { display: flex; align-items: center; gap: 0.4rem; }
+  .key { display: inline-block; flex: none; }
+  .key-bar { width: 10px; height: 12px; background: var(--bar); border-radius: 2px 2px 0 0; }
+  .key-line { width: 26px; height: 3px; border-radius: 2px; background: linear-gradient(90deg, var(--warm), var(--hot)); }
+  .key-line.dashed { background: repeating-linear-gradient(90deg, var(--warm) 0 5px, transparent 5px 8px, var(--hot) 8px 13px, transparent 13px 16px); }
+  .tip { z-index: 3; }
   figcaption { font-size: 1rem; color: var(--muted); margin-bottom: 0.75rem; }
   .plot { position: relative; height: 12rem; margin: 1.5rem 0 1.75rem 2.75rem; border-bottom: 1px solid var(--muted); }
   .tick { position: absolute; left: 0; right: 0; border-top: 1px solid var(--grid); }
@@ -363,8 +448,8 @@ const questions = [
   }
   .col:hover .tip, .col:focus .tip { opacity: 1; }
   .col:hover .bar, .col:focus .bar { filter: brightness(1.15); }
-  .col:first-child .tip { left: 0; transform: none; }
-  .col:last-child .tip { left: auto; right: 0; transform: none; }
+  .col:nth-child(-n + 2) .tip { left: 0; transform: none; }
+  .col:nth-last-child(-n + 2) .tip { left: auto; right: 0; transform: none; }
   .fignote { font-size: 1rem; color: var(--muted); margin: 0 0 0.5rem; }
   .asTable summary { font: 0.8125rem var(--mono); color: var(--muted); cursor: pointer; }
   .asTable table, .sc-rows { width: 100%; border-collapse: collapse; font-size: 1rem; margin-top: 0.5rem; }
