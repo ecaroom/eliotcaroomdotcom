@@ -209,6 +209,10 @@ blockquote {
 .badge-kicker { font: 0.7rem var(--mono); color: var(--muted); text-transform: lowercase; }
 .badge-title { font: 700 1.35rem/1.1 var(--serif); }
 .badge-cta { font: 0.75rem var(--mono); color: var(--muted); }
+/* highlighted badge: light yellow-green fill, dark text in both modes */
+.badge-highlight { background: #e2e8a6; border-color: #4e2c1c; color: #4e2c1c; }
+.badge-highlight .badge-kicker, .badge-highlight .badge-cta { color: #4f4f36; }
+.badge-highlight:hover { background: #d3dc86; }
 
 /* photo backdrop: the About photo sits behind every page.
    Wide screens: it shows as borders either side of the solid text column.
