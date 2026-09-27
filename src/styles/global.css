@@ -214,12 +214,12 @@ blockquote {
    Wide screens: it shows as borders either side of the solid text column.
    Phones: hidden (column is full width).
    About page (.photo-page): full background at every size, zoomed toward Eliot,
-   with text in solid panels. Eliot is at about 43% across, 35% down in the photo. */
+   with text in solid panels. Photo is pinned to the top edge so trees and sky show more than rock; Eliot is at about 43% across, 35% down. */
 .backdrop {
   position: fixed;
   inset: 0;
   z-index: -1;
-  background: url('/about/climb.jpg') 43% 35% / cover no-repeat;
+  background: url('/about/climb.jpg') 43% 0 / cover no-repeat;
   display: none;
 }
 :root[data-theme='dark'] .backdrop::after {
@@ -244,19 +244,17 @@ blockquote {
 .photo-page { background: transparent; }
 .photo-page .backdrop {
   display: block;
-  transform: scale(1.25);
-  transform-origin: 43% 35%;
+  transform-origin: 43% 0;
 }
 .photo-page main { padding-top: 1.5rem; }
 .photo-page .panel {
   background: var(--bg);
   padding: 0.6rem 0.9rem;
   border-radius: 6px;
-  width: fit-content;
-  max-width: 100%;
+  width: 100%;
 }
-.photo-page h1.panel { margin-bottom: 0; }
-.photo-page .about-line.panel { margin-top: 55vh; }
+.photo-page h1.panel { margin-bottom: 0.75rem; }
+.photo-page .about-line.panel { margin-top: 0; }
 @media (max-width: 719px) {
-  .photo-page .backdrop { transform: scale(1.7); }
+  .photo-page .backdrop { transform: scale(1.5); }
 }
