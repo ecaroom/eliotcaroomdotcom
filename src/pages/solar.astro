@@ -7,18 +7,16 @@ import Base from '../layouts/Base.astro';
 const pdf = (id: number, name: string) => `https://www.rosellepark.gov/DocumentCenter/View/${id}/${name}`;
 
 // Electricity line, paid or charged, by year. 2025 is the appropriation, not spending.
+// 2023 comes from the 2023 audit because the 2024 budget PDF is a scan with no text.
 const bars = [
-  { year: 2018, value: 82461.71, doc: 'b2019' },
-  { year: 2019, value: 84688.41, doc: 'b2020' },
-  { year: 2020, value: 136822.42, doc: 'b2021' },
   { year: 2021, value: 94214.59, doc: 'b2022' },
   { year: 2022, value: 90226.58, doc: 'b2023', label: true },
-  { year: 2023, value: null, doc: null },
+  { year: 2023, value: 100156.6, doc: 'a2023', label: true },
   { year: 2024, value: 113548.61, doc: 'b2025', label: true },
   { year: 2025, value: 115000, doc: 'b2025', label: true, budgeted: true },
 ];
-const axisMax = 150000;
-const ticks = [50000, 100000, 150000];
+const axisMax = 125000;
+const ticks = [25000, 50000, 75000, 100000, 125000];
 const usd = (n: number) => '$' + Math.round(n).toLocaleString('en-US');
 const k = (n: number) => '$' + Math.round(n / 1000) + 'k';
 
@@ -55,34 +53,21 @@ const docs = [
     rows: [['2021 paid or charged', '$94,214.59'], ['2022 appropriation', '$119,000.00']],
   },
   {
-    id: 'b2021',
-    title: 'Roselle Park 2021 Adopted Budget',
-    href: pdf(250, '2021-Adopted-Budget-PDF'),
-    where: 'Sheet 17, line 31-430-2, Electricity.',
+    id: 'a2023',
+    title: 'Roselle Park Report of Audit, 2023',
+    href: 'https://www.rosellepark.gov/Archive.aspx?ADID=86',
+    where: 'Suplee, Clooney & Company, audit of the year ended December 31, 2023. Exhibit A-3, Current Fund Statement of Expenditures, Utilities, Electricity.',
     rows: [
-      ['2020 budget, as adopted', '$102,000.00'],
-      ['2020 budget after modification', '$142,000.00'],
-      ['2020 paid or charged', '$136,822.42'],
+      ['2023 budget', '$105,000.00'],
+      ['2023 budget after modification', '$115,000.00'],
+      ['2023 paid or charged', '$100,156.60'],
+      ['2023 unexpended, reserved', '$14,843.40'],
     ],
-    note: 'The budget does not say why 2020 ran high. PSE&G’s standard commercial rate did not rise that year.',
-  },
-  {
-    id: 'b2020',
-    title: 'Roselle Park 2020 Adopted Budget',
-    href: pdf(248, '2020-Adopted-Budget-PDF'),
-    where: 'Sheet 17, line 31-430-2, Electricity.',
-    rows: [['2019 paid or charged', '$84,688.41'], ['2020 appropriation', '$102,000.00']],
-  },
-  {
-    id: 'b2019',
-    title: 'Roselle Park 2019 Adopted Budget',
-    href: pdf(247, '2019-Adopted-Budget-PDF'),
-    where: 'Sheet 17, line 31-430-2, Electricity.',
-    rows: [['2018 paid or charged', '$82,461.71'], ['2019 appropriation', '$100,000.00']],
+    note: 'The 2024 budget, which would normally report 2023 spending, is posted only as scanned images, so the audit is the source for this year.',
   },
   {
     id: 'adi',
-    title: 'NJ Board of Public Utilities order, May 21, 2026',
+    title: 'NJ Board of Public Utilities Order, May 21, 2026',
     href: 'https://www.nj.gov/bpu/pdf/boardorders/2026/20260521/8C%20ORDER%20ADI%203%20Year%20Review%20Cost%20Cap.pdf',
     where: 'Three-year review of the Administratively Determined Incentive (ADI) program, Docket Nos. QO20020184 and QO26030096. Staff recommended no change to non-residential incentives; the Board accepted it.',
     rows: [
@@ -100,31 +85,33 @@ const questions = [
   'Will you pursue at least one project that can be in service by December 31, 2027, so the borough can collect the federal clean electricity investment credit?',
   'Will you favor financing that costs taxpayers nothing up front, such as a power purchase agreement or New Jersey’s Energy Savings Improvement Program?',
   'Will you publish the borough’s annual electricity use and spending?',
-  'In a sentence or two: what would you do to protect Roselle Park from rising energy costs and from storms like Ida?',
+  'In a sentence or two: what would you do to protect Roselle Park from rising energy costs and from storms like Sandy, Irene, and Ida?',
 ];
 ---
 <Base
-  title="Accelerating solar for Roselle Park"
+  title="Accelerating Solar for Roselle Park"
   description="Roselle Park's electricity bill rose 26% from 2022 to 2024, before PSE&G's biggest rate increase. Solar on borough property can cut it, at no upfront cost, and federal money for it ends in 2027."
 >
-  <h1>Accelerating solar for Roselle Park</h1>
+  <h1>Accelerating Solar for Roselle Park</h1>
   <p class="meta">For the November 2026 election · updated September 2026</p>
 
   <p>
     I live in Roselle Park, and I’m asking both candidates for mayor, Joe Signorello Jr. and Jorge Ramirez, and everyone
     running for borough council, to commit to solar on borough property.
   </p>
-
-  <h2>The bill solar can cut</h2>
   <p>
-    The borough paid $113,549 for electricity in 2024 (<button class="doc" data-doc="b2025">2025 budget</button>), up
-    26% from $90,227 in 2022 (<button class="doc" data-doc="b2023">2023 budget</button>). It raised that year’s
-    electricity budget from $105,000 to $120,000 partway through.
+    Roselle Park will benefit from adding solar to borough properties. It’s the right financial choice to hedge against
+    rising electric rates, and the right thing to do as climate causes worsening damage in New Jersey and beyond.
+  </p>
+
+  <h2>Escalating Electric Costs Can Be Mitigated with Solar</h2>
+  <p>
+    The borough’s electricity spending rose 26% from 2022 to 2024, according to its own budgets (<button class="doc" data-doc="b2023">2022</button>, <button class="doc" data-doc="b2025">2024</button>).
   </p>
 
   <figure class="spend" aria-labelledby="spend-cap">
-    <figcaption id="spend-cap">Roselle Park borough budget, Electricity line: paid or charged</figcaption>
-    <div class="plot" role="img" aria-label="Electricity spending by year: 2018 $82,462; 2019 $84,689; 2020 $136,822; 2021 $94,215; 2022 $90,227; 2023 not published; 2024 $113,549; 2025 budgeted $115,000.">
+    <figcaption id="spend-cap">Roselle Park borough spending on electricity, paid or charged</figcaption>
+    <div class="plot" role="img" aria-label="Electricity spending by year: 2021 $94,215; 2022 $90,227; 2023 $100,157; 2024 $113,549; 2025 budgeted $115,000.">
       {ticks.map((t) => (
         <div class="tick" style={`bottom:${(t / axisMax) * 100}%`}><span>{k(t)}</span></div>
       ))}
@@ -149,7 +136,7 @@ const questions = [
       </div>
     </div>
     <p class="fignote">
-      *2025 is the amount budgeted, not spent. 2023’s figure is in a budget posted only as scanned images. <button class="doc" data-doc="all">Where each number comes from</button>
+      *2025 is the amount budgeted, not spent. <button class="doc" data-doc="all">Where each number comes from</button>
     </p>
     <details class="asTable">
       <summary>Show as a table</summary>
@@ -159,8 +146,8 @@ const questions = [
           {bars.map((b) => (
             <tr>
               <td>{b.year}</td>
-              <td class="num">{b.value === null ? 'not published' : usd(b.value) + (b.budgeted ? ' (budgeted)' : '')}</td>
-              <td>{b.doc ? <button class="doc" data-doc={b.doc}>{docs.find((d) => d.id === b.doc)!.title.replace('Roselle Park ', '')}</button> : ''}</td>
+              <td class="num">{usd(b.value) + (b.budgeted ? ' (budgeted)' : '')}</td>
+              <td><button class="doc" data-doc={b.doc}>{docs.find((d) => d.id === b.doc)!.title.replace('Roselle Park ', '')}</button></td>
             </tr>
           ))}
         </tbody>
@@ -178,7 +165,7 @@ const questions = [
     line that PSE&amp;G bills <a href="https://nj.pseg.com/businessandcontractorservices/outdoorlightingunmeteredservices" {...ext}>without a meter</a>.
   </p>
 
-  <h2>It needn’t cost taxpayers anything up front</h2>
+  <h2>It Needn’t Cost Taxpayers Anything Up Front</h2>
   <p>
     In 2012 a Union County program put solar on 31 public buildings, including the Roselle Park Board of Education’s. A
     developer owned the panels and sold the power below utility rates, and the county <a href="https://ucnj.org/press-releases/public-info/2012/09/21/union-county-solar-program-completes-28-installations-in-15-governmental-agencies/" {...ext}>projected $5 million in savings</a> over 15 years. The borough government didn’t take part.
@@ -192,26 +179,16 @@ const questions = [
     electricity investment credit, which local governments can take as cash, only if it is <a href="https://blogs.law.columbia.edu/climatechange/2025/07/07/the-one-big-beautiful-bill-act-considerations-for-cities-and-community-partners/" {...ext}>running by December 31, 2027</a>.
   </p>
 
-  <h2>It’s the right thing to do</h2>
+  <h2>It’s the Right Thing to Do</h2>
   <p>
     New Jersey has warmed about 4°F since 1900, twice the global average, according to the <a href="https://njclimateresourcecenter.rutgers.edu/new-jerseys-temperatures-rise-by-4-degrees-fahrenheit-twice-the-global-average-since-1900/" {...ext}>state climatologist’s office</a>.
     Ida’s flooding killed 30 people in the state in 2021, four of them <a href="https://cbsnews.com/newyork/news/elizabeth-nj-ida-flooding-victims-vigil" {...ext}>next door in Elizabeth</a>.
   </p>
 
-  <h2>What I’m asking candidates</h2>
+  <h2>Ask Our Mayoral Candidates</h2>
   <ol class="asks">
     {questions.map((q) => <li>{q}</li>)}
   </ol>
-
-  <h2>Evidence</h2>
-  <table class="projects">
-    <tbody>
-      <tr>
-        <th scope="row"><a href="/solar/pseg-rates/">PSE&amp;G rates and borough spending</a></th>
-        <td>What PSE&amp;G has charged since 2016, from its filed tariffs, and what the borough has spent on electricity and streetlights since 2018, from its budgets.</td>
-      </tr>
-    </tbody>
-  </table>
 
   {docs.map((d) => (
     <dialog class="sidecar" id={`doc-${d.id}`} aria-labelledby={`doc-${d.id}-t`}>
@@ -238,10 +215,11 @@ const questions = [
       <p class="sc-kind">Source documents</p>
       <button class="sc-close" type="button" aria-label="Close">close</button>
     </div>
-    <h3 id="doc-all-t">Where the chart’s numbers come from</h3>
+    <h3 id="doc-all-t">Where the Chart’s Numbers Come From</h3>
     <p class="sc-where">
-      Each adopted budget reports the previous year’s spending next to its own appropriation. All figures are Sheet 17,
-      Current Fund, Unclassified, line 31-430-2, Electricity, “Paid or Charged.”
+      Each budget reports the previous year’s spending next to its own appropriation, on Sheet 17, Current Fund,
+      Unclassified, line 31-430-2, Electricity, “Paid or Charged.” 2023 comes from that year’s audit, because the 2024
+      budget is posted only as scanned images.
     </p>
     <table class="sc-rows">
       <tbody>
@@ -256,13 +234,13 @@ const questions = [
         })}
       </tbody>
     </table>
-    <p class="sc-note">
-      2023’s spending would appear in the 2024 budget, which the borough posted as scanned images. It is available from the <a href="https://www.rosellepark.gov/178/Clerk" {...ext}>Borough Clerk</a> by records request.
-    </p>
   </dialog>
 </Base>
 
 <style>
+  /* this page is more formal: headings keep their title case */
+  h1, h2, h3 { text-transform: none; }
+
   /* inline trigger for a source that opens in the side panel */
   .doc {
     font: inherit;
