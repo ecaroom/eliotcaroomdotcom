@@ -192,12 +192,12 @@ blockquote {
 /* about */
 .about-line { font-size: 1.4rem; line-height: 1.45; color: var(--head); }
 
-/* home badge (Wait Until 8th) */
+/* home badges (Accelerating Solar, Wait Until 8th) */
+.badges { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 2rem; }
 .badge {
   display: inline-flex;
   flex-direction: column;
   gap: 0.1rem;
-  margin-top: 2rem;
   padding: 0.7rem 1rem 0.75rem;
   border: 2px solid var(--head);
   border-radius: 10px;
