@@ -6,22 +6,38 @@ import Base from '../layouts/Base.astro';
 // Sheet 17, Current Fund, Unclassified, line 31-430-2 (Electricity), "Paid or Charged."
 const pdf = (id: number, name: string) => `https://www.rosellepark.gov/DocumentCenter/View/${id}/${name}`;
 
-// Electricity line, paid or charged, by year. 2025 is the appropriation, not spending.
+// Electricity line, paid or charged, by year. 2026 is the appropriation in the introduced budget, not spending
+// (the adopted 2026 budget is posted only as scanned images).
 // 2023 comes from the 2023 audit because the 2024 budget PDF is a scan with no text.
 const bars = [
-  { year: 2021, value: 94214.59, doc: 'b2022' },
-  { year: 2022, value: 90226.58, doc: 'b2023', label: true },
-  { year: 2023, value: 100156.6, doc: 'a2023', label: true },
-  { year: 2024, value: 113548.61, doc: 'b2025', label: true },
-  { year: 2025, value: 115000, doc: 'b2025', label: true, budgeted: true },
+  { year: 2021, value: 94214.59, doc: 'b2022', label: true },
+  { year: 2022, value: 90226.58, doc: 'b2023' },
+  { year: 2023, value: 100156.6, doc: 'a2023' },
+  { year: 2024, value: 113548.61, doc: 'b2025' },
+  { year: 2025, value: 124730.35, doc: 'b2026', label: true },
+  { year: 2026, value: 142000, doc: 'b2026', label: true, budgeted: true },
 ];
-const axisMax = 125000;
-const ticks = [25000, 50000, 75000, 100000, 125000];
+const axisMax = 150000;
+const ticks = [50000, 100000, 150000];
 const usd = (n: number) => '$' + Math.round(n).toLocaleString('en-US');
 const k = (n: number) => '$' + Math.round(n / 1000) + 'k';
 
 // Documents that open in the side panel: long PDFs where the figure is buried.
 const docs = [
+  {
+    id: 'b2026',
+    title: 'Roselle Park 2026 Introduced Budget',
+    href: pdf(678, '2026-Introduced-Budget-PDF'),
+    where: 'Sheet 17, Current Fund appropriations, Unclassified, line 31-430-2, Electricity.',
+    rows: [
+      ['2025 budget, as adopted', '$115,000.00'],
+      ['2025 budget, as modified', '$140,000.00'],
+      ['2025 paid or charged', '$124,730.35'],
+      ['2025 unexpended, reserved', '$15,269.65'],
+      ['2026 appropriation', '$142,000.00'],
+    ],
+    note: 'The adopted 2026 budget is posted only as scanned images, so this is the introduced version. Street Lighting is a separate line on the same sheet (31-435-2): $229,472.28 paid or charged in 2025, $259,000.00 appropriated for 2026.',
+  },
   {
     id: 'b2025',
     title: 'Roselle Park 2025 Introduced Budget',
@@ -90,7 +106,7 @@ const questions = [
 ---
 <Base
   title="Accelerating Solar for Roselle Park"
-  description="Roselle Park's electricity bill rose 26% from 2022 to 2024, before PSE&G's biggest rate increase. Solar on borough property can cut it, at no upfront cost, and federal money for it ends in 2027."
+  description="Roselle Park's electricity spending rose 32% from 2021 to 2025. Solar on borough property can cut it, at no upfront cost, and federal money for it ends in 2027."
 >
   <h1>Accelerating Solar for Roselle Park</h1>
   <p class="meta">For the November 2026 election · updated September 2026</p>
@@ -106,12 +122,12 @@ const questions = [
 
   <h2>Escalating Electric Costs Can Be Mitigated with Solar</h2>
   <p>
-    The borough’s electricity spending rose 26% from 2022 to 2024, according to its own budgets (<button class="doc" data-doc="b2023">2022</button>, <button class="doc" data-doc="b2025">2024</button>).
+    The borough’s electricity spending rose 32% from 2021 to 2025, according to its own budgets (<button class="doc" data-doc="b2022">2021</button>, <button class="doc" data-doc="b2026">2025</button>).
   </p>
 
   <figure class="spend" aria-labelledby="spend-cap">
     <figcaption id="spend-cap">Roselle Park borough spending on electricity, paid or charged</figcaption>
-    <div class="plot" role="img" aria-label="Electricity spending by year: 2021 $94,215; 2022 $90,227; 2023 $100,157; 2024 $113,549; 2025 budgeted $115,000.">
+    <div class="plot" role="img" aria-label="Electricity spending by year: 2021 $94,215; 2022 $90,227; 2023 $100,157; 2024 $113,549; 2025 $124,730; 2026 budgeted $142,000.">
       {ticks.map((t) => (
         <div class="tick" style={`bottom:${(t / axisMax) * 100}%`}><span>{k(t)}</span></div>
       ))}
@@ -130,13 +146,13 @@ const questions = [
             ) : (
               <span class="gap">n/a</span>
             )}
-            <span class="yr">{b.budgeted ? '’25*' : '’' + String(b.year).slice(2)}</span>
+            <span class="yr">{'’' + String(b.year).slice(2) + (b.budgeted ? '*' : '')}</span>
           </div>
         ))}
       </div>
     </div>
     <p class="fignote">
-      *2025 is the amount budgeted, not spent. <button class="doc" data-doc="all">Where each number comes from</button>
+      *2026 is the amount budgeted, not spent. <button class="doc" data-doc="all">Where each number comes from</button>
     </p>
     <details class="asTable">
       <summary>Show as a table</summary>
@@ -156,9 +172,9 @@ const questions = [
   </figure>
 
   <p>
-    The largest rate increase isn’t in those numbers yet. PSE&amp;G’s standard commercial energy rate was 9.83¢ per
-    kilowatt-hour through 2024 and 18.48¢ from January 2025, according to its <a href="/solar/pseg-rates/">filed tariffs</a>.
-    The borough budgeted $115,000 for electricity in 2025, 1% more than it spent in 2024.
+    PSE&amp;G’s standard commercial energy rate nearly doubled in January 2025, according to its <a href="/solar/pseg-rates/">filed tariffs</a>.
+    That year the borough had to raise its electricity budget from $115,000 to $140,000 partway through. For 2026 it has
+    set aside $142,000, 14% more than it spent in 2025.
   </p>
   <p>
     Solar on borough roofs and parking lots offsets this line. It would not touch street lighting, a separate and larger
