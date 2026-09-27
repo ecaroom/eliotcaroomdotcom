@@ -23,10 +23,20 @@ const showRates = true;
 // PSE&G bundled energy rate, cents per kWh, base/winter tier, from the filed tariffs charted on
 // /solar/pseg-rates/ (NREL/OpenEI URDB). GLP = commercial "General Lighting and Power", excludes
 // the separate demand charge; RS = residential. Each entry is [effective date, rate].
+const tariffUrl = 'https://nj.pseg.com/-/media/pseg/public-site/documents/current-electric-tariff/';
+const filings = [
+  { eff: '2019-06-01', glp: 6.575, rs: 17.151, src: tariffUrl + 'electric_tariff.ashx' },
+  { eff: '2021-06-01', glp: 6.211, rs: 17.827, src: tariffUrl + 'electric_tariff.ashx' },
+  { eff: '2022-06-15', glp: 8.132, rs: 17.508, src: tariffUrl + 'electric-tariff-16-2021-gprc-w-community-solar-energy-prog-effective-07012022.ashx' },
+  { eff: '2023-05-01', glp: 9.831, rs: 18.891, src: tariffUrl + 'electric-tariff-16-bpu-bgs-nitstec-effective-09012023.ashx' },
+  { eff: '2025-01-01', glp: 18.475, rs: 23.18, src: tariffUrl + 'electric-tariff-17-gprc-effective-20250101.ashx' },
+  { eff: '2026-04-01', glp: 19.369, rs: 25.876, src: tariffUrl + 'electric-tariff-17-sprc-effective-20260401.ashx' },
+];
 const tariffs = {
-  glp: [['2019-06-01', 6.575], ['2021-06-01', 6.211], ['2022-06-15', 8.132], ['2023-05-01', 9.831], ['2025-01-01', 18.475], ['2026-04-01', 19.369]],
-  rs: [['2019-06-01', 17.151], ['2021-06-01', 17.827], ['2022-06-15', 17.508], ['2023-05-01', 18.891], ['2025-01-01', 23.18], ['2026-04-01', 25.876]],
-} as const;
+  glp: filings.map((f) => [f.eff, f.glp] as const),
+  rs: filings.map((f) => [f.eff, f.rs] as const),
+};
+const longDate = (iso: string) => new Date(iso + 'T12:00:00Z').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
 // Average rate in effect across the calendar year, weighted by days; 2026 runs through the build date.
 const yearAvg = (series: readonly (readonly [string, number])[], year: number) => {
   const day = 86400000;
@@ -259,6 +269,7 @@ const questions = [
           ))}
         </tbody>
       </table>
+      {showRates && <p class="fignote">Rates: <button class="doc" data-doc="pseg">PSE&amp;G tariff filings</button></p>}
     </details>
   </figure>
 
@@ -369,7 +380,50 @@ const questions = [
         })}
       </tbody>
     </table>
+    {showRates && (
+      <>
+        <h3 class="sc-sub">Rate Lines</h3>
+        <p class="sc-where">
+          PSE&amp;G’s filed tariffs, as recorded in the U.S. Utility Rate Database. Each year’s point is the average of
+          the rates in effect that year, weighted by days.
+        </p>
+        <p><button class="doc" data-doc="pseg">Every filing behind the lines</button></p>
+      </>
+    )}
   </dialog>
+
+  {showRates && (
+    <dialog class="sidecar" id="doc-pseg" aria-labelledby="doc-pseg-t">
+      <div class="sc-head">
+        <p class="sc-kind">Source documents</p>
+        <button class="sc-close" type="button" aria-label="Close">close</button>
+      </div>
+      <h3 id="doc-pseg-t">PSE&amp;G Tariff Filings</h3>
+      <p class="sc-where">
+        Bundled energy rate (delivery plus PSE&amp;G’s default supply), base/winter tier, sales tax included, in cents per
+        kilowatt-hour. Commercial is Rate Schedule GLP, General Lighting and Power, and excludes its separate demand
+        charge; residential is Rate Schedule RS. Each rate holds until the next filing.
+      </p>
+      <table class="sc-rows">
+        <thead><tr><th>Effective</th><th class="num">Commercial</th><th class="num">Residential</th><th>Filing</th></tr></thead>
+        <tbody>
+          {filings.map((f) => (
+            <tr>
+              <th scope="row">{longDate(f.eff)}</th>
+              <td class="num">{f.glp.toFixed(2)}¢</td>
+              <td class="num">{f.rs.toFixed(2)}¢</td>
+              <td><a href={f.src} {...ext}>PDF</a></td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <p class="sc-note">
+        Retrieved from the <a href="https://apps.openei.org/USURDB/?utilRateFinder=PSEG" {...ext}>U.S. Utility Rate Database</a> (NREL / OpenEI). The 2019 and 2021 filings are recorded under PSE&amp;G’s general tariff
+        address, which may now open a later version.
+      </p>
+      <p><a href="/solar/pseg-rates/">Full rate history since 2016</a> →</p>
+    </dialog>
+  )}
 </Base>
 
 <style>
@@ -457,6 +511,7 @@ const questions = [
   .asTable th { font: 0.75rem var(--mono); color: var(--muted); }
   .num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
   .sc-rows th { font-weight: 400; }
+  .sc-rows thead th { font: 0.75rem var(--mono); color: var(--muted); }
 
   /* side panel: slides in from the right; a bottom sheet on phones */
   .sidecar {
@@ -470,6 +525,7 @@ const questions = [
   .sc-kind { margin: 0; font: 0.75rem var(--mono); color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
   .sc-close { font: 0.8125rem var(--mono); color: var(--band-text); background: var(--band); border: 0; border-radius: 999px; padding: 0.3rem 0.75rem; cursor: pointer; }
   .sidecar h3 { font-size: 1.35rem; margin: 0 0 0.5rem; }
+  .sidecar h3.sc-sub { margin-top: 1.75rem; }
   .sc-where, .sc-note { font-size: 1rem; color: var(--muted); }
   @media (max-width: 40rem) {
     .sidecar {
