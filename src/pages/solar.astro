@@ -16,6 +16,8 @@ const src = {
   irs: 'https://www.irs.gov/pub/irs-drop/n-25-42.pdf',
   rutgers: 'https://njclimateresourcecenter.rutgers.edu/new-jerseys-temperatures-rise-by-4-degrees-fahrenheit-twice-the-global-average-since-1900/',
   ncics: 'https://statesummaries.ncics.org/chapter/nj/',
+  budget2023: 'https://www.rosellepark.gov/DocumentCenter/View/240/2023-Adopted-Budget-PDF',
+  budget2025: 'https://www.rosellepark.gov/DocumentCenter/View/244/2025-Introduced-Budget-PDF',
   imm: 'https://www.monitoringanalytics.com/reports/PJM_State_of_the_Market/2025/2025-som-pjm-vol1.pdf',
 };
 
@@ -31,7 +33,7 @@ const evidence = [
   {
     name: 'PSE&G electricity rate history',
     href: '/solar/pseg-rates/',
-    summary: 'What PSE&G has charged residential and commercial customers since 2016, from its own filed tariffs.',
+    summary: 'What PSE&G has charged residential and commercial customers since 2016, from its own filed tariffs, and what the borough has spent on electricity and streetlights since 2018, from its budgets.',
   },
 ];
 ---
@@ -49,9 +51,13 @@ const evidence = [
 
   <h2>It cuts the borough’s electric bill</h2>
   <p>
-    PSE&amp;G’s standard commercial energy rate went from 9.83¢ to 19.37¢ per kilowatt-hour between May 2023 and April
-    2026, according to its own <a href="/solar/pseg-rates/">filed tariffs</a>. It nearly doubled in three years. The
-    household rate rose 37% over the same span.
+    Roselle Park spent $326,586 on electricity and streetlights in 2024, 27% more than in 2022, according to the
+    borough’s own budgets (<a href={src.budget2023} class="ext-inline" target="_blank" rel="noopener">2022</a>, <a href={src.budget2025} class="ext-inline" target="_blank" rel="noopener">2024</a>). Partway through 2024 it had to add $25,000 to those two lines.
+  </p>
+  <p>
+    The biggest increase hasn’t reached those numbers yet. PSE&amp;G’s standard commercial energy rate was 9.83¢ per
+    kilowatt-hour for all of 2024, then jumped to 18.48¢ in January 2025 and 19.37¢ in April 2026, according to its <a href="/solar/pseg-rates/">filed tariffs</a>. The borough’s 2025 budget set aside $115,000 for electricity, less
+    than the $120,000 it ended up budgeting for 2024.
   </p>
   <p>
     The pressure hasn’t let up. PJM, the grid operator that sets wholesale capacity prices for New Jersey, has run three
