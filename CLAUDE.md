@@ -60,7 +60,7 @@ Source colors: Chelsea Cucumber `#9aa459`, Pigeon Post `#b0ccd9`, Birch `#34361f
 - **No raw backups of old sites.** Rebuild old sections from backups; never commit the backups themselves (they may contain passwords or personal data).
 - **No unpublished work-related material** (e.g. FactSet) until Eliot has cleared it.
 - **Site copy follows Eliot's style guide.** No em dashes.
-- **External links open in a new tab** (`target="_blank" rel="noopener"`) and carry a ↗ marker. Internal links open in the same tab.
+- **External links open in a new tab** (`target="_blank" rel="noopener"`) and carry a ↗ marker. **Internal links carry a → marker** (Eliot 2026-09-27: internal links weren't obvious) and open in the same tab: `.int-inline` in tables, automatic on `.links` lists, written into badge text. Links inside paragraphs rely on underline and need no marker.
 - Commit author email: the GitHub noreply address, not a personal email.
 - **Media hosting (decided 2026-09-26):** photos live in the repo, resized for web (about 2000px long edge, a few hundred KB). **Never commit video files** (GitHub's 100 MB file cap, the 1 GB Pages limit, and deleted files stay in public Git history). Video goes on YouTube, embedded via `youtube-nocookie.com` in a responsive 16:9 wrapper (`.video-embed`). Cloudflare R2 plus a plain `<video>` tag is the fallback for short clips that shouldn't be on YouTube. For work Eliot made as an employee, check ownership first; if the employer's copy is online, link or embed that rather than re-hosting.
 

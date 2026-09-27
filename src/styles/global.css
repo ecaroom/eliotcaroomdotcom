@@ -150,6 +150,9 @@ img { max-width: 100%; height: auto; }
 
 /* external link marker, inline in prose and tables */
 .ext-inline::after { content: ' ↗'; font-size: 0.8em; color: var(--muted); }
+/* internal link marker: → for links that stay on this site (↗ = opens another site) */
+.int-inline::after { content: ' →'; font-size: 0.8em; color: var(--muted); }
+.links a:not(.ext)::after { content: '→'; margin-left: auto; font-size: 0.9em; color: var(--muted); }
 
 /* article pages (e.g. restored project write-ups) */
 .meta { margin: -0.75rem 0 1.5rem; font: 0.8125rem var(--mono); color: var(--muted); }
