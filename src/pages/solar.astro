@@ -1,6 +1,32 @@
 ---
 import Base from '../layouts/Base.astro';
 
+// Campaign page for the November 2026 Roselle Park mayoral and council races.
+// Figures checked 2026-09-26; each claim links to its source.
+const src = {
+  pjm2526: 'https://www.pjm.com/-/media/DotCom/markets-ops/rpm/rpm-auction-info/2025-2026/2025-2026-base-residual-auction-report.pdf',
+  pjm2728: 'https://insidelines.pjm.com/pjm-auction-procures-134479-mw-of-generation-resources/',
+  pjm2829: 'https://insidelines.pjm.com/pjm-capacity-auction-procures-138318-mw-of-generation-resources-as-work-continues-to-address-growing-electricity-demand/',
+  bgs2025: 'https://www.nj.gov/bpu/newsroom/2025/approved/20250212.html',
+  bgs2026: 'https://nj.gov/bpu/newsroom/2026/approved/20260212.html',
+  county: 'https://ucnj.org/press-releases/public-info/2012/09/21/union-county-solar-program-completes-28-installations-in-15-governmental-agencies/',
+  esip: 'https://www.sustainablejersey.com/fileadmin/media/Grants_and_Resources/ESIP_HowToGuide_V2_2019.pdf',
+  adi: 'https://www.nj.gov/bpu/pdf/boardorders/2026/20260521/8C%20ORDER%20ADI%203%20Year%20Review%20Cost%20Cap.pdf',
+  obbba: 'https://blogs.law.columbia.edu/climatechange/2025/07/07/the-one-big-beautiful-bill-act-considerations-for-cities-and-community-partners/',
+  irs: 'https://www.irs.gov/pub/irs-drop/n-25-42.pdf',
+  rutgers: 'https://njclimateresourcecenter.rutgers.edu/new-jerseys-temperatures-rise-by-4-degrees-fahrenheit-twice-the-global-average-since-1900/',
+  ncics: 'https://statesummaries.ncics.org/chapter/nj/',
+  imm: 'https://www.monitoringanalytics.com/reports/PJM_State_of_the_Market/2025/2025-som-pjm-vol1.pdf',
+};
+
+const questions = [
+  'Will you have the borough assess every borough-owned roof and parking lot for solar within 90 days of taking office?',
+  'Will you pursue at least one project that can be in service by December 31, 2027, so the borough can collect the federal clean electricity investment credit?',
+  'Will you favor financing that costs taxpayers nothing up front, such as a power purchase agreement or New Jersey’s Energy Savings Improvement Program?',
+  'Will you publish the borough’s annual electricity use and spending?',
+  'In a sentence or two: what would you do to protect Roselle Park from rising energy costs and from storms like Ida?',
+];
+
 const evidence = [
   {
     name: 'PSE&G electricity rate history',
@@ -9,11 +35,70 @@ const evidence = [
   },
 ];
 ---
-<Base title="Accelerating solar for Roselle Park" description="Evidence for why Roselle Park's mayoral candidates should support solar.">
+<Base
+  title="Accelerating solar for Roselle Park"
+  description="Solar on borough property would cut Roselle Park's electric bill, can cost taxpayers nothing up front, and is the right thing to do. Federal money for it ends in 2027."
+>
   <h1>Accelerating solar for Roselle Park</h1>
+  <p class="meta">For the November 2026 election · updated September 2026</p>
+
   <p>
-    Evidence for why Roselle Park's mayoral candidates should support solar, starting with what the town pays for electricity.
+    I live in Roselle Park, and I’m asking both candidates for mayor, Joe Signorello Jr. and Jorge Ramirez, and everyone
+    running for borough council, to commit to solar on borough property. The case rests on three things.
   </p>
+
+  <h2>It cuts the borough’s electric bill</h2>
+  <p>
+    PSE&amp;G’s standard commercial energy rate went from 9.83¢ to 19.37¢ per kilowatt-hour between May 2023 and April
+    2026, according to its own <a href="/solar/pseg-rates/">filed tariffs</a>. It nearly doubled in three years. The
+    household rate rose 37% over the same span.
+  </p>
+  <p>
+    The pressure hasn’t let up. PJM, the grid operator that sets wholesale capacity prices for New Jersey, has run three
+    capacity auctions since mid-2025, and all three cleared between $325 and $334 per megawatt-day, more than 11 times the <a href={src.pjm2526} class="ext-inline" target="_blank" rel="noopener">$28.92 price</a> of the 2024/25 auction. The
+    last two fell more than 6,600 megawatts short of PJM’s reliability target
+    (<a href={src.pjm2728} class="ext-inline" target="_blank" rel="noopener">2027/28</a>, <a href={src.pjm2829} class="ext-inline" target="_blank" rel="noopener">2028/29</a>).
+  </p>
+  <p>
+    PSE&amp;G household bills rose <a href={src.bgs2025} class="ext-inline" target="_blank" rel="noopener">17% in June 2025</a> and held <a href={src.bgs2026} class="ext-inline" target="_blank" rel="noopener">roughly flat in 2026</a>, in part because of
+    a temporary cap on that auction. Power from panels on borough roofs has a price fixed for 15 years or more, by contract
+    or by ownership, whatever happens to PJM.
+  </p>
+
+  <h2>It can cost taxpayers nothing up front, and federal money for it runs out in 2027</h2>
+  <p>
+    Roselle Park has done this before. In 2012 the Union County Improvement Authority put solar on 31 public buildings
+    across 15 agencies, including the Roselle Park Board of Education. A developer owned the panels and sold the power
+    below utility rates, and the county <a href={src.county} class="ext-inline" target="_blank" rel="noopener">projected about $5 million in savings</a> over 15 years. The borough government wasn’t one of the 15.
+  </p>
+  <p>
+    New Jersey also lets towns pay for solar out of the savings it produces, through the <a href={src.esip} class="ext-inline" target="_blank" rel="noopener">Energy Savings Improvement Program</a>, which
+    requires every year of the deal to be cash-positive. The state’s solar incentive pays <a href={src.adi} class="ext-inline" target="_blank" rel="noopener">$110 per megawatt-hour for 15 years</a> to
+    rooftop and parking-canopy systems under 1 megawatt.
+  </p>
+  <p>
+    The deadline is federal. Under the 2025 budget law, a solar project that didn’t start construction by July 4, 2026
+    gets the clean electricity investment credit only if it’s <a href={src.obbba} class="ext-inline" target="_blank" rel="noopener">running by December 31, 2027</a>. Local
+    governments can take that credit as a direct cash payment, typically 30% of the project’s cost. Whoever takes office
+    in January has twelve months.
+  </p>
+
+  <h2>It’s the right thing to do</h2>
+  <p>
+    New Jersey has warmed about 4°F since 1900, twice the global average, according to the <a href={src.rutgers} class="ext-inline" target="_blank" rel="noopener">Office of the New Jersey State Climatologist</a>.
+    Ida killed 30 people in the state in 2021. Downpours of two inches or more were about <a href={src.ncics} class="ext-inline" target="_blank" rel="noopener">50% more frequent</a> in 2005 to 2014 than the
+    long-term average.
+  </p>
+  <p>
+    On PJM’s grid, which supplies Roselle Park, coal-fired generation rose 19% in 2025, according to the grid’s <a href={src.imm} class="ext-inline" target="_blank" rel="noopener">independent market monitor</a>. Every
+    kilowatt-hour made on a borough roof is one the town doesn’t buy from that grid.
+  </p>
+
+  <h2>What I’m asking candidates</h2>
+  <ol class="asks">
+    {questions.map((q) => <li>{q}</li>)}
+  </ol>
+
   <h2>Evidence</h2>
   <table class="projects">
     <tbody>
