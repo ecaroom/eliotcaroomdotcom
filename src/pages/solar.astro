@@ -96,6 +96,31 @@ const docs = [
 
 const ext = { class: 'ext-inline', target: '_blank', rel: 'noopener' };
 
+const races = [
+  {
+    office: 'Mayor',
+    lead: true,
+    seats: [
+      { name: 'Joseph Signorello Jr.', party: 'Democrat', note: 'incumbent' },
+      { name: 'Khanjan Patel', party: 'Republican' },
+    ],
+  },
+  {
+    office: 'Borough Council, At-Large',
+    seats: [
+      { name: 'Adolfo Dicosmo', party: 'Democrat' },
+      { name: 'Jorge Ramirez', party: 'Republican' },
+    ],
+  },
+  {
+    office: 'Borough Council, 1st Ward',
+    seats: [
+      { name: 'Jorge E. Casalins', party: 'Democrat' },
+      { name: 'Mariann Brenner', party: 'Republican' },
+    ],
+  },
+];
+
 const questions = [
   'Will you have every roof and parking lot we own assessed for solar within 90 days of taking office?',
   'Will you pursue at least one project that can be in service by December 31, 2027, so we can collect the federal clean electricity investment credit?',
@@ -112,9 +137,8 @@ const questions = [
   <p class="meta">For the November 2026 election · updated September 2026</p>
 
   <p>
-    I live in Roselle Park, and I’m asking both candidates for mayor, Joseph Signorello Jr. and Khanjan Patel, and the
-    four candidates for borough council, Adolfo Dicosmo, Jorge Ramirez, Jorge E. Casalins and Mariann Brenner, to commit
-    to solar on the property we own.
+    I live in Roselle Park, and I’m asking everyone on the November 3 ballot for mayor and borough council to commit to
+    solar on the property we own.
   </p>
   <p>
     Roselle Park will benefit from adding solar to borough properties. It’s the right financial choice to hedge against
@@ -208,7 +232,29 @@ const questions = [
     <figcaption>A sign in Kenilworth, summer 2026. Photo by Eliot Caroom.</figcaption>
   </figure>
 
-  <h2>Ask Our Mayoral Candidates</h2>
+  <h2>Ask Our Candidates</h2>
+  <p>Election day is November 3, 2026.</p>
+
+  <h3>The Race for Mayor</h3>
+  <ul class="ballot lead">
+    {races[0].seats.map((c) => (
+      <li><span class="cand">{c.name}</span> <span class="party">{c.party}{c.note ? `, ${c.note}` : ''}</span></li>
+    ))}
+  </ul>
+
+  <h3>Borough Council</h3>
+  {races.slice(1).map((r) => (
+    <div class="race">
+      <p class="office">{r.office.replace('Borough Council, ', '')}</p>
+      <ul class="ballot">
+        {r.seats.map((c) => (
+          <li><span class="cand">{c.name}</span> <span class="party">{c.party}</span></li>
+        ))}
+      </ul>
+    </div>
+  ))}
+
+  <h3>What to Ask Them</h3>
   <ol class="asks">
     {questions.map((q) => <li>{q}</li>)}
   </ol>
@@ -261,6 +307,15 @@ const questions = [
 </Base>
 
 <style>
+  h3 { font-size: 1.2rem; margin: 1.75rem 0 0.5rem; }
+  .ballot { list-style: none; padding: 0; margin: 0 0 1rem; border-top: 1px solid var(--rule); }
+  .ballot li { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; padding: 0.5rem 0; border-bottom: 1px solid var(--rule); }
+  .ballot .cand { font-weight: 600; color: var(--head); }
+  .ballot .party { font: 0.8125rem var(--mono); color: var(--muted); text-align: right; }
+  .ballot.lead .cand { font-size: 1.45rem; }
+  .ballot.lead li { padding: 0.75rem 0; }
+  .office { margin: 1rem 0 0.25rem; font: 0.8125rem var(--mono); color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
+
   .photo { margin: 1.5rem 0; }
   .photo img { display: block; width: 100%; height: auto; }
   .photo figcaption { font-size: 1rem; color: var(--muted); margin-top: 0.4rem; }
