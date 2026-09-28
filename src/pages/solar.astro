@@ -128,10 +128,12 @@ const docs = [
     id: 'adi',
     title: 'NJ Board of Public Utilities Order, May 21, 2026',
     href: 'https://www.nj.gov/bpu/pdf/boardorders/2026/20260521/8C%20ORDER%20ADI%203%20Year%20Review%20Cost%20Cap.pdf',
-    where: 'Three-year review of the Administratively Determined Incentive (ADI) program, Docket Nos. QO20020184 and QO26030096. Staff recommended no change to non-residential incentives; the Board accepted it.',
+    where: 'Three-year review of the Administratively Determined Incentive (ADI) program, Docket Nos. QO20020184 and QO26030096. Staff recommended no change to non-residential incentives and keeping the public-entity adder (Appendix A, question 9); the Board accepted it.',
     rows: [
       ['Net-metered non-residential, rooftop, carport, canopy or floating, under 1 MW', '$110 per SREC-II'],
+      ['Adder for public entities (school districts, municipalities), kept', '+$20 per SREC-II'],
       ['Incentive term', '15 years'],
+      ['Registration', 'First come, first served until the 150 MW non-residential block fills, or June 1, 2027'],
     ],
     note: 'One SREC-II is earned per megawatt-hour of solar generation.',
   },
@@ -283,16 +285,27 @@ const questions = [
     line that PSE&amp;G bills <a href="https://nj.pseg.com/businessandcontractorservices/outdoorlightingunmeteredservices" {...ext}>without a meter</a>.
   </p>
 
-  <h2>No Upfront Cost, Plus Federal Cash If We Install Before 2028</h2>
+  <h2>No Upfront Cost, Plus Two Incentives</h2>
   <p>
-    New Jersey lets towns pay for solar out of the savings, through the <a href="https://www.sustainablejersey.com/fileadmin/media/Grants_and_Resources/ESIP_HowToGuide_V2_2019.pdf" {...ext}>Energy Savings Improvement Program</a>,
-    which requires every year to be cash-positive. The state adds <button class="doc" data-doc="adi">$110 per megawatt-hour for 15 years</button> for rooftop and canopy systems under 1 megawatt.
+    There are two ways to pay nothing up front. Under a power purchase agreement, a developer owns the panels and sells
+    us the power for less than PSE&amp;G charges. Under New Jersey’s <a href="https://www.sustainablejersey.com/fileadmin/media/Grants_and_Resources/ESIP_HowToGuide_V2_2019.pdf" {...ext}>Energy Savings Improvement Program</a>,
+    we borrow against the savings and repay over up to 15 years, and every year has to come out cash-positive.
   </p>
-  <p>
-    That works whenever we build. The federal clean electricity investment credit is on top of it, paid to us as cash,
-    but only if the system is <a href="https://blogs.law.columbia.edu/climatechange/2025/07/07/the-one-big-beautiful-bill-act-considerations-for-cities-and-community-partners/" {...ext}>running by December 31, 2027</a>.
-    That deadline covers any project starting construction after July 4, 2026, which includes ours.
-  </p>
+  <p>Two incentives add to that. Each goes to whoever owns the panels, so under a power purchase agreement the developer collects them and should pass some along as a lower price.</p>
+  <ul class="asks">
+    <li>
+      <strong>State solar certificates:</strong> <button class="doc" data-doc="adi">$110 per megawatt-hour for 15 years</button>
+      for rooftop and canopy systems under 1 megawatt, plus $20 more for public entities like us. <em>Outlook: steady.</em>
+      The state kept these rates in May 2026 while cutting the residential rate. Spots go first come, first served until
+      the year’s allotment fills.
+    </li>
+    <li>
+      <strong>Federal clean electricity investment credit:</strong> paid to us as cash if we own the system.
+      <em>Outlook: ending.</em> The system has to be <a href="https://blogs.law.columbia.edu/climatechange/2025/07/07/the-one-big-beautiful-bill-act-considerations-for-cities-and-community-partners/" {...ext}>running by December 31, 2027</a>,
+      the deadline for any project starting construction after July 4, 2026, which includes ours. It also has to meet
+      federal rules on foreign suppliers, and systems of 1 megawatt or more face stricter domestic-content rules.
+    </li>
+  </ul>
 
   <h2>It’s the Right Thing to Do</h2>
   <p>
