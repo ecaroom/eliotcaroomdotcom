@@ -145,7 +145,6 @@ const ext = { class: 'ext-inline', target: '_blank', rel: 'noopener' };
 // yn = Eliot's yes/no reading of questions 1-4. Reply text is verbatim as received:
 // do not correct spelling or wording. `answers` = one reply per question; `letter` = a
 // free-form reply, kept whole in its original paragraphs.
-const asOf = 'Oct. 5';
 const races = [
   {
     office: 'Mayor',
@@ -202,7 +201,7 @@ const replied = seats.filter((c) => c.status === 'answered').length;
 
 const statusLine = (c) => {
   if (c.status === 'pending') return 'Says a reply is coming';
-  if (c.status !== 'answered') return `No reply as of ${asOf}`;
+  if (c.status !== 'answered') return 'No reply yet';
   const yn = c.yn ?? [];
   if (yn.length === 4 && yn.every((v) => v === 'Yes')) return 'Replied: yes to questions 1 to 4';
   return 'Replied: ' + yn.map((v, i) => `${i + 1} ${v.toLowerCase()}`).join(', ');
