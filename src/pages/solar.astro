@@ -214,6 +214,27 @@ const seats = races.flatMap((r) => r.seats);
 const seatCount = seats.length;
 const replied = seats.filter((c) => c.status === 'answered').length;
 
+// Banner: candidates who answered yes to questions 1-4, in ballot order, styled like the ads
+// (yellow sun, wavy green outline).
+const officeShort = (o) => o.replace('Borough Council, ', 'Council, ').replace('At-Large', 'at-large');
+const supporters = races.flatMap((r) =>
+  r.seats
+    .filter((c) => c.status === 'answered' && (c.yn ?? []).length === 4 && c.yn.every((v) => v === 'Yes'))
+    .map((c) => ({ name: c.name, office: officeShort(r.office), party: c.party })),
+);
+const wavy = (() => {
+  // same wobbly rounded-rectangle outline as the ad rows (viewBox 400 x 100)
+  let d = 'M 14 4';
+  for (let i = 0; i < 24; i++) d += ` q 7.75 ${i % 2 ? 3 : -3} 15.5 0`;
+  d += ' Q 396 4 396 14';
+  for (let i = 0; i < 4; i++) d += ` q ${i % 2 ? -3 : 3} 9 0 18`;
+  d += ' Q 396 96 386 96';
+  for (let i = 0; i < 24; i++) d += ` q -7.75 ${i % 2 ? -3 : 3} -15.5 0`;
+  d += ' Q 4 96 4 86';
+  for (let i = 0; i < 4; i++) d += ` q ${i % 2 ? 3 : -3} -9 0 -18`;
+  return d + ' Q 4 4 14 4 Z';
+})();
+
 const statusLine = (c) => {
   if (c.status === 'pending') return 'Says a reply is coming';
   if (c.status !== 'answered') return 'No reply yet';
@@ -238,7 +259,33 @@ const questions = [
   <p class="meta">For the November 2026 election · updated October 5, 2026</p>
 
   <a class="news" href="#candidates">
-    <span class="news-k">Candidate responses</span>
+    {supporters.length > 0 && (
+      <>
+        <span class="news-k">These candidates support solar</span>
+        <span class="sup-list">
+          {supporters.map((c) => (
+            <span class="sup">
+              <svg class="sup-ring" aria-hidden="true" viewBox="0 0 400 100" preserveAspectRatio="none">
+                <path d={wavy} fill="#f4fbf2" stroke="#1e9e4a" stroke-width="3" stroke-linejoin="round" vector-effect="non-scaling-stroke" />
+              </svg>
+              <svg class="sun" aria-hidden="true" viewBox="0 0 46 46">
+                <g stroke="#111111" stroke-width="3" stroke-linecap="round">
+                  <line x1="23" y1="2" x2="23" y2="8" /><line x1="23" y1="38" x2="23" y2="44" />
+                  <line x1="2" y1="23" x2="8" y2="23" /><line x1="38" y1="23" x2="44" y2="23" />
+                  <line x1="8.2" y1="8.2" x2="12.4" y2="12.4" /><line x1="33.6" y1="33.6" x2="37.8" y2="37.8" />
+                  <line x1="37.8" y1="8.2" x2="33.6" y2="12.4" /><line x1="12.4" y1="33.6" x2="8.2" y2="37.8" />
+                </g>
+                <circle cx="23" cy="23" r="9.5" fill="#ffd400" stroke="#111111" stroke-width="3" />
+              </svg>
+              <span class="sup-who">
+                <span class="sup-name">{c.name}</span>
+                <span class="sup-office">{c.office} · {c.party}</span>
+              </span>
+            </span>
+          ))}
+        </span>
+      </>
+    )}
     <span class="news-t">{replied} of {seatCount} candidates have answered. See the responses →</span>
   </a>
 
@@ -545,6 +592,13 @@ const questions = [
   .news:hover { background: #d3dc86; }
   .news-k { display: block; font: 0.75rem var(--mono); color: #4f4f36; text-transform: uppercase; letter-spacing: 0.04em; }
   .news-t { display: block; font-size: 1.15rem; font-weight: 600; }
+  .sup-list { display: flex; flex-direction: column; gap: 0.6rem; margin: 0.6rem 0 0.8rem; }
+  .sup { position: relative; isolation: isolate; display: flex; align-items: center; gap: 0.8rem; padding: 0.55rem 0.9rem; }
+  .sup-ring { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; z-index: -1; }
+  .sun { flex: none; width: 2.9rem; height: 2.9rem; }
+  .sup-who { display: flex; flex-direction: column; }
+  .sup-name { font-size: 1.3rem; font-weight: 700; line-height: 1.15; color: #4e2c1c; }
+  .sup-office { font: 0.75rem var(--mono); color: #146b32; font-weight: 600; }
   .reply { margin: 0.4rem 0 0.25rem; }
   .reply.qs { margin: 0 0 1rem; }
   .reply.qs summary { font-size: 0.9rem; }
