@@ -196,6 +196,10 @@ const races = [
   },
 ];
 
+const seats = races.flatMap((r) => r.seats);
+const seatCount = seats.length;
+const replied = seats.filter((c) => c.status === 'answered').length;
+
 const statusLine = (c) => {
   if (c.status === 'pending') return 'Says a reply is coming';
   if (c.status !== 'answered') return `No reply as of ${asOf}`;
@@ -218,6 +222,11 @@ const questions = [
 >
   <h1>Common Sense Solar Savings for Roselle Park, NJ</h1>
   <p class="meta">For the November 2026 election · updated October 5, 2026</p>
+
+  <a class="news" href="#candidates">
+    <span class="news-k">Candidate responses</span>
+    <span class="news-t">{replied} of {seatCount} candidates have answered. See the responses →</span>
+  </a>
 
   <p>
     As a resident of Roselle Park, I’m urging candidates for mayor and borough council to pledge to pursue solar on
@@ -362,12 +371,19 @@ const questions = [
     <figcaption>Extreme temperatures on N. Michigan Ave. in Kenilworth, July 2026. Photo by Eliot Caroom.</figcaption>
   </figure>
 
-  <h2>Ask Our Candidates</h2>
+  <h2 id="candidates">Ask Our Candidates</h2>
   <p>Election day is November 3, 2026.</p>
   <p>
-    I sent all six candidates the five questions listed below and asked for replies by October 5. Replies appear
-    exactly as the candidates sent them.
+    I sent all six candidates five questions and asked for replies by October 5. Replies appear exactly as the
+    candidates sent them.
   </p>
+
+  <details class="reply qs">
+    <summary>Read the five questions</summary>
+    <ol class="asks">
+      {questions.map((q) => <li>{q}</li>)}
+    </ol>
+  </details>
 
   {races.map((r, ri) => (
     <div class="race">
@@ -403,10 +419,6 @@ const questions = [
     </div>
   ))}
 
-  <h3>The Five Questions</h3>
-  <ol class="asks">
-    {questions.map((q) => <li>{q}</li>)}
-  </ol>
 
   {docs.map((d) => (
     <dialog class="sidecar" id={`doc-${d.id}`} aria-labelledby={`doc-${d.id}-t`}>
@@ -509,7 +521,16 @@ const questions = [
   .ballot.lead > li { padding: 0.75rem 0; }
   .ballot .status { margin: 0.15rem 0 0; font: 0.8125rem var(--mono); color: var(--muted); }
   .ballot .answered .status { color: var(--text); font-weight: 600; }
+  .news {
+    display: block; margin: 1rem 0 1.5rem; padding: 0.75rem 1rem; border: 1px solid #4e2c1c; border-radius: 6px;
+    background: #e2e8a6; color: #4e2c1c; text-decoration: none;
+  }
+  .news:hover { background: #d3dc86; }
+  .news-k { display: block; font: 0.75rem var(--mono); color: #4f4f36; text-transform: uppercase; letter-spacing: 0.04em; }
+  .news-t { display: block; font-size: 1.15rem; font-weight: 600; }
   .reply { margin: 0.4rem 0 0.25rem; }
+  .reply.qs { margin: 0 0 1rem; }
+  .reply.qs summary { font-size: 0.9rem; }
   .reply summary { font: 0.8125rem var(--mono); color: var(--accent); cursor: pointer; }
   .reply .asks { margin: 0.75rem 0 0; }
   .reply .q { margin: 0; font-size: 1rem; color: var(--muted); }
