@@ -144,14 +144,29 @@ const ext = { class: 'ext-inline', target: '_blank', rel: 'noopener' };
 // Candidate replies. status: 'answered' | 'pending' (said a reply is coming) | 'noreply'.
 // yn = Eliot's yes/no reading of questions 1-4. Reply text is verbatim as received:
 // do not correct spelling or wording. `answers` = one reply per question; `letter` = a
-// free-form reply, kept whole in its original paragraphs.
+// free-form reply, kept whole in its original paragraphs; `closing` = paragraphs sent after the answers.
 const races = [
   {
     office: 'Mayor',
     lead: true,
     seats: [
       { name: 'Joseph Signorello Jr.', party: 'Democrat', note: 'incumbent', status: 'noreply' },
-      { name: 'Khanjan Patel', party: 'Republican', status: 'pending' },
+      {
+        name: 'Khanjan Patel',
+        party: 'Republican',
+        status: 'answered',
+        yn: ['Yes', 'Yes', 'Yes', 'Yes'],
+        answers: [
+          'Yes. I support a comprehensive assessment of all municipal roofs and parking lots to determine where solar installations would be practical and financially beneficial.',
+          'Yes, provided the projects are technically feasible and financially responsible for Roselle Park. I would support pursuing available state and federal incentives to reduce the Borough’s energy costs without creating an unnecessary burden for taxpayers.',
+          'Yes. If a financing structure allows Roselle Park to move forward without an upfront cost to taxpayers and provides long-term savings, I would support evaluating and pursuing that option.',
+          'Yes. Residents should have access to clear information about how much the Borough spends on electricity and how those costs change from year to year.',
+          'As Mayor, I would pursue practical energy-efficiency and renewable-energy projects that can reduce municipal operating costs without placing an unnecessary burden on taxpayers. I would also support investments in drainage, infrastructure, emergency preparedness, and storm resiliency. These decisions should be based on reliable financial and technical information and should provide measurable long-term value for Roselle Park residents.',
+        ],
+        closing: [
+          'Roselle Park should remain open to ideas and technologies that can reduce costs and strengthen our community. At the same time, every project should be carefully evaluated to ensure it is practical, financially sound, and in the best interest of taxpayers.',
+        ],
+      },
     ],
   },
   {
@@ -410,6 +425,9 @@ const questions = [
                 {c.letter && (
                   <div class="letter">{c.letter.map((p) => <p>{p}</p>)}</div>
                 )}
+                {c.closing && (
+                  <div class="closing">{c.closing.map((p) => <p>{p}</p>)}</div>
+                )}
               </details>
             )}
           </li>
@@ -536,6 +554,8 @@ const questions = [
   .reply .a { margin: 0.2rem 0 0; }
   .reply .letter { margin-top: 0.75rem; padding-left: 0.9rem; border-left: 2px solid var(--rule); }
   .reply .letter p { margin: 0 0 0.75rem; }
+  .reply .closing { margin-top: 0.75rem; }
+  .reply .closing p { margin: 0 0 0.75rem; }
   .office { margin: 1rem 0 0.25rem; font: 0.8125rem var(--mono); color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
 
   .photo { margin: 1.5rem 0; }
