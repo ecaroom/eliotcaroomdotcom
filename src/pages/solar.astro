@@ -141,30 +141,68 @@ const docs = [
 
 const ext = { class: 'ext-inline', target: '_blank', rel: 'noopener' };
 
+// Candidate replies. status: 'answered' | 'pending' (said a reply is coming) | 'noreply'.
+// yn = Eliot's yes/no reading of questions 1-4. Reply text is verbatim as received:
+// do not correct spelling or wording. `answers` = one reply per question; `letter` = a
+// free-form reply, kept whole in its original paragraphs.
+const asOf = 'Oct. 5';
 const races = [
   {
     office: 'Mayor',
     lead: true,
     seats: [
-      { name: 'Joseph Signorello Jr.', party: 'Democrat', note: 'incumbent' },
-      { name: 'Khanjan Patel', party: 'Republican' },
+      { name: 'Joseph Signorello Jr.', party: 'Democrat', note: 'incumbent', status: 'noreply' },
+      { name: 'Khanjan Patel', party: 'Republican', status: 'pending' },
     ],
   },
   {
     office: 'Borough Council, At-Large',
     seats: [
-      { name: 'Adolfo Dicosmo', party: 'Democrat' },
-      { name: 'Jorge Ramirez', party: 'Republican' },
+      { name: 'Adolfo Dicosmo', party: 'Democrat', status: 'noreply' },
+      {
+        name: 'Jorge Ramirez',
+        party: 'Republican',
+        status: 'answered',
+        yn: ['Yes', 'Yes', 'Yes', 'Yes'],
+        letter: [
+          'I’m a huge proponent of solar and have been for about 15 years. In 2016 I had a solar system installed on my house that I now own. The system was put on with $0 out of pocket and was paid off by the solar credits that my system generated. At the time PSEG offered this program and guaranteed an SREC price of $250 per SREC. The way it worked financially was that the solar loan program paid for 2/3 of the cost and I had to come up with the remaining 1/3. The federal govt had a program where they reimbursed you the 1/3 of the cost with a full credit when you filed your taxes. Furthermore a lender lent me the 1/3 cost with a loan that was 0% interest for 12 months. So I used their money to pay my portion and then come tax time I paid off the loan with the crest from the govt.',
+          'So to answer your 1st question yes I would most definitely analyze every roof and parking lot space we have to hopefully put solar panels on it. Most people don’t realize that an added benefit of having solar panels is that the panels themselves also extend the life of whatever surface they’re covering.',
+          '2) Yes I will pursue at least 100 kilowatts of power. I would pursue as much as possible with 100kw being the minimum',
+          '3) Yes I would favor and proactively look into any program we as a town can take advantage of to offset the cost of solar. Just as I did with my own house.',
+          '4) I will most definitely publish our annual electricity use and spending for everyone to see along with every other expenditure the borough makes. The expenditures the borough makes is using the people’s money. I believe the people not only have a right to see where their money is being spent but also have a right to have their input heard. I personally believe our website needs to be completely redone to make it easier for residents to navigate and easier to find any information on what the mayor and council have decided without having the need to OPRA everything.',
+          '5) I believe the Borough should perform a full financial audit and start cutting out wasteful spending. I believe we should start looking at other providers and have the power of competition lower our costs. Once we have done that we can start putting money away and start actually lowering our property taxes. I completely believe we can lower property taxes by $500-$1000 in one year by doing that as well as having these apartment buildings that are making millions contribute more to the borough, either by helping the schools more or by helping our essential services like our police and volunteer fire department.',
+        ],
+      },
     ],
   },
   {
     office: 'Borough Council, 1st Ward',
     seats: [
-      { name: 'Jorge E. Casalins', party: 'Democrat' },
-      { name: 'Mariann Brenner', party: 'Republican' },
+      {
+        name: 'Jorge E. Casalins',
+        party: 'Democrat',
+        status: 'answered',
+        yn: ['Yes', 'Yes', 'Yes', 'Yes'],
+        answers: [
+          'Yes',
+          'Yes',
+          'Yes',
+          'Yes',
+          'I have been following Governor Sherrill’s policies and having conversations with Commissioners from the NJ Board of Public Utilities regarding moves to help alleviate the rising energy costs. Unfortunately these are state-controlled matters and the best we can do at the local level is support state efforts and push along. Regarding storms - I believe the most important step we can take is preparedness. We have been working hard with DPW to clear and maintain basins, storm water collection areas and other infrastructure that is designed to keep water flowing and either stop or alleviate flooding. With the recent storms we have been seeing success as areas around us flooded but through our efforts the flooding has been either prevented or greatly decreased. I have also been in communication with our Police Chief who is the Emergency Management Coordinator for the Borough regarding a local weather-monitor system that we would subscribe to as a shared service with the Board of Education to give us much more localized data and access to professionals when planning for weather events. I hope to push this through before the end of the year, it would only cost the Borough $2,500/year.',
+        ],
+      },
+      { name: 'Mariann Brenner', party: 'Republican', status: 'noreply' },
     ],
   },
 ];
+
+const statusLine = (c) => {
+  if (c.status === 'pending') return 'Says a reply is coming';
+  if (c.status !== 'answered') return `No reply as of ${asOf}`;
+  const yn = c.yn ?? [];
+  if (yn.length === 4 && yn.every((v) => v === 'Yes')) return 'Replied: yes to questions 1 to 4';
+  return 'Replied: ' + yn.map((v, i) => `${i + 1} ${v.toLowerCase()}`).join(', ');
+};
 
 const questions = [
   'Will you have every roof and parking lot we own assessed for solar by February 28, 2027?',
@@ -179,7 +217,7 @@ const questions = [
   description="Our electricity spending in Roselle Park rose 32% from 2021 to 2025. Solar on the property we own can cut it, at no upfront cost, and federal money for it ends in 2027."
 >
   <h1>Common Sense Solar Savings for Roselle Park, NJ</h1>
-  <p class="meta">For the November 2026 election · updated September 2026</p>
+  <p class="meta">For the November 2026 election · updated October 5, 2026</p>
 
   <p>
     As a resident of Roselle Park, I’m urging candidates for mayor and borough council to pledge to pursue solar on
@@ -326,27 +364,46 @@ const questions = [
 
   <h2>Ask Our Candidates</h2>
   <p>Election day is November 3, 2026.</p>
+  <p>
+    I sent all six candidates the five questions listed below and asked for replies by October 5. Replies appear
+    exactly as the candidates sent them.
+  </p>
 
-  <h3>The Race for Mayor</h3>
-  <ul class="ballot lead">
-    {races[0].seats.map((c) => (
-      <li><span class="cand">{c.name}</span> <span class="party">{c.party}{c.note ? `, ${c.note}` : ''}</span></li>
-    ))}
-  </ul>
-
-  <h3>Borough Council</h3>
-  {races.slice(1).map((r) => (
+  {races.map((r, ri) => (
     <div class="race">
-      <p class="office">{r.office.replace('Borough Council, ', '')}</p>
-      <ul class="ballot">
+      {ri === 0 && <h3>The Race for Mayor</h3>}
+      {ri === 1 && <h3>Borough Council</h3>}
+      {ri > 0 && <p class="office">{r.office.replace('Borough Council, ', '')}</p>}
+      <ul class:list={['ballot', { lead: ri === 0 }]}>
         {r.seats.map((c) => (
-          <li><span class="cand">{c.name}</span> <span class="party">{c.party}</span></li>
+          <li class={c.status}>
+            <div class="who">
+              <span class="cand">{c.name}</span>
+              <span class="party">{c.party}{c.note ? `, ${c.note}` : ''}</span>
+            </div>
+            <p class="status">{statusLine(c)}</p>
+            {(c.answers || c.letter) && (
+              <details class="reply">
+                <summary>Read the full reply</summary>
+                {c.answers && (
+                  <ol class="asks">
+                    {c.answers.map((a, i) => (
+                      <li><p class="q">{questions[i]}</p><p class="a">{a}</p></li>
+                    ))}
+                  </ol>
+                )}
+                {c.letter && (
+                  <div class="letter">{c.letter.map((p) => <p>{p}</p>)}</div>
+                )}
+              </details>
+            )}
+          </li>
         ))}
       </ul>
     </div>
   ))}
 
-  <h3>What to Ask Them</h3>
+  <h3>The Five Questions</h3>
   <ol class="asks">
     {questions.map((q) => <li>{q}</li>)}
   </ol>
@@ -444,11 +501,21 @@ const questions = [
 <style>
   h3 { font-size: 1.2rem; margin: 1.75rem 0 0.5rem; }
   .ballot { list-style: none; padding: 0; margin: 0 0 1rem; border-top: 1px solid var(--rule); }
-  .ballot li { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; padding: 0.5rem 0; border-bottom: 1px solid var(--rule); }
+  .ballot > li { padding: 0.5rem 0; border-bottom: 1px solid var(--rule); }
+  .ballot .who { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; }
   .ballot .cand { font-weight: 600; color: var(--head); }
   .ballot .party { font: 0.8125rem var(--mono); color: var(--muted); text-align: right; }
   .ballot.lead .cand { font-size: 1.45rem; }
-  .ballot.lead li { padding: 0.75rem 0; }
+  .ballot.lead > li { padding: 0.75rem 0; }
+  .ballot .status { margin: 0.15rem 0 0; font: 0.8125rem var(--mono); color: var(--muted); }
+  .ballot .answered .status { color: var(--text); font-weight: 600; }
+  .reply { margin: 0.4rem 0 0.25rem; }
+  .reply summary { font: 0.8125rem var(--mono); color: var(--accent); cursor: pointer; }
+  .reply .asks { margin: 0.75rem 0 0; }
+  .reply .q { margin: 0; font-size: 1rem; color: var(--muted); }
+  .reply .a { margin: 0.2rem 0 0; }
+  .reply .letter { margin-top: 0.75rem; padding-left: 0.9rem; border-left: 2px solid var(--rule); }
+  .reply .letter p { margin: 0 0 0.75rem; }
   .office { margin: 1rem 0 0.25rem; font: 0.8125rem var(--mono); color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
 
   .photo { margin: 1.5rem 0; }
