@@ -25,6 +25,7 @@ Visitors type eliotcaroom.com
 | Domain registration | Cloudflare Registrar, `eliotcaroom.com` | Eliot's Cloudflare account |
 | DNS | Cloudflare DNS for the same domain | same |
 | HTTPS certificate | Issued automatically by GitHub Pages | none |
+| Traffic analytics | Cloudflare Web Analytics (free, no cookies) | Eliot's Cloudflare account |
 
 Costs: the domain only (Cloudflare charges the registry's wholesale price, no markup). Hosting is free.
 
@@ -54,6 +55,12 @@ Turning the orange cloud (proxy) on breaks GitHub's HTTPS certificate renewal. L
 **GitHub account → Settings → Pages → Verified domains:** `eliotcaroom.com` verified with a TXT record in Cloudflare (`_github-pages-challenge-ecaroom`). This stops anyone else's GitHub Pages site from claiming the domain. Don't delete that TXT record.
 
 **Domain renewal:** auto-renew on at Cloudflare. Keep the card on file current and the account email one you'll still read in 10 years. Set a calendar reminder before the registration expires.
+
+**Cloudflare → Web Analytics → eliotcaroom.com** (set up 2026-10-11)
+- Setup mode must be **manual JS snippet**, not automatic. Automatic injection only works on proxied (orange-cloud) sites, and this site is grey cloud, so Cloudflare never sees the pages.
+- The snippet lives in two places: before `</body>` in `src/layouts/Base.astro` (with `is:inline` so Astro leaves it alone; covers every Astro page) and in `public/solar/pseg-rates/index.html`. **Any new standalone HTML page in `public/` needs the snippet pasted in too**, or its visits won't count.
+- The beacon token is public by design (every visitor's browser sees it), so it's fine in the repo.
+- Counting started 2026-10-11; nothing before that date was recorded.
 
 ## 3. Editing the site with Claude
 
@@ -90,7 +97,7 @@ Requires Node.js (version 22 is what the site is built with).
 | Edit professional work | `src/pages/work.astro` | One `<h2>` plus `<p>` per job. |
 | Home page list | `src/pages/index.astro` | The `links` array. |
 | Add evidence to the solar campaign | `src/pages/solar.astro` | Add to `evidence`. A standalone HTML evidence page goes in `public/solar/<name>/index.html`. |
-| Publish any standalone HTML page | `public/<path>/index.html` | Served as-is at `eliotcaroom.com/<path>/`. Add the favicon link, a back link, and the theme-sync script (copy from `public/solar/pseg-rates/index.html`). |
+| Publish any standalone HTML page | `public/<path>/index.html` | Served as-is at `eliotcaroom.com/<path>/`. Add the favicon link, a back link, the theme-sync script and the Cloudflare Web Analytics snippet (copy all from `public/solar/pseg-rates/index.html`). |
 | Write a post | `src/content/writing/<slug>.md` | Front matter: `title`, `date`, `summary`, `draft`. `draft: true` hides it from the site but it is still public in the repo. |
 | Colors | `src/styles/global.css` | Tokens at the top: light in `:root`, dark in `:root[data-theme='dark']`. The site always opens in light; dark is only via the mode button. |
 | Fonts | `src/layouts/Base.astro` (imports) and `--serif` in `global.css` | Fonts are self-hosted via `@fontsource/*` npm packages. |
@@ -114,6 +121,7 @@ Conventions: external links get `target="_blank" rel="noopener"` and a ↗ marke
 | Site shows old content | Deploy failed or still running; browser cache | Check the Actions tab; hard refresh (Cmd+Shift+R). |
 | Old tab icon | Browser icon cache | Hard refresh or open in a private window. |
 | Build fails after an edit | Syntax error in an `.astro` file (unclosed tag, missing comma in an entry) | The Actions log names the file and line. |
+| Web Analytics shows no visits | Setup mode switched back to automatic, or the snippet was dropped from `Base.astro` | Set Manage site to manual JS snippet; check the snippet is still before `</body>`. |
 | eliotcaroom.com doesn't load at all | DNS records changed or domain expired | Check Cloudflare DNS records against section 2, and the domain's expiry. |
 
 ## 8. Security rules (summary; details in `CLAUDE.md`)
