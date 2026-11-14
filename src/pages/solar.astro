@@ -151,7 +151,7 @@ const races = [
     lead: true,
     seats: [
       {
-        name: 'Joseph Signorello Jr.',
+        name: 'Joseph Signorello Jr.', elected: true,
         party: 'Democrat',
         note: 'incumbent',
         status: 'answered',
@@ -186,7 +186,7 @@ const races = [
     office: 'Borough Council, At-Large',
     seats: [
       {
-        name: 'Adolfo Dicosmo',
+        name: 'Adolfo Dicosmo', elected: true,
         party: 'Democrat',
         status: 'answered',
         yn: ['Yes', 'Yes', 'Yes', 'Yes'],
@@ -212,7 +212,7 @@ const races = [
     office: 'Borough Council, 1st Ward',
     seats: [
       {
-        name: 'Jorge E. Casalins',
+        name: 'Jorge E. Casalins', elected: true,
         party: 'Democrat',
         status: 'answered',
         yn: ['Yes', 'Yes', 'Yes', 'Yes'],
@@ -230,6 +230,14 @@ const races = [
 ];
 
 const seats = races.flatMap((r) => r.seats);
+// Nov 3, 2026 results (Eliot, 2026-11-14): `elected: true` on the winners' seats.
+const updated = 'November 14, 2026';
+const winners = races.flatMap((r) =>
+  r.seats.filter((c) => c.elected).map((c) => ({ name: c.name, office: r.office })),
+);
+const winnerLine = winners
+  .map((w) => (w.office === 'Mayor' ? `Mayor ${w.name}` : `${w.name} (${w.office.replace('Borough Council, ', 'council, ').replace('At-Large', 'at-large')})`))
+  .join(', ');
 const seatCount = seats.length;
 const replied = seats.filter((c) => c.status === 'answered').length;
 
@@ -275,7 +283,13 @@ const questions = [
   description="Our electricity spending in Roselle Park rose 32% from 2021 to 2025. Solar on the property we own can cut it, at no upfront cost, and federal money for it ends in 2027."
 >
   <h1>Common Sense Solar Savings for Roselle Park, NJ</h1>
-  <p class="meta">For the November 2026 election · updated October 5, 2026</p>
+  <p class="meta">For the November 2026 election · updated {updated}</p>
+
+  <section class="update" aria-label="Update">
+    <p class="update-k">Update · {updated}</p>
+    <p class="update-t">Congratulations to the elected council members and mayor. Excited to move forward on solar for Roselle Park!</p>
+    <p class="update-n">Elected Nov. 3: {winnerLine}.</p>
+  </section>
 
   <a class="news" href="#candidates">
     {supporters.length > 0 && (
@@ -462,7 +476,7 @@ const questions = [
   </figure>
 
   <h2 id="candidates">Ask Our Candidates</h2>
-  <p>Election day is November 3, 2026.</p>
+  <p>Election day was November 3, 2026. Winners are marked Elected below.</p>
   <p>
     I sent all six candidates five questions and asked for replies by October 5. Replies appear exactly as the
     candidates sent them.
@@ -484,7 +498,7 @@ const questions = [
         {r.seats.map((c) => (
           <li class={c.status}>
             <div class="who">
-              <span class="cand">{c.name}</span>
+              <span class="cand">{c.name}{c.elected && <span class="won">Elected</span>}</span>
               <span class="party">{c.party}{c.note ? `, ${c.note}` : ''}</span>
             </div>
             <p class="status">{statusLine(c)}</p>
@@ -614,6 +628,19 @@ const questions = [
   .ballot.lead > li { padding: 0.75rem 0; }
   .ballot .status { margin: 0.15rem 0 0; font: 0.8125rem var(--mono); color: var(--muted); }
   .ballot .answered .status { color: var(--text); font-weight: 600; }
+  .update {
+    margin: 1rem 0 0.75rem; padding: 0.85rem 1rem; border-radius: 6px;
+    background: #4e2c1c; color: #fbf6e9;
+  }
+  .update p { margin: 0; }
+  .update-k { font: 0.75rem var(--mono); color: #e2e8a6; text-transform: uppercase; letter-spacing: 0.04em; }
+  .update-t { margin-top: 0.3rem !important; font-size: 1.2rem; font-weight: 700; line-height: 1.3; }
+  .update-n { margin-top: 0.35rem !important; font-size: 0.95rem; }
+  .ballot .won {
+    margin-left: 0.5rem; padding: 0.05rem 0.4rem; border-radius: 4px; vertical-align: 0.15em;
+    font: 600 0.7rem var(--mono); text-transform: uppercase; letter-spacing: 0.04em;
+    background: #e2e8a6; color: #4e2c1c;
+  }
   .news {
     display: block; margin: 1rem 0 1.5rem; padding: 0.75rem 1rem; border: 1px solid #4e2c1c; border-radius: 6px;
     background: #e2e8a6; color: #4e2c1c; text-decoration: none;
