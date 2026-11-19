@@ -1,0 +1,3205 @@
+{
+ "meta": {
+  "n_accidents": 2724,
+  "source": "https://github.com/ecaroom/climbing-accidents",
+  "attribution": "Data: an analysis of the AAC's climbing accident reports by Eliot Caroom (CC BY 4.0)",
+  "weighting": "Accidents with n disciplines contribute 1/n to each. In view C, each accident's share is also split across its n factor families. Other middle stages and the outcome stage are exclusive."
+ },
+ "disciplines": [
+  {
+   "id": "mountaineering",
+   "label": "Mountaineering",
+   "ramp": [
+    "#ececea",
+    "#cfcfcb",
+    "#a3a39e",
+    "#7a7a75",
+    "#56564f"
+   ],
+   "outline": false,
+   "n_any": 1245,
+   "n_weighted": 1140.7
+  },
+  {
+   "id": "ice",
+   "label": "Ice",
+   "ramp": [
+    "#dbe9f6",
+    "#a8cbea",
+    "#5f9fd6",
+    "#2f72b2",
+    "#1a4c80"
+   ],
+   "outline": false,
+   "n_any": 223,
+   "n_weighted": 160.7
+  },
+  {
+   "id": "trad",
+   "label": "Trad",
+   "ramp": [
+    "#e8e0f3",
+    "#c5b2e2",
+    "#9476c6",
+    "#6c4ea6",
+    "#4a3378"
+   ],
+   "outline": false,
+   "n_any": 898,
+   "n_weighted": 845.5
+  },
+  {
+   "id": "sport",
+   "label": "Sport",
+   "ramp": [
+    "#f8d9d4",
+    "#eea69c",
+    "#d9604f",
+    "#b23a2c",
+    "#7f2219"
+   ],
+   "outline": false,
+   "n_any": 173,
+   "n_weighted": 168.0
+  },
+  {
+   "id": "toprope",
+   "label": "Top-rope",
+   "ramp": [
+    "#d8eedc",
+    "#a6d6b0",
+    "#5fae74",
+    "#3a8a51",
+    "#245f36"
+   ],
+   "outline": false,
+   "n_any": 93,
+   "n_weighted": 80.2
+  },
+  {
+   "id": "bouldering",
+   "label": "Bouldering",
+   "ramp": [
+    "#8a8a8a",
+    "#5c5c5c",
+    "#2e2e2e",
+    "#1c1c1c",
+    "#0a0a0a"
+   ],
+   "outline": false,
+   "n_any": 15,
+   "n_weighted": 14.0
+  },
+  {
+   "id": "unspecified",
+   "label": "Unspecified",
+   "ramp": null,
+   "outline": true,
+   "n_any": 315,
+   "n_weighted": 315.0
+  }
+ ],
+ "outcomes": [
+  {
+   "id": "fatal",
+   "label": "Fatal",
+   "color": "#7f1d2b",
+   "n": 544
+  },
+  {
+   "id": "serious",
+   "label": "Serious injury",
+   "color": "#c45a1c",
+   "n": 1776
+  },
+  {
+   "id": "minor",
+   "label": "Minor injury",
+   "color": "#e0a43a",
+   "n": 215
+  },
+  {
+   "id": "none",
+   "label": "No injury reported",
+   "color": "#c9c2b2",
+   "n": 189
+  }
+ ],
+ "views": {
+  "A": {
+   "title": "Human vs. environment",
+   "nodes": [
+    {
+     "id": "d:mountaineering",
+     "label": "Mountaineering",
+     "stage": 0,
+     "discipline": "mountaineering"
+    },
+    {
+     "id": "d:ice",
+     "label": "Ice",
+     "stage": 0,
+     "discipline": "ice"
+    },
+    {
+     "id": "d:trad",
+     "label": "Trad",
+     "stage": 0,
+     "discipline": "trad"
+    },
+    {
+     "id": "d:sport",
+     "label": "Sport",
+     "stage": 0,
+     "discipline": "sport"
+    },
+    {
+     "id": "d:toprope",
+     "label": "Top-rope",
+     "stage": 0,
+     "discipline": "toprope"
+    },
+    {
+     "id": "d:bouldering",
+     "label": "Bouldering",
+     "stage": 0,
+     "discipline": "bouldering"
+    },
+    {
+     "id": "d:unspecified",
+     "label": "Unspecified",
+     "stage": 0,
+     "discipline": "unspecified"
+    },
+    {
+     "id": "mA:human",
+     "label": "Human only",
+     "stage": 1,
+     "slot": 0,
+     "n": 1641
+    },
+    {
+     "id": "mA:both",
+     "label": "Human + environment",
+     "stage": 1,
+     "slot": 1,
+     "n": 606
+    },
+    {
+     "id": "mA:env",
+     "label": "Environment only",
+     "stage": 1,
+     "slot": 2,
+     "n": 216
+    },
+    {
+     "id": "mA:nofactor",
+     "label": "No factor tagged",
+     "stage": 1,
+     "slot": 3,
+     "n": 261
+    },
+    {
+     "id": "o:fatal",
+     "label": "Fatal",
+     "stage": 2
+    },
+    {
+     "id": "o:serious",
+     "label": "Serious injury",
+     "stage": 2
+    },
+    {
+     "id": "o:minor",
+     "label": "Minor injury",
+     "stage": 2
+    },
+    {
+     "id": "o:none",
+     "label": "No injury reported",
+     "stage": 2
+    }
+   ],
+   "links": [
+    {
+     "source": "d:mountaineering",
+     "target": "mA:human",
+     "discipline": "mountaineering",
+     "value": 471.333333
+    },
+    {
+     "source": "d:mountaineering",
+     "target": "mA:both",
+     "discipline": "mountaineering",
+     "value": 401.0
+    },
+    {
+     "source": "d:mountaineering",
+     "target": "mA:env",
+     "discipline": "mountaineering",
+     "value": 158.333333
+    },
+    {
+     "source": "d:mountaineering",
+     "target": "mA:nofactor",
+     "discipline": "mountaineering",
+     "value": 110.0
+    },
+    {
+     "source": "d:ice",
+     "target": "mA:human",
+     "discipline": "ice",
+     "value": 77.833333
+    },
+    {
+     "source": "d:ice",
+     "target": "mA:both",
+     "discipline": "ice",
+     "value": 38.0
+    },
+    {
+     "source": "d:ice",
+     "target": "mA:env",
+     "discipline": "ice",
+     "value": 23.833333
+    },
+    {
+     "source": "d:ice",
+     "target": "mA:nofactor",
+     "discipline": "ice",
+     "value": 21.0
+    },
+    {
+     "source": "d:trad",
+     "target": "mA:human",
+     "discipline": "trad",
+     "value": 661.666667
+    },
+    {
+     "source": "d:trad",
+     "target": "mA:both",
+     "discipline": "trad",
+     "value": 119.833333
+    },
+    {
+     "source": "d:trad",
+     "target": "mA:env",
+     "discipline": "trad",
+     "value": 19.0
+    },
+    {
+     "source": "d:trad",
+     "target": "mA:nofactor",
+     "discipline": "trad",
+     "value": 45.0
+    },
+    {
+     "source": "d:sport",
+     "target": "mA:human",
+     "discipline": "sport",
+     "value": 144.0
+    },
+    {
+     "source": "d:sport",
+     "target": "mA:both",
+     "discipline": "sport",
+     "value": 6.0
+    },
+    {
+     "source": "d:sport",
+     "target": "mA:env",
+     "discipline": "sport",
+     "value": 4.0
+    },
+    {
+     "source": "d:sport",
+     "target": "mA:nofactor",
+     "discipline": "sport",
+     "value": 14.0
+    },
+    {
+     "source": "d:toprope",
+     "target": "mA:human",
+     "discipline": "toprope",
+     "value": 69.166667
+    },
+    {
+     "source": "d:toprope",
+     "target": "mA:both",
+     "discipline": "toprope",
+     "value": 4.166667
+    },
+    {
+     "source": "d:toprope",
+     "target": "mA:env",
+     "discipline": "toprope",
+     "value": 0.833333
+    },
+    {
+     "source": "d:toprope",
+     "target": "mA:nofactor",
+     "discipline": "toprope",
+     "value": 6.0
+    },
+    {
+     "source": "d:bouldering",
+     "target": "mA:human",
+     "discipline": "bouldering",
+     "value": 4.0
+    },
+    {
+     "source": "d:bouldering",
+     "target": "mA:both",
+     "discipline": "bouldering",
+     "value": 1.0
+    },
+    {
+     "source": "d:bouldering",
+     "target": "mA:nofactor",
+     "discipline": "bouldering",
+     "value": 9.0
+    },
+    {
+     "source": "d:unspecified",
+     "target": "mA:human",
+     "discipline": "unspecified",
+     "value": 213.0
+    },
+    {
+     "source": "d:unspecified",
+     "target": "mA:both",
+     "discipline": "unspecified",
+     "value": 36.0
+    },
+    {
+     "source": "d:unspecified",
+     "target": "mA:env",
+     "discipline": "unspecified",
+     "value": 10.0
+    },
+    {
+     "source": "d:unspecified",
+     "target": "mA:nofactor",
+     "discipline": "unspecified",
+     "value": 56.0
+    },
+    {
+     "source": "mA:human",
+     "target": "o:fatal",
+     "discipline": "mountaineering",
+     "value": 86.833333
+    },
+    {
+     "source": "mA:human",
+     "target": "o:fatal",
+     "discipline": "ice",
+     "value": 12.333333
+    },
+    {
+     "source": "mA:human",
+     "target": "o:fatal",
+     "discipline": "trad",
+     "value": 88.833333
+    },
+    {
+     "source": "mA:human",
+     "target": "o:fatal",
+     "discipline": "sport",
+     "value": 11.5
+    },
+    {
+     "source": "mA:human",
+     "target": "o:fatal",
+     "discipline": "toprope",
+     "value": 14.5
+    },
+    {
+     "source": "mA:human",
+     "target": "o:fatal",
+     "discipline": "unspecified",
+     "value": 56.0
+    },
+    {
+     "source": "mA:human",
+     "target": "o:serious",
+     "discipline": "mountaineering",
+     "value": 315.0
+    },
+    {
+     "source": "mA:human",
+     "target": "o:serious",
+     "discipline": "ice",
+     "value": 59.0
+    },
+    {
+     "source": "mA:human",
+     "target": "o:serious",
+     "discipline": "trad",
+     "value": 490.333333
+    },
+    {
+     "source": "mA:human",
+     "target": "o:serious",
+     "discipline": "sport",
+     "value": 102.5
+    },
+    {
+     "source": "mA:human",
+     "target": "o:serious",
+     "discipline": "toprope",
+     "value": 45.166667
+    },
+    {
+     "source": "mA:human",
+     "target": "o:serious",
+     "discipline": "bouldering",
+     "value": 4.0
+    },
+    {
+     "source": "mA:human",
+     "target": "o:serious",
+     "discipline": "unspecified",
+     "value": 122.0
+    },
+    {
+     "source": "mA:human",
+     "target": "o:minor",
+     "discipline": "mountaineering",
+     "value": 33.5
+    },
+    {
+     "source": "mA:human",
+     "target": "o:minor",
+     "discipline": "ice",
+     "value": 3.0
+    },
+    {
+     "source": "mA:human",
+     "target": "o:minor",
+     "discipline": "trad",
+     "value": 42.0
+    },
+    {
+     "source": "mA:human",
+     "target": "o:minor",
+     "discipline": "sport",
+     "value": 13.0
+    },
+    {
+     "source": "mA:human",
+     "target": "o:minor",
+     "discipline": "toprope",
+     "value": 2.5
+    },
+    {
+     "source": "mA:human",
+     "target": "o:minor",
+     "discipline": "unspecified",
+     "value": 19.0
+    },
+    {
+     "source": "mA:human",
+     "target": "o:none",
+     "discipline": "mountaineering",
+     "value": 36.0
+    },
+    {
+     "source": "mA:human",
+     "target": "o:none",
+     "discipline": "ice",
+     "value": 3.5
+    },
+    {
+     "source": "mA:human",
+     "target": "o:none",
+     "discipline": "trad",
+     "value": 40.5
+    },
+    {
+     "source": "mA:human",
+     "target": "o:none",
+     "discipline": "sport",
+     "value": 17.0
+    },
+    {
+     "source": "mA:human",
+     "target": "o:none",
+     "discipline": "toprope",
+     "value": 7.0
+    },
+    {
+     "source": "mA:human",
+     "target": "o:none",
+     "discipline": "unspecified",
+     "value": 16.0
+    },
+    {
+     "source": "mA:both",
+     "target": "o:fatal",
+     "discipline": "mountaineering",
+     "value": 119.0
+    },
+    {
+     "source": "mA:both",
+     "target": "o:fatal",
+     "discipline": "ice",
+     "value": 10.0
+    },
+    {
+     "source": "mA:both",
+     "target": "o:fatal",
+     "discipline": "trad",
+     "value": 10.5
+    },
+    {
+     "source": "mA:both",
+     "target": "o:fatal",
+     "discipline": "toprope",
+     "value": 1.5
+    },
+    {
+     "source": "mA:both",
+     "target": "o:fatal",
+     "discipline": "unspecified",
+     "value": 5.0
+    },
+    {
+     "source": "mA:both",
+     "target": "o:serious",
+     "discipline": "mountaineering",
+     "value": 222.666667
+    },
+    {
+     "source": "mA:both",
+     "target": "o:serious",
+     "discipline": "ice",
+     "value": 17.666667
+    },
+    {
+     "source": "mA:both",
+     "target": "o:serious",
+     "discipline": "trad",
+     "value": 67.333333
+    },
+    {
+     "source": "mA:both",
+     "target": "o:serious",
+     "discipline": "sport",
+     "value": 3.0
+    },
+    {
+     "source": "mA:both",
+     "target": "o:serious",
+     "discipline": "toprope",
+     "value": 2.333333
+    },
+    {
+     "source": "mA:both",
+     "target": "o:serious",
+     "discipline": "unspecified",
+     "value": 17.0
+    },
+    {
+     "source": "mA:both",
+     "target": "o:minor",
+     "discipline": "mountaineering",
+     "value": 37.0
+    },
+    {
+     "source": "mA:both",
+     "target": "o:minor",
+     "discipline": "ice",
+     "value": 7.0
+    },
+    {
+     "source": "mA:both",
+     "target": "o:minor",
+     "discipline": "trad",
+     "value": 28.0
+    },
+    {
+     "source": "mA:both",
+     "target": "o:minor",
+     "discipline": "sport",
+     "value": 1.0
+    },
+    {
+     "source": "mA:both",
+     "target": "o:minor",
+     "discipline": "unspecified",
+     "value": 8.0
+    },
+    {
+     "source": "mA:both",
+     "target": "o:none",
+     "discipline": "mountaineering",
+     "value": 22.333333
+    },
+    {
+     "source": "mA:both",
+     "target": "o:none",
+     "discipline": "ice",
+     "value": 3.333333
+    },
+    {
+     "source": "mA:both",
+     "target": "o:none",
+     "discipline": "trad",
+     "value": 14.0
+    },
+    {
+     "source": "mA:both",
+     "target": "o:none",
+     "discipline": "sport",
+     "value": 2.0
+    },
+    {
+     "source": "mA:both",
+     "target": "o:none",
+     "discipline": "toprope",
+     "value": 0.333333
+    },
+    {
+     "source": "mA:both",
+     "target": "o:none",
+     "discipline": "bouldering",
+     "value": 1.0
+    },
+    {
+     "source": "mA:both",
+     "target": "o:none",
+     "discipline": "unspecified",
+     "value": 6.0
+    },
+    {
+     "source": "mA:env",
+     "target": "o:fatal",
+     "discipline": "mountaineering",
+     "value": 45.333333
+    },
+    {
+     "source": "mA:env",
+     "target": "o:fatal",
+     "discipline": "ice",
+     "value": 9.333333
+    },
+    {
+     "source": "mA:env",
+     "target": "o:fatal",
+     "discipline": "sport",
+     "value": 1.0
+    },
+    {
+     "source": "mA:env",
+     "target": "o:fatal",
+     "discipline": "toprope",
+     "value": 0.333333
+    },
+    {
+     "source": "mA:env",
+     "target": "o:fatal",
+     "discipline": "unspecified",
+     "value": 6.0
+    },
+    {
+     "source": "mA:env",
+     "target": "o:serious",
+     "discipline": "mountaineering",
+     "value": 100.0
+    },
+    {
+     "source": "mA:env",
+     "target": "o:serious",
+     "discipline": "ice",
+     "value": 13.0
+    },
+    {
+     "source": "mA:env",
+     "target": "o:serious",
+     "discipline": "trad",
+     "value": 13.5
+    },
+    {
+     "source": "mA:env",
+     "target": "o:serious",
+     "discipline": "sport",
+     "value": 2.0
+    },
+    {
+     "source": "mA:env",
+     "target": "o:serious",
+     "discipline": "toprope",
+     "value": 0.5
+    },
+    {
+     "source": "mA:env",
+     "target": "o:serious",
+     "discipline": "unspecified",
+     "value": 2.0
+    },
+    {
+     "source": "mA:env",
+     "target": "o:minor",
+     "discipline": "mountaineering",
+     "value": 8.0
+    },
+    {
+     "source": "mA:env",
+     "target": "o:minor",
+     "discipline": "trad",
+     "value": 2.0
+    },
+    {
+     "source": "mA:env",
+     "target": "o:minor",
+     "discipline": "sport",
+     "value": 1.0
+    },
+    {
+     "source": "mA:env",
+     "target": "o:minor",
+     "discipline": "unspecified",
+     "value": 2.0
+    },
+    {
+     "source": "mA:env",
+     "target": "o:none",
+     "discipline": "mountaineering",
+     "value": 5.0
+    },
+    {
+     "source": "mA:env",
+     "target": "o:none",
+     "discipline": "ice",
+     "value": 1.5
+    },
+    {
+     "source": "mA:env",
+     "target": "o:none",
+     "discipline": "trad",
+     "value": 3.5
+    },
+    {
+     "source": "mA:nofactor",
+     "target": "o:fatal",
+     "discipline": "mountaineering",
+     "value": 33.0
+    },
+    {
+     "source": "mA:nofactor",
+     "target": "o:fatal",
+     "discipline": "ice",
+     "value": 5.0
+    },
+    {
+     "source": "mA:nofactor",
+     "target": "o:fatal",
+     "discipline": "trad",
+     "value": 2.0
+    },
+    {
+     "source": "mA:nofactor",
+     "target": "o:fatal",
+     "discipline": "sport",
+     "value": 2.0
+    },
+    {
+     "source": "mA:nofactor",
+     "target": "o:fatal",
+     "discipline": "toprope",
+     "value": 1.0
+    },
+    {
+     "source": "mA:nofactor",
+     "target": "o:fatal",
+     "discipline": "unspecified",
+     "value": 23.0
+    },
+    {
+     "source": "mA:nofactor",
+     "target": "o:serious",
+     "discipline": "mountaineering",
+     "value": 70.5
+    },
+    {
+     "source": "mA:nofactor",
+     "target": "o:serious",
+     "discipline": "ice",
+     "value": 15.5
+    },
+    {
+     "source": "mA:nofactor",
+     "target": "o:serious",
+     "discipline": "trad",
+     "value": 40.5
+    },
+    {
+     "source": "mA:nofactor",
+     "target": "o:serious",
+     "discipline": "sport",
+     "value": 10.0
+    },
+    {
+     "source": "mA:nofactor",
+     "target": "o:serious",
+     "discipline": "toprope",
+     "value": 3.5
+    },
+    {
+     "source": "mA:nofactor",
+     "target": "o:serious",
+     "discipline": "bouldering",
+     "value": 9.0
+    },
+    {
+     "source": "mA:nofactor",
+     "target": "o:serious",
+     "discipline": "unspecified",
+     "value": 28.0
+    },
+    {
+     "source": "mA:nofactor",
+     "target": "o:minor",
+     "discipline": "mountaineering",
+     "value": 2.5
+    },
+    {
+     "source": "mA:nofactor",
+     "target": "o:minor",
+     "discipline": "ice",
+     "value": 0.5
+    },
+    {
+     "source": "mA:nofactor",
+     "target": "o:minor",
+     "discipline": "trad",
+     "value": 0.5
+    },
+    {
+     "source": "mA:nofactor",
+     "target": "o:minor",
+     "discipline": "sport",
+     "value": 1.0
+    },
+    {
+     "source": "mA:nofactor",
+     "target": "o:minor",
+     "discipline": "toprope",
+     "value": 1.5
+    },
+    {
+     "source": "mA:nofactor",
+     "target": "o:minor",
+     "discipline": "unspecified",
+     "value": 2.0
+    },
+    {
+     "source": "mA:nofactor",
+     "target": "o:none",
+     "discipline": "mountaineering",
+     "value": 4.0
+    },
+    {
+     "source": "mA:nofactor",
+     "target": "o:none",
+     "discipline": "trad",
+     "value": 2.0
+    },
+    {
+     "source": "mA:nofactor",
+     "target": "o:none",
+     "discipline": "sport",
+     "value": 1.0
+    },
+    {
+     "source": "mA:nofactor",
+     "target": "o:none",
+     "discipline": "unspecified",
+     "value": 3.0
+    }
+   ]
+  },
+  "C": {
+   "title": "Factor families",
+   "nodes": [
+    {
+     "id": "d:mountaineering",
+     "label": "Mountaineering",
+     "stage": 0,
+     "discipline": "mountaineering"
+    },
+    {
+     "id": "d:ice",
+     "label": "Ice",
+     "stage": 0,
+     "discipline": "ice"
+    },
+    {
+     "id": "d:trad",
+     "label": "Trad",
+     "stage": 0,
+     "discipline": "trad"
+    },
+    {
+     "id": "d:sport",
+     "label": "Sport",
+     "stage": 0,
+     "discipline": "sport"
+    },
+    {
+     "id": "d:toprope",
+     "label": "Top-rope",
+     "stage": 0,
+     "discipline": "toprope"
+    },
+    {
+     "id": "d:bouldering",
+     "label": "Bouldering",
+     "stage": 0,
+     "discipline": "bouldering"
+    },
+    {
+     "id": "d:unspecified",
+     "label": "Unspecified",
+     "stage": 0,
+     "discipline": "unspecified"
+    },
+    {
+     "id": "mC:gear",
+     "label": "Protection & gear",
+     "stage": 1,
+     "slot": 0,
+     "n": 683.0,
+     "n_any": 1098
+    },
+    {
+     "id": "mC:rope",
+     "label": "Rope & belay systems",
+     "stage": 1,
+     "slot": 1,
+     "n": 380.1,
+     "n_any": 612
+    },
+    {
+     "id": "mC:decisions",
+     "label": "Decisions & timing",
+     "stage": 1,
+     "slot": 2,
+     "n": 458.4,
+     "n_any": 937
+    },
+    {
+     "id": "mC:movement",
+     "label": "Movement & terrain",
+     "stage": 1,
+     "slot": 3,
+     "n": 265.5,
+     "n_any": 429
+    },
+    {
+     "id": "mC:body",
+     "label": "Body & health",
+     "stage": 1,
+     "slot": 4,
+     "n": 189.1,
+     "n_any": 322
+    },
+    {
+     "id": "mC:weather",
+     "label": "Weather & conditions",
+     "stage": 1,
+     "slot": 5,
+     "n": 250.0,
+     "n_any": 557
+    },
+    {
+     "id": "mC:hazards",
+     "label": "Mountain hazards",
+     "stage": 1,
+     "slot": 6,
+     "n": 237.0,
+     "n_any": 398
+    },
+    {
+     "id": "mC:nofactor",
+     "label": "No factor tagged",
+     "stage": 1,
+     "slot": 7,
+     "n": 261.0,
+     "n_any": 261
+    },
+    {
+     "id": "o:fatal",
+     "label": "Fatal",
+     "stage": 2
+    },
+    {
+     "id": "o:serious",
+     "label": "Serious injury",
+     "stage": 2
+    },
+    {
+     "id": "o:minor",
+     "label": "Minor injury",
+     "stage": 2
+    },
+    {
+     "id": "o:none",
+     "label": "No injury reported",
+     "stage": 2
+    }
+   ],
+   "links": [
+    {
+     "source": "d:mountaineering",
+     "target": "mC:gear",
+     "discipline": "mountaineering",
+     "value": 174.125
+    },
+    {
+     "source": "d:mountaineering",
+     "target": "mC:rope",
+     "discipline": "mountaineering",
+     "value": 42.55
+    },
+    {
+     "source": "d:mountaineering",
+     "target": "mC:decisions",
+     "discipline": "mountaineering",
+     "value": 216.708333
+    },
+    {
+     "source": "d:mountaineering",
+     "target": "mC:movement",
+     "discipline": "mountaineering",
+     "value": 102.15
+    },
+    {
+     "source": "d:mountaineering",
+     "target": "mC:body",
+     "discipline": "mountaineering",
+     "value": 149.05
+    },
+    {
+     "source": "d:mountaineering",
+     "target": "mC:weather",
+     "discipline": "mountaineering",
+     "value": 166.791667
+    },
+    {
+     "source": "d:mountaineering",
+     "target": "mC:hazards",
+     "discipline": "mountaineering",
+     "value": 179.291667
+    },
+    {
+     "source": "d:mountaineering",
+     "target": "mC:nofactor",
+     "discipline": "mountaineering",
+     "value": 110.0
+    },
+    {
+     "source": "d:ice",
+     "target": "mC:gear",
+     "discipline": "ice",
+     "value": 51.6
+    },
+    {
+     "source": "d:ice",
+     "target": "mC:rope",
+     "discipline": "ice",
+     "value": 15.516667
+    },
+    {
+     "source": "d:ice",
+     "target": "mC:decisions",
+     "discipline": "ice",
+     "value": 19.975
+    },
+    {
+     "source": "d:ice",
+     "target": "mC:movement",
+     "discipline": "ice",
+     "value": 6.375
+    },
+    {
+     "source": "d:ice",
+     "target": "mC:body",
+     "discipline": "ice",
+     "value": 4.016667
+    },
+    {
+     "source": "d:ice",
+     "target": "mC:weather",
+     "discipline": "ice",
+     "value": 17.1
+    },
+    {
+     "source": "d:ice",
+     "target": "mC:hazards",
+     "discipline": "ice",
+     "value": 25.083333
+    },
+    {
+     "source": "d:ice",
+     "target": "mC:nofactor",
+     "discipline": "ice",
+     "value": 21.0
+    },
+    {
+     "source": "d:trad",
+     "target": "mC:gear",
+     "discipline": "trad",
+     "value": 343.841667
+    },
+    {
+     "source": "d:trad",
+     "target": "mC:rope",
+     "discipline": "trad",
+     "value": 146.85
+    },
+    {
+     "source": "d:trad",
+     "target": "mC:decisions",
+     "discipline": "trad",
+     "value": 129.383333
+    },
+    {
+     "source": "d:trad",
+     "target": "mC:movement",
+     "discipline": "trad",
+     "value": 91.541667
+    },
+    {
+     "source": "d:trad",
+     "target": "mC:body",
+     "discipline": "trad",
+     "value": 24.583333
+    },
+    {
+     "source": "d:trad",
+     "target": "mC:weather",
+     "discipline": "trad",
+     "value": 45.758333
+    },
+    {
+     "source": "d:trad",
+     "target": "mC:hazards",
+     "discipline": "trad",
+     "value": 18.541667
+    },
+    {
+     "source": "d:trad",
+     "target": "mC:nofactor",
+     "discipline": "trad",
+     "value": 45.0
+    },
+    {
+     "source": "d:sport",
+     "target": "mC:gear",
+     "discipline": "sport",
+     "value": 41.0
+    },
+    {
+     "source": "d:sport",
+     "target": "mC:rope",
+     "discipline": "sport",
+     "value": 67.75
+    },
+    {
+     "source": "d:sport",
+     "target": "mC:decisions",
+     "discipline": "sport",
+     "value": 22.75
+    },
+    {
+     "source": "d:sport",
+     "target": "mC:movement",
+     "discipline": "sport",
+     "value": 9.416667
+    },
+    {
+     "source": "d:sport",
+     "target": "mC:body",
+     "discipline": "sport",
+     "value": 7.166667
+    },
+    {
+     "source": "d:sport",
+     "target": "mC:weather",
+     "discipline": "sport",
+     "value": 2.083333
+    },
+    {
+     "source": "d:sport",
+     "target": "mC:hazards",
+     "discipline": "sport",
+     "value": 3.833333
+    },
+    {
+     "source": "d:sport",
+     "target": "mC:nofactor",
+     "discipline": "sport",
+     "value": 14.0
+    },
+    {
+     "source": "d:toprope",
+     "target": "mC:gear",
+     "discipline": "toprope",
+     "value": 17.5
+    },
+    {
+     "source": "d:toprope",
+     "target": "mC:rope",
+     "discipline": "toprope",
+     "value": 33.25
+    },
+    {
+     "source": "d:toprope",
+     "target": "mC:decisions",
+     "discipline": "toprope",
+     "value": 10.083333
+    },
+    {
+     "source": "d:toprope",
+     "target": "mC:movement",
+     "discipline": "toprope",
+     "value": 8.25
+    },
+    {
+     "source": "d:toprope",
+     "target": "mC:body",
+     "discipline": "toprope",
+     "value": 2.166667
+    },
+    {
+     "source": "d:toprope",
+     "target": "mC:weather",
+     "discipline": "toprope",
+     "value": 1.833333
+    },
+    {
+     "source": "d:toprope",
+     "target": "mC:hazards",
+     "discipline": "toprope",
+     "value": 1.083333
+    },
+    {
+     "source": "d:toprope",
+     "target": "mC:nofactor",
+     "discipline": "toprope",
+     "value": 6.0
+    },
+    {
+     "source": "d:bouldering",
+     "target": "mC:gear",
+     "discipline": "bouldering",
+     "value": 0.75
+    },
+    {
+     "source": "d:bouldering",
+     "target": "mC:decisions",
+     "discipline": "bouldering",
+     "value": 0.25
+    },
+    {
+     "source": "d:bouldering",
+     "target": "mC:movement",
+     "discipline": "bouldering",
+     "value": 3.5
+    },
+    {
+     "source": "d:bouldering",
+     "target": "mC:weather",
+     "discipline": "bouldering",
+     "value": 0.5
+    },
+    {
+     "source": "d:bouldering",
+     "target": "mC:nofactor",
+     "discipline": "bouldering",
+     "value": 9.0
+    },
+    {
+     "source": "d:unspecified",
+     "target": "mC:gear",
+     "discipline": "unspecified",
+     "value": 54.166667
+    },
+    {
+     "source": "d:unspecified",
+     "target": "mC:rope",
+     "discipline": "unspecified",
+     "value": 74.166667
+    },
+    {
+     "source": "d:unspecified",
+     "target": "mC:decisions",
+     "discipline": "unspecified",
+     "value": 59.25
+    },
+    {
+     "source": "d:unspecified",
+     "target": "mC:movement",
+     "discipline": "unspecified",
+     "value": 44.25
+    },
+    {
+     "source": "d:unspecified",
+     "target": "mC:body",
+     "discipline": "unspecified",
+     "value": 2.083333
+    },
+    {
+     "source": "d:unspecified",
+     "target": "mC:weather",
+     "discipline": "unspecified",
+     "value": 15.916667
+    },
+    {
+     "source": "d:unspecified",
+     "target": "mC:hazards",
+     "discipline": "unspecified",
+     "value": 9.166667
+    },
+    {
+     "source": "d:unspecified",
+     "target": "mC:nofactor",
+     "discipline": "unspecified",
+     "value": 56.0
+    },
+    {
+     "source": "mC:gear",
+     "target": "o:fatal",
+     "discipline": "mountaineering",
+     "value": 42.958333
+    },
+    {
+     "source": "mC:gear",
+     "target": "o:fatal",
+     "discipline": "ice",
+     "value": 8.0
+    },
+    {
+     "source": "mC:gear",
+     "target": "o:fatal",
+     "discipline": "trad",
+     "value": 43.875
+    },
+    {
+     "source": "mC:gear",
+     "target": "o:fatal",
+     "discipline": "sport",
+     "value": 3.25
+    },
+    {
+     "source": "mC:gear",
+     "target": "o:fatal",
+     "discipline": "toprope",
+     "value": 5.25
+    },
+    {
+     "source": "mC:gear",
+     "target": "o:fatal",
+     "discipline": "unspecified",
+     "value": 17.0
+    },
+    {
+     "source": "mC:gear",
+     "target": "o:serious",
+     "discipline": "mountaineering",
+     "value": 108.583333
+    },
+    {
+     "source": "mC:gear",
+     "target": "o:serious",
+     "discipline": "ice",
+     "value": 40.083333
+    },
+    {
+     "source": "mC:gear",
+     "target": "o:serious",
+     "discipline": "trad",
+     "value": 268.083333
+    },
+    {
+     "source": "mC:gear",
+     "target": "o:serious",
+     "discipline": "sport",
+     "value": 29.166667
+    },
+    {
+     "source": "mC:gear",
+     "target": "o:serious",
+     "discipline": "toprope",
+     "value": 11.083333
+    },
+    {
+     "source": "mC:gear",
+     "target": "o:serious",
+     "discipline": "bouldering",
+     "value": 0.25
+    },
+    {
+     "source": "mC:gear",
+     "target": "o:serious",
+     "discipline": "unspecified",
+     "value": 32.25
+    },
+    {
+     "source": "mC:gear",
+     "target": "o:minor",
+     "discipline": "mountaineering",
+     "value": 11.166667
+    },
+    {
+     "source": "mC:gear",
+     "target": "o:minor",
+     "discipline": "ice",
+     "value": 1.916667
+    },
+    {
+     "source": "mC:gear",
+     "target": "o:minor",
+     "discipline": "trad",
+     "value": 14.416667
+    },
+    {
+     "source": "mC:gear",
+     "target": "o:minor",
+     "discipline": "sport",
+     "value": 6.083333
+    },
+    {
+     "source": "mC:gear",
+     "target": "o:minor",
+     "discipline": "toprope",
+     "value": 0.5
+    },
+    {
+     "source": "mC:gear",
+     "target": "o:minor",
+     "discipline": "unspecified",
+     "value": 3.0
+    },
+    {
+     "source": "mC:gear",
+     "target": "o:none",
+     "discipline": "mountaineering",
+     "value": 11.416667
+    },
+    {
+     "source": "mC:gear",
+     "target": "o:none",
+     "discipline": "ice",
+     "value": 1.6
+    },
+    {
+     "source": "mC:gear",
+     "target": "o:none",
+     "discipline": "trad",
+     "value": 17.466667
+    },
+    {
+     "source": "mC:gear",
+     "target": "o:none",
+     "discipline": "sport",
+     "value": 2.5
+    },
+    {
+     "source": "mC:gear",
+     "target": "o:none",
+     "discipline": "toprope",
+     "value": 0.666667
+    },
+    {
+     "source": "mC:gear",
+     "target": "o:none",
+     "discipline": "bouldering",
+     "value": 0.5
+    },
+    {
+     "source": "mC:gear",
+     "target": "o:none",
+     "discipline": "unspecified",
+     "value": 1.916667
+    },
+    {
+     "source": "mC:rope",
+     "target": "o:fatal",
+     "discipline": "mountaineering",
+     "value": 13.683333
+    },
+    {
+     "source": "mC:rope",
+     "target": "o:fatal",
+     "discipline": "ice",
+     "value": 4.375
+    },
+    {
+     "source": "mC:rope",
+     "target": "o:fatal",
+     "discipline": "trad",
+     "value": 30.791667
+    },
+    {
+     "source": "mC:rope",
+     "target": "o:fatal",
+     "discipline": "sport",
+     "value": 5.75
+    },
+    {
+     "source": "mC:rope",
+     "target": "o:fatal",
+     "discipline": "toprope",
+     "value": 5.25
+    },
+    {
+     "source": "mC:rope",
+     "target": "o:fatal",
+     "discipline": "unspecified",
+     "value": 17.833333
+    },
+    {
+     "source": "mC:rope",
+     "target": "o:serious",
+     "discipline": "mountaineering",
+     "value": 22.283333
+    },
+    {
+     "source": "mC:rope",
+     "target": "o:serious",
+     "discipline": "ice",
+     "value": 9.375
+    },
+    {
+     "source": "mC:rope",
+     "target": "o:serious",
+     "discipline": "trad",
+     "value": 95.175
+    },
+    {
+     "source": "mC:rope",
+     "target": "o:serious",
+     "discipline": "sport",
+     "value": 50.416667
+    },
+    {
+     "source": "mC:rope",
+     "target": "o:serious",
+     "discipline": "toprope",
+     "value": 21.416667
+    },
+    {
+     "source": "mC:rope",
+     "target": "o:serious",
+     "discipline": "unspecified",
+     "value": 43.75
+    },
+    {
+     "source": "mC:rope",
+     "target": "o:minor",
+     "discipline": "mountaineering",
+     "value": 4.083333
+    },
+    {
+     "source": "mC:rope",
+     "target": "o:minor",
+     "discipline": "ice",
+     "value": 1.5
+    },
+    {
+     "source": "mC:rope",
+     "target": "o:minor",
+     "discipline": "trad",
+     "value": 10.833333
+    },
+    {
+     "source": "mC:rope",
+     "target": "o:minor",
+     "discipline": "sport",
+     "value": 3.5
+    },
+    {
+     "source": "mC:rope",
+     "target": "o:minor",
+     "discipline": "toprope",
+     "value": 1.75
+    },
+    {
+     "source": "mC:rope",
+     "target": "o:minor",
+     "discipline": "unspecified",
+     "value": 4.5
+    },
+    {
+     "source": "mC:rope",
+     "target": "o:none",
+     "discipline": "mountaineering",
+     "value": 2.5
+    },
+    {
+     "source": "mC:rope",
+     "target": "o:none",
+     "discipline": "ice",
+     "value": 0.266667
+    },
+    {
+     "source": "mC:rope",
+     "target": "o:none",
+     "discipline": "trad",
+     "value": 10.05
+    },
+    {
+     "source": "mC:rope",
+     "target": "o:none",
+     "discipline": "sport",
+     "value": 8.083333
+    },
+    {
+     "source": "mC:rope",
+     "target": "o:none",
+     "discipline": "toprope",
+     "value": 4.833333
+    },
+    {
+     "source": "mC:rope",
+     "target": "o:none",
+     "discipline": "unspecified",
+     "value": 8.083333
+    },
+    {
+     "source": "mC:decisions",
+     "target": "o:fatal",
+     "discipline": "mountaineering",
+     "value": 55.208333
+    },
+    {
+     "source": "mC:decisions",
+     "target": "o:fatal",
+     "discipline": "ice",
+     "value": 4.166667
+    },
+    {
+     "source": "mC:decisions",
+     "target": "o:fatal",
+     "discipline": "trad",
+     "value": 12.125
+    },
+    {
+     "source": "mC:decisions",
+     "target": "o:fatal",
+     "discipline": "sport",
+     "value": 1.25
+    },
+    {
+     "source": "mC:decisions",
+     "target": "o:fatal",
+     "discipline": "toprope",
+     "value": 2.75
+    },
+    {
+     "source": "mC:decisions",
+     "target": "o:fatal",
+     "discipline": "unspecified",
+     "value": 12.5
+    },
+    {
+     "source": "mC:decisions",
+     "target": "o:serious",
+     "discipline": "mountaineering",
+     "value": 118.0
+    },
+    {
+     "source": "mC:decisions",
+     "target": "o:serious",
+     "discipline": "ice",
+     "value": 11.791667
+    },
+    {
+     "source": "mC:decisions",
+     "target": "o:serious",
+     "discipline": "trad",
+     "value": 80.041667
+    },
+    {
+     "source": "mC:decisions",
+     "target": "o:serious",
+     "discipline": "sport",
+     "value": 14.0
+    },
+    {
+     "source": "mC:decisions",
+     "target": "o:serious",
+     "discipline": "toprope",
+     "value": 6.916667
+    },
+    {
+     "source": "mC:decisions",
+     "target": "o:serious",
+     "discipline": "bouldering",
+     "value": 0.25
+    },
+    {
+     "source": "mC:decisions",
+     "target": "o:serious",
+     "discipline": "unspecified",
+     "value": 24.5
+    },
+    {
+     "source": "mC:decisions",
+     "target": "o:minor",
+     "discipline": "mountaineering",
+     "value": 26.75
+    },
+    {
+     "source": "mC:decisions",
+     "target": "o:minor",
+     "discipline": "ice",
+     "value": 2.666667
+    },
+    {
+     "source": "mC:decisions",
+     "target": "o:minor",
+     "discipline": "trad",
+     "value": 23.583333
+    },
+    {
+     "source": "mC:decisions",
+     "target": "o:minor",
+     "discipline": "sport",
+     "value": 3.083333
+    },
+    {
+     "source": "mC:decisions",
+     "target": "o:minor",
+     "discipline": "toprope",
+     "value": 0.25
+    },
+    {
+     "source": "mC:decisions",
+     "target": "o:minor",
+     "discipline": "unspecified",
+     "value": 14.333333
+    },
+    {
+     "source": "mC:decisions",
+     "target": "o:none",
+     "discipline": "mountaineering",
+     "value": 16.75
+    },
+    {
+     "source": "mC:decisions",
+     "target": "o:none",
+     "discipline": "ice",
+     "value": 1.35
+    },
+    {
+     "source": "mC:decisions",
+     "target": "o:none",
+     "discipline": "trad",
+     "value": 13.633333
+    },
+    {
+     "source": "mC:decisions",
+     "target": "o:none",
+     "discipline": "sport",
+     "value": 4.416667
+    },
+    {
+     "source": "mC:decisions",
+     "target": "o:none",
+     "discipline": "toprope",
+     "value": 0.166667
+    },
+    {
+     "source": "mC:decisions",
+     "target": "o:none",
+     "discipline": "unspecified",
+     "value": 7.916667
+    },
+    {
+     "source": "mC:movement",
+     "target": "o:fatal",
+     "discipline": "mountaineering",
+     "value": 17.866667
+    },
+    {
+     "source": "mC:movement",
+     "target": "o:fatal",
+     "discipline": "ice",
+     "value": 0.166667
+    },
+    {
+     "source": "mC:movement",
+     "target": "o:fatal",
+     "discipline": "trad",
+     "value": 6.333333
+    },
+    {
+     "source": "mC:movement",
+     "target": "o:fatal",
+     "discipline": "toprope",
+     "value": 1.5
+    },
+    {
+     "source": "mC:movement",
+     "target": "o:fatal",
+     "discipline": "unspecified",
+     "value": 11.0
+    },
+    {
+     "source": "mC:movement",
+     "target": "o:serious",
+     "discipline": "mountaineering",
+     "value": 74.616667
+    },
+    {
+     "source": "mC:movement",
+     "target": "o:serious",
+     "discipline": "ice",
+     "value": 4.708333
+    },
+    {
+     "source": "mC:movement",
+     "target": "o:serious",
+     "discipline": "trad",
+     "value": 72.125
+    },
+    {
+     "source": "mC:movement",
+     "target": "o:serious",
+     "discipline": "sport",
+     "value": 5.583333
+    },
+    {
+     "source": "mC:movement",
+     "target": "o:serious",
+     "discipline": "toprope",
+     "value": 6.25
+    },
+    {
+     "source": "mC:movement",
+     "target": "o:serious",
+     "discipline": "bouldering",
+     "value": 3.5
+    },
+    {
+     "source": "mC:movement",
+     "target": "o:serious",
+     "discipline": "unspecified",
+     "value": 30.583333
+    },
+    {
+     "source": "mC:movement",
+     "target": "o:minor",
+     "discipline": "mountaineering",
+     "value": 4.666667
+    },
+    {
+     "source": "mC:movement",
+     "target": "o:minor",
+     "discipline": "trad",
+     "value": 7.083333
+    },
+    {
+     "source": "mC:movement",
+     "target": "o:minor",
+     "discipline": "sport",
+     "value": 1.0
+    },
+    {
+     "source": "mC:movement",
+     "target": "o:minor",
+     "discipline": "unspecified",
+     "value": 1.5
+    },
+    {
+     "source": "mC:movement",
+     "target": "o:none",
+     "discipline": "mountaineering",
+     "value": 5.0
+    },
+    {
+     "source": "mC:movement",
+     "target": "o:none",
+     "discipline": "ice",
+     "value": 1.5
+    },
+    {
+     "source": "mC:movement",
+     "target": "o:none",
+     "discipline": "trad",
+     "value": 6.0
+    },
+    {
+     "source": "mC:movement",
+     "target": "o:none",
+     "discipline": "sport",
+     "value": 2.833333
+    },
+    {
+     "source": "mC:movement",
+     "target": "o:none",
+     "discipline": "toprope",
+     "value": 0.5
+    },
+    {
+     "source": "mC:movement",
+     "target": "o:none",
+     "discipline": "unspecified",
+     "value": 1.166667
+    },
+    {
+     "source": "mC:body",
+     "target": "o:fatal",
+     "discipline": "mountaineering",
+     "value": 19.433333
+    },
+    {
+     "source": "mC:body",
+     "target": "o:fatal",
+     "discipline": "ice",
+     "value": 0.375
+    },
+    {
+     "source": "mC:body",
+     "target": "o:fatal",
+     "discipline": "trad",
+     "value": 2.041667
+    },
+    {
+     "source": "mC:body",
+     "target": "o:fatal",
+     "discipline": "sport",
+     "value": 1.25
+    },
+    {
+     "source": "mC:body",
+     "target": "o:fatal",
+     "discipline": "toprope",
+     "value": 0.5
+    },
+    {
+     "source": "mC:body",
+     "target": "o:fatal",
+     "discipline": "unspecified",
+     "value": 0.333333
+    },
+    {
+     "source": "mC:body",
+     "target": "o:serious",
+     "discipline": "mountaineering",
+     "value": 110.283333
+    },
+    {
+     "source": "mC:body",
+     "target": "o:serious",
+     "discipline": "ice",
+     "value": 2.291667
+    },
+    {
+     "source": "mC:body",
+     "target": "o:serious",
+     "discipline": "trad",
+     "value": 15.741667
+    },
+    {
+     "source": "mC:body",
+     "target": "o:serious",
+     "discipline": "sport",
+     "value": 5.333333
+    },
+    {
+     "source": "mC:body",
+     "target": "o:serious",
+     "discipline": "toprope",
+     "value": 0.666667
+    },
+    {
+     "source": "mC:body",
+     "target": "o:serious",
+     "discipline": "unspecified",
+     "value": 0.583333
+    },
+    {
+     "source": "mC:body",
+     "target": "o:minor",
+     "discipline": "mountaineering",
+     "value": 6.916667
+    },
+    {
+     "source": "mC:body",
+     "target": "o:minor",
+     "discipline": "ice",
+     "value": 0.75
+    },
+    {
+     "source": "mC:body",
+     "target": "o:minor",
+     "discipline": "trad",
+     "value": 4.166667
+    },
+    {
+     "source": "mC:body",
+     "target": "o:minor",
+     "discipline": "unspecified",
+     "value": 0.666667
+    },
+    {
+     "source": "mC:body",
+     "target": "o:none",
+     "discipline": "mountaineering",
+     "value": 12.416667
+    },
+    {
+     "source": "mC:body",
+     "target": "o:none",
+     "discipline": "ice",
+     "value": 0.6
+    },
+    {
+     "source": "mC:body",
+     "target": "o:none",
+     "discipline": "trad",
+     "value": 2.633333
+    },
+    {
+     "source": "mC:body",
+     "target": "o:none",
+     "discipline": "sport",
+     "value": 0.583333
+    },
+    {
+     "source": "mC:body",
+     "target": "o:none",
+     "discipline": "toprope",
+     "value": 1.0
+    },
+    {
+     "source": "mC:body",
+     "target": "o:none",
+     "discipline": "unspecified",
+     "value": 0.5
+    },
+    {
+     "source": "mC:weather",
+     "target": "o:fatal",
+     "discipline": "mountaineering",
+     "value": 46.958333
+    },
+    {
+     "source": "mC:weather",
+     "target": "o:fatal",
+     "discipline": "ice",
+     "value": 5.208333
+    },
+    {
+     "source": "mC:weather",
+     "target": "o:fatal",
+     "discipline": "trad",
+     "value": 3.166667
+    },
+    {
+     "source": "mC:weather",
+     "target": "o:fatal",
+     "discipline": "toprope",
+     "value": 0.75
+    },
+    {
+     "source": "mC:weather",
+     "target": "o:fatal",
+     "discipline": "unspecified",
+     "value": 4.833333
+    },
+    {
+     "source": "mC:weather",
+     "target": "o:serious",
+     "discipline": "mountaineering",
+     "value": 95.916667
+    },
+    {
+     "source": "mC:weather",
+     "target": "o:serious",
+     "discipline": "ice",
+     "value": 8.125
+    },
+    {
+     "source": "mC:weather",
+     "target": "o:serious",
+     "discipline": "trad",
+     "value": 27.541667
+    },
+    {
+     "source": "mC:weather",
+     "target": "o:serious",
+     "discipline": "sport",
+     "value": 1.166667
+    },
+    {
+     "source": "mC:weather",
+     "target": "o:serious",
+     "discipline": "toprope",
+     "value": 1.083333
+    },
+    {
+     "source": "mC:weather",
+     "target": "o:serious",
+     "discipline": "unspecified",
+     "value": 5.166667
+    },
+    {
+     "source": "mC:weather",
+     "target": "o:minor",
+     "discipline": "mountaineering",
+     "value": 15.0
+    },
+    {
+     "source": "mC:weather",
+     "target": "o:minor",
+     "discipline": "ice",
+     "value": 2.166667
+    },
+    {
+     "source": "mC:weather",
+     "target": "o:minor",
+     "discipline": "trad",
+     "value": 9.333333
+    },
+    {
+     "source": "mC:weather",
+     "target": "o:minor",
+     "discipline": "sport",
+     "value": 0.333333
+    },
+    {
+     "source": "mC:weather",
+     "target": "o:minor",
+     "discipline": "unspecified",
+     "value": 4.0
+    },
+    {
+     "source": "mC:weather",
+     "target": "o:none",
+     "discipline": "mountaineering",
+     "value": 8.916667
+    },
+    {
+     "source": "mC:weather",
+     "target": "o:none",
+     "discipline": "ice",
+     "value": 1.6
+    },
+    {
+     "source": "mC:weather",
+     "target": "o:none",
+     "discipline": "trad",
+     "value": 5.716667
+    },
+    {
+     "source": "mC:weather",
+     "target": "o:none",
+     "discipline": "sport",
+     "value": 0.583333
+    },
+    {
+     "source": "mC:weather",
+     "target": "o:none",
+     "discipline": "bouldering",
+     "value": 0.5
+    },
+    {
+     "source": "mC:weather",
+     "target": "o:none",
+     "discipline": "unspecified",
+     "value": 1.916667
+    },
+    {
+     "source": "mC:hazards",
+     "target": "o:fatal",
+     "discipline": "mountaineering",
+     "value": 55.058333
+    },
+    {
+     "source": "mC:hazards",
+     "target": "o:fatal",
+     "discipline": "ice",
+     "value": 9.375
+    },
+    {
+     "source": "mC:hazards",
+     "target": "o:fatal",
+     "discipline": "trad",
+     "value": 1.0
+    },
+    {
+     "source": "mC:hazards",
+     "target": "o:fatal",
+     "discipline": "sport",
+     "value": 1.0
+    },
+    {
+     "source": "mC:hazards",
+     "target": "o:fatal",
+     "discipline": "toprope",
+     "value": 0.333333
+    },
+    {
+     "source": "mC:hazards",
+     "target": "o:fatal",
+     "discipline": "unspecified",
+     "value": 3.5
+    },
+    {
+     "source": "mC:hazards",
+     "target": "o:serious",
+     "discipline": "mountaineering",
+     "value": 107.983333
+    },
+    {
+     "source": "mC:hazards",
+     "target": "o:serious",
+     "discipline": "ice",
+     "value": 13.291667
+    },
+    {
+     "source": "mC:hazards",
+     "target": "o:serious",
+     "discipline": "trad",
+     "value": 12.458333
+    },
+    {
+     "source": "mC:hazards",
+     "target": "o:serious",
+     "discipline": "sport",
+     "value": 1.833333
+    },
+    {
+     "source": "mC:hazards",
+     "target": "o:serious",
+     "discipline": "toprope",
+     "value": 0.583333
+    },
+    {
+     "source": "mC:hazards",
+     "target": "o:serious",
+     "discipline": "unspecified",
+     "value": 4.166667
+    },
+    {
+     "source": "mC:hazards",
+     "target": "o:minor",
+     "discipline": "mountaineering",
+     "value": 9.916667
+    },
+    {
+     "source": "mC:hazards",
+     "target": "o:minor",
+     "discipline": "ice",
+     "value": 1.0
+    },
+    {
+     "source": "mC:hazards",
+     "target": "o:minor",
+     "discipline": "trad",
+     "value": 2.583333
+    },
+    {
+     "source": "mC:hazards",
+     "target": "o:minor",
+     "discipline": "sport",
+     "value": 1.0
+    },
+    {
+     "source": "mC:hazards",
+     "target": "o:minor",
+     "discipline": "unspecified",
+     "value": 1.0
+    },
+    {
+     "source": "mC:hazards",
+     "target": "o:none",
+     "discipline": "mountaineering",
+     "value": 6.333333
+    },
+    {
+     "source": "mC:hazards",
+     "target": "o:none",
+     "discipline": "ice",
+     "value": 1.416667
+    },
+    {
+     "source": "mC:hazards",
+     "target": "o:none",
+     "discipline": "trad",
+     "value": 2.5
+    },
+    {
+     "source": "mC:hazards",
+     "target": "o:none",
+     "discipline": "toprope",
+     "value": 0.166667
+    },
+    {
+     "source": "mC:hazards",
+     "target": "o:none",
+     "discipline": "unspecified",
+     "value": 0.5
+    },
+    {
+     "source": "mC:nofactor",
+     "target": "o:fatal",
+     "discipline": "mountaineering",
+     "value": 33.0
+    },
+    {
+     "source": "mC:nofactor",
+     "target": "o:fatal",
+     "discipline": "ice",
+     "value": 5.0
+    },
+    {
+     "source": "mC:nofactor",
+     "target": "o:fatal",
+     "discipline": "trad",
+     "value": 2.0
+    },
+    {
+     "source": "mC:nofactor",
+     "target": "o:fatal",
+     "discipline": "sport",
+     "value": 2.0
+    },
+    {
+     "source": "mC:nofactor",
+     "target": "o:fatal",
+     "discipline": "toprope",
+     "value": 1.0
+    },
+    {
+     "source": "mC:nofactor",
+     "target": "o:fatal",
+     "discipline": "unspecified",
+     "value": 23.0
+    },
+    {
+     "source": "mC:nofactor",
+     "target": "o:serious",
+     "discipline": "mountaineering",
+     "value": 70.5
+    },
+    {
+     "source": "mC:nofactor",
+     "target": "o:serious",
+     "discipline": "ice",
+     "value": 15.5
+    },
+    {
+     "source": "mC:nofactor",
+     "target": "o:serious",
+     "discipline": "trad",
+     "value": 40.5
+    },
+    {
+     "source": "mC:nofactor",
+     "target": "o:serious",
+     "discipline": "sport",
+     "value": 10.0
+    },
+    {
+     "source": "mC:nofactor",
+     "target": "o:serious",
+     "discipline": "toprope",
+     "value": 3.5
+    },
+    {
+     "source": "mC:nofactor",
+     "target": "o:serious",
+     "discipline": "bouldering",
+     "value": 9.0
+    },
+    {
+     "source": "mC:nofactor",
+     "target": "o:serious",
+     "discipline": "unspecified",
+     "value": 28.0
+    },
+    {
+     "source": "mC:nofactor",
+     "target": "o:minor",
+     "discipline": "mountaineering",
+     "value": 2.5
+    },
+    {
+     "source": "mC:nofactor",
+     "target": "o:minor",
+     "discipline": "ice",
+     "value": 0.5
+    },
+    {
+     "source": "mC:nofactor",
+     "target": "o:minor",
+     "discipline": "trad",
+     "value": 0.5
+    },
+    {
+     "source": "mC:nofactor",
+     "target": "o:minor",
+     "discipline": "sport",
+     "value": 1.0
+    },
+    {
+     "source": "mC:nofactor",
+     "target": "o:minor",
+     "discipline": "toprope",
+     "value": 1.5
+    },
+    {
+     "source": "mC:nofactor",
+     "target": "o:minor",
+     "discipline": "unspecified",
+     "value": 2.0
+    },
+    {
+     "source": "mC:nofactor",
+     "target": "o:none",
+     "discipline": "mountaineering",
+     "value": 4.0
+    },
+    {
+     "source": "mC:nofactor",
+     "target": "o:none",
+     "discipline": "trad",
+     "value": 2.0
+    },
+    {
+     "source": "mC:nofactor",
+     "target": "o:none",
+     "discipline": "sport",
+     "value": 1.0
+    },
+    {
+     "source": "mC:nofactor",
+     "target": "o:none",
+     "discipline": "unspecified",
+     "value": 3.0
+    }
+   ]
+  },
+  "B": {
+   "title": "What they were doing",
+   "nodes": [
+    {
+     "id": "d:mountaineering",
+     "label": "Mountaineering",
+     "stage": 0,
+     "discipline": "mountaineering"
+    },
+    {
+     "id": "d:ice",
+     "label": "Ice",
+     "stage": 0,
+     "discipline": "ice"
+    },
+    {
+     "id": "d:trad",
+     "label": "Trad",
+     "stage": 0,
+     "discipline": "trad"
+    },
+    {
+     "id": "d:sport",
+     "label": "Sport",
+     "stage": 0,
+     "discipline": "sport"
+    },
+    {
+     "id": "d:toprope",
+     "label": "Top-rope",
+     "stage": 0,
+     "discipline": "toprope"
+    },
+    {
+     "id": "d:bouldering",
+     "label": "Bouldering",
+     "stage": 0,
+     "discipline": "bouldering"
+    },
+    {
+     "id": "d:unspecified",
+     "label": "Unspecified",
+     "stage": 0,
+     "discipline": "unspecified"
+    },
+    {
+     "id": "mB:roped",
+     "label": "Roped ascent",
+     "stage": 1,
+     "slot": 0,
+     "n": 1102
+    },
+    {
+     "id": "mB:descent",
+     "label": "Descent",
+     "stage": 1,
+     "slot": 1,
+     "n": 865
+    },
+    {
+     "id": "mB:unroped",
+     "label": "Unroped / solo ascent",
+     "stage": 1,
+     "slot": 2,
+     "n": 366
+    },
+    {
+     "id": "mB:unclear",
+     "label": "Unclear",
+     "stage": 1,
+     "slot": 3,
+     "n": 391
+    },
+    {
+     "id": "o:fatal",
+     "label": "Fatal",
+     "stage": 2
+    },
+    {
+     "id": "o:serious",
+     "label": "Serious injury",
+     "stage": 2
+    },
+    {
+     "id": "o:minor",
+     "label": "Minor injury",
+     "stage": 2
+    },
+    {
+     "id": "o:none",
+     "label": "No injury reported",
+     "stage": 2
+    }
+   ],
+   "links": [
+    {
+     "source": "d:mountaineering",
+     "target": "mB:roped",
+     "discipline": "mountaineering",
+     "value": 136.5
+    },
+    {
+     "source": "d:mountaineering",
+     "target": "mB:descent",
+     "discipline": "mountaineering",
+     "value": 452.833333
+    },
+    {
+     "source": "d:mountaineering",
+     "target": "mB:unroped",
+     "discipline": "mountaineering",
+     "value": 207.333333
+    },
+    {
+     "source": "d:mountaineering",
+     "target": "mB:unclear",
+     "discipline": "mountaineering",
+     "value": 344.0
+    },
+    {
+     "source": "d:ice",
+     "target": "mB:roped",
+     "discipline": "ice",
+     "value": 91.5
+    },
+    {
+     "source": "d:ice",
+     "target": "mB:descent",
+     "discipline": "ice",
+     "value": 28.333333
+    },
+    {
+     "source": "d:ice",
+     "target": "mB:unroped",
+     "discipline": "ice",
+     "value": 28.333333
+    },
+    {
+     "source": "d:ice",
+     "target": "mB:unclear",
+     "discipline": "ice",
+     "value": 12.5
+    },
+    {
+     "source": "d:trad",
+     "target": "mB:roped",
+     "discipline": "trad",
+     "value": 668.5
+    },
+    {
+     "source": "d:trad",
+     "target": "mB:descent",
+     "discipline": "trad",
+     "value": 176.0
+    },
+    {
+     "source": "d:trad",
+     "target": "mB:unroped",
+     "discipline": "trad",
+     "value": 0.5
+    },
+    {
+     "source": "d:trad",
+     "target": "mB:unclear",
+     "discipline": "trad",
+     "value": 0.5
+    },
+    {
+     "source": "d:sport",
+     "target": "mB:roped",
+     "discipline": "sport",
+     "value": 109.5
+    },
+    {
+     "source": "d:sport",
+     "target": "mB:descent",
+     "discipline": "sport",
+     "value": 58.5
+    },
+    {
+     "source": "d:toprope",
+     "target": "mB:roped",
+     "discipline": "toprope",
+     "value": 42.0
+    },
+    {
+     "source": "d:toprope",
+     "target": "mB:descent",
+     "discipline": "toprope",
+     "value": 28.333333
+    },
+    {
+     "source": "d:toprope",
+     "target": "mB:unroped",
+     "discipline": "toprope",
+     "value": 7.833333
+    },
+    {
+     "source": "d:toprope",
+     "target": "mB:unclear",
+     "discipline": "toprope",
+     "value": 2.0
+    },
+    {
+     "source": "d:bouldering",
+     "target": "mB:descent",
+     "discipline": "bouldering",
+     "value": 2.0
+    },
+    {
+     "source": "d:bouldering",
+     "target": "mB:unroped",
+     "discipline": "bouldering",
+     "value": 12.0
+    },
+    {
+     "source": "d:unspecified",
+     "target": "mB:roped",
+     "discipline": "unspecified",
+     "value": 54.0
+    },
+    {
+     "source": "d:unspecified",
+     "target": "mB:descent",
+     "discipline": "unspecified",
+     "value": 119.0
+    },
+    {
+     "source": "d:unspecified",
+     "target": "mB:unroped",
+     "discipline": "unspecified",
+     "value": 110.0
+    },
+    {
+     "source": "d:unspecified",
+     "target": "mB:unclear",
+     "discipline": "unspecified",
+     "value": 32.0
+    },
+    {
+     "source": "mB:roped",
+     "target": "o:fatal",
+     "discipline": "mountaineering",
+     "value": 29.166667
+    },
+    {
+     "source": "mB:roped",
+     "target": "o:fatal",
+     "discipline": "ice",
+     "value": 13.666667
+    },
+    {
+     "source": "mB:roped",
+     "target": "o:fatal",
+     "discipline": "trad",
+     "value": 59.333333
+    },
+    {
+     "source": "mB:roped",
+     "target": "o:fatal",
+     "discipline": "sport",
+     "value": 8.5
+    },
+    {
+     "source": "mB:roped",
+     "target": "o:fatal",
+     "discipline": "toprope",
+     "value": 6.333333
+    },
+    {
+     "source": "mB:roped",
+     "target": "o:fatal",
+     "discipline": "unspecified",
+     "value": 7.0
+    },
+    {
+     "source": "mB:roped",
+     "target": "o:serious",
+     "discipline": "mountaineering",
+     "value": 90.5
+    },
+    {
+     "source": "mB:roped",
+     "target": "o:serious",
+     "discipline": "ice",
+     "value": 67.0
+    },
+    {
+     "source": "mB:roped",
+     "target": "o:serious",
+     "discipline": "trad",
+     "value": 525.166667
+    },
+    {
+     "source": "mB:roped",
+     "target": "o:serious",
+     "discipline": "sport",
+     "value": 74.5
+    },
+    {
+     "source": "mB:roped",
+     "target": "o:serious",
+     "discipline": "toprope",
+     "value": 27.833333
+    },
+    {
+     "source": "mB:roped",
+     "target": "o:serious",
+     "discipline": "unspecified",
+     "value": 37.0
+    },
+    {
+     "source": "mB:roped",
+     "target": "o:minor",
+     "discipline": "mountaineering",
+     "value": 13.5
+    },
+    {
+     "source": "mB:roped",
+     "target": "o:minor",
+     "discipline": "ice",
+     "value": 6.0
+    },
+    {
+     "source": "mB:roped",
+     "target": "o:minor",
+     "discipline": "trad",
+     "value": 45.5
+    },
+    {
+     "source": "mB:roped",
+     "target": "o:minor",
+     "discipline": "sport",
+     "value": 10.5
+    },
+    {
+     "source": "mB:roped",
+     "target": "o:minor",
+     "discipline": "toprope",
+     "value": 2.5
+    },
+    {
+     "source": "mB:roped",
+     "target": "o:minor",
+     "discipline": "unspecified",
+     "value": 5.0
+    },
+    {
+     "source": "mB:roped",
+     "target": "o:none",
+     "discipline": "mountaineering",
+     "value": 3.333333
+    },
+    {
+     "source": "mB:roped",
+     "target": "o:none",
+     "discipline": "ice",
+     "value": 4.833333
+    },
+    {
+     "source": "mB:roped",
+     "target": "o:none",
+     "discipline": "trad",
+     "value": 38.5
+    },
+    {
+     "source": "mB:roped",
+     "target": "o:none",
+     "discipline": "sport",
+     "value": 16.0
+    },
+    {
+     "source": "mB:roped",
+     "target": "o:none",
+     "discipline": "toprope",
+     "value": 5.333333
+    },
+    {
+     "source": "mB:roped",
+     "target": "o:none",
+     "discipline": "unspecified",
+     "value": 5.0
+    },
+    {
+     "source": "mB:descent",
+     "target": "o:fatal",
+     "discipline": "mountaineering",
+     "value": 108.0
+    },
+    {
+     "source": "mB:descent",
+     "target": "o:fatal",
+     "discipline": "ice",
+     "value": 7.0
+    },
+    {
+     "source": "mB:descent",
+     "target": "o:fatal",
+     "discipline": "trad",
+     "value": 41.5
+    },
+    {
+     "source": "mB:descent",
+     "target": "o:fatal",
+     "discipline": "sport",
+     "value": 6.0
+    },
+    {
+     "source": "mB:descent",
+     "target": "o:fatal",
+     "discipline": "toprope",
+     "value": 5.5
+    },
+    {
+     "source": "mB:descent",
+     "target": "o:fatal",
+     "discipline": "unspecified",
+     "value": 29.0
+    },
+    {
+     "source": "mB:descent",
+     "target": "o:serious",
+     "discipline": "mountaineering",
+     "value": 287.833333
+    },
+    {
+     "source": "mB:descent",
+     "target": "o:serious",
+     "discipline": "ice",
+     "value": 18.333333
+    },
+    {
+     "source": "mB:descent",
+     "target": "o:serious",
+     "discipline": "trad",
+     "value": 86.5
+    },
+    {
+     "source": "mB:descent",
+     "target": "o:serious",
+     "discipline": "sport",
+     "value": 43.0
+    },
+    {
+     "source": "mB:descent",
+     "target": "o:serious",
+     "discipline": "toprope",
+     "value": 19.333333
+    },
+    {
+     "source": "mB:descent",
+     "target": "o:serious",
+     "discipline": "bouldering",
+     "value": 2.0
+    },
+    {
+     "source": "mB:descent",
+     "target": "o:serious",
+     "discipline": "unspecified",
+     "value": 62.0
+    },
+    {
+     "source": "mB:descent",
+     "target": "o:minor",
+     "discipline": "mountaineering",
+     "value": 26.0
+    },
+    {
+     "source": "mB:descent",
+     "target": "o:minor",
+     "discipline": "ice",
+     "value": 2.5
+    },
+    {
+     "source": "mB:descent",
+     "target": "o:minor",
+     "discipline": "trad",
+     "value": 26.5
+    },
+    {
+     "source": "mB:descent",
+     "target": "o:minor",
+     "discipline": "sport",
+     "value": 5.5
+    },
+    {
+     "source": "mB:descent",
+     "target": "o:minor",
+     "discipline": "toprope",
+     "value": 1.5
+    },
+    {
+     "source": "mB:descent",
+     "target": "o:minor",
+     "discipline": "unspecified",
+     "value": 16.0
+    },
+    {
+     "source": "mB:descent",
+     "target": "o:none",
+     "discipline": "mountaineering",
+     "value": 31.0
+    },
+    {
+     "source": "mB:descent",
+     "target": "o:none",
+     "discipline": "ice",
+     "value": 0.5
+    },
+    {
+     "source": "mB:descent",
+     "target": "o:none",
+     "discipline": "trad",
+     "value": 21.5
+    },
+    {
+     "source": "mB:descent",
+     "target": "o:none",
+     "discipline": "sport",
+     "value": 4.0
+    },
+    {
+     "source": "mB:descent",
+     "target": "o:none",
+     "discipline": "toprope",
+     "value": 2.0
+    },
+    {
+     "source": "mB:descent",
+     "target": "o:none",
+     "discipline": "unspecified",
+     "value": 12.0
+    },
+    {
+     "source": "mB:unroped",
+     "target": "o:fatal",
+     "discipline": "mountaineering",
+     "value": 79.5
+    },
+    {
+     "source": "mB:unroped",
+     "target": "o:fatal",
+     "discipline": "ice",
+     "value": 11.5
+    },
+    {
+     "source": "mB:unroped",
+     "target": "o:fatal",
+     "discipline": "trad",
+     "value": 0.5
+    },
+    {
+     "source": "mB:unroped",
+     "target": "o:fatal",
+     "discipline": "toprope",
+     "value": 4.5
+    },
+    {
+     "source": "mB:unroped",
+     "target": "o:fatal",
+     "discipline": "unspecified",
+     "value": 45.0
+    },
+    {
+     "source": "mB:unroped",
+     "target": "o:serious",
+     "discipline": "mountaineering",
+     "value": 100.833333
+    },
+    {
+     "source": "mB:unroped",
+     "target": "o:serious",
+     "discipline": "ice",
+     "value": 11.833333
+    },
+    {
+     "source": "mB:unroped",
+     "target": "o:serious",
+     "discipline": "toprope",
+     "value": 3.333333
+    },
+    {
+     "source": "mB:unroped",
+     "target": "o:serious",
+     "discipline": "bouldering",
+     "value": 11.0
+    },
+    {
+     "source": "mB:unroped",
+     "target": "o:serious",
+     "discipline": "unspecified",
+     "value": 52.0
+    },
+    {
+     "source": "mB:unroped",
+     "target": "o:minor",
+     "discipline": "mountaineering",
+     "value": 17.0
+    },
+    {
+     "source": "mB:unroped",
+     "target": "o:minor",
+     "discipline": "ice",
+     "value": 2.0
+    },
+    {
+     "source": "mB:unroped",
+     "target": "o:minor",
+     "discipline": "unspecified",
+     "value": 6.0
+    },
+    {
+     "source": "mB:unroped",
+     "target": "o:none",
+     "discipline": "mountaineering",
+     "value": 10.0
+    },
+    {
+     "source": "mB:unroped",
+     "target": "o:none",
+     "discipline": "ice",
+     "value": 3.0
+    },
+    {
+     "source": "mB:unroped",
+     "target": "o:none",
+     "discipline": "bouldering",
+     "value": 1.0
+    },
+    {
+     "source": "mB:unroped",
+     "target": "o:none",
+     "discipline": "unspecified",
+     "value": 7.0
+    },
+    {
+     "source": "mB:unclear",
+     "target": "o:fatal",
+     "discipline": "mountaineering",
+     "value": 67.5
+    },
+    {
+     "source": "mB:unclear",
+     "target": "o:fatal",
+     "discipline": "ice",
+     "value": 4.5
+    },
+    {
+     "source": "mB:unclear",
+     "target": "o:fatal",
+     "discipline": "toprope",
+     "value": 1.0
+    },
+    {
+     "source": "mB:unclear",
+     "target": "o:fatal",
+     "discipline": "unspecified",
+     "value": 9.0
+    },
+    {
+     "source": "mB:unclear",
+     "target": "o:serious",
+     "discipline": "mountaineering",
+     "value": 229.0
+    },
+    {
+     "source": "mB:unclear",
+     "target": "o:serious",
+     "discipline": "ice",
+     "value": 8.0
+    },
+    {
+     "source": "mB:unclear",
+     "target": "o:serious",
+     "discipline": "toprope",
+     "value": 1.0
+    },
+    {
+     "source": "mB:unclear",
+     "target": "o:serious",
+     "discipline": "unspecified",
+     "value": 18.0
+    },
+    {
+     "source": "mB:unclear",
+     "target": "o:minor",
+     "discipline": "mountaineering",
+     "value": 24.5
+    },
+    {
+     "source": "mB:unclear",
+     "target": "o:minor",
+     "discipline": "trad",
+     "value": 0.5
+    },
+    {
+     "source": "mB:unclear",
+     "target": "o:minor",
+     "discipline": "unspecified",
+     "value": 4.0
+    },
+    {
+     "source": "mB:unclear",
+     "target": "o:none",
+     "discipline": "mountaineering",
+     "value": 23.0
+    },
+    {
+     "source": "mB:unclear",
+     "target": "o:none",
+     "discipline": "unspecified",
+     "value": 1.0
+    }
+   ]
+  }
+ }
+}

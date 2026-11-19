@@ -1,0 +1,1036 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Climbing Accidents Visualized</title>
+<style>
+  :root {
+    --bg: #fbfaf7;
+    --ink: #22221f;
+    --ink-2: #5d5c56;
+    --ink-3: #8f8e87;
+    --rule: #e3e1da;
+    --card: #ffffff;
+    --mark: #fbe7a1;
+    --env: #e3eef0;
+    --env-ink: #2d5d66;
+    --link-opacity: 0.72;
+    --serif: Georgia, "Times New Roman", serif;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--sans); }
+
+  header.intro { max-width: 720px; margin: 0 auto; padding: 12vh 16px 8vh; }
+  header.intro h1 { font-family: var(--serif); font-size: clamp(2rem, 5vw, 3.2rem); line-height: 1.1; margin: 0 0 .5em; }
+  header.intro p { font-size: 1.15rem; line-height: 1.55; color: var(--ink-2); margin: 0; }
+
+  /* ---- scrolly: full-width sticky chart; steps are invisible scroll triggers whose text
+         is shown in the persistent caption header above the chart ---- */
+  .scrolly { position: relative; max-width: 1280px; margin: 0 auto; padding: 0 16px; }
+  .graphic { position: sticky; top: 0; height: 100vh; display: flex; flex-direction: column;
+             justify-content: center; min-width: 0; }
+  .steps { position: relative; margin-top: -100vh; pointer-events: none; }
+  .step { height: 90vh; }
+  .step:last-child { height: 120vh; }
+  .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+  .caption { border-bottom: 1px solid var(--rule); padding: 0 0 12px; margin-bottom: 14px; min-height: 4.2em; }
+  .caption .text { font-family: var(--serif); font-size: clamp(1.05rem, 2vw, 1.35rem); line-height: 1.35; max-width: 60ch;
+                   transition: opacity .25s; }
+  .caption .text.fading { opacity: 0; }
+  .chart-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 6px; }
+  .chart-head h2 { font-size: .95rem; font-weight: 600; margin: 0; }
+  .chart-head .sub { font-size: .8rem; color: var(--ink-3); }
+  .hint { font-size: .75rem; color: var(--ink-3); margin-top: 4px; }
+  .controls { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .simplify { display: inline-flex; align-items: center; gap: 6px; font-size: .78rem; color: var(--ink-2); cursor: pointer; user-select: none; }
+  .simplify input { position: absolute; opacity: 0; pointer-events: none; }
+  .simplify .track { width: 26px; height: 15px; border-radius: 999px; background: var(--rule); position: relative; transition: background .2s; }
+  .simplify .track::after { content: ""; position: absolute; top: 2px; left: 2px; width: 11px; height: 11px; border-radius: 50%;
+                            background: var(--card); box-shadow: 0 1px 2px rgba(0,0,0,.2); transition: transform .2s; }
+  .simplify input:checked + .track { background: var(--ink); }
+  .simplify input:checked + .track::after { transform: translateX(11px); }
+  .simplify input:focus-visible + .track { outline: 2px solid var(--ink); outline-offset: 2px; }
+  .simplify.off { opacity: .4; }
+  @media (max-width: 640px) { .simplify { display: none; } }   /* phones: always simple, no switch */
+  .toggle { display: inline-flex; border: 1px solid var(--rule); border-radius: 999px; padding: 2px; background: var(--card); }
+  .toggle button { font: inherit; font-size: .8rem; border: 0; background: transparent; color: var(--ink-2);
+                   padding: 5px 12px; border-radius: 999px; cursor: pointer; }
+  .toggle button[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
+  #chart { width: 100%; height: min(66vh, 620px); }
+  #chart svg { display: block; width: 100%; height: 100%; overflow: visible; }
+
+  .node rect, .node-label { cursor: pointer; }
+  .node-label { font-size: 12px; fill: var(--ink); }
+  .node-label .n { fill: var(--ink-3); font-variant-numeric: tabular-nums; }
+  .node-label.outcome .name { font-weight: 600; }
+  .stage-label { font-size: 11px; letter-spacing: .06em; text-transform: uppercase; fill: var(--ink-3); }
+  .halo { paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+  .link { fill: none; stroke-opacity: var(--link-opacity); transition: stroke-opacity .15s; cursor: pointer; }
+  .links:hover .link { stroke-opacity: .25; }
+  .links .link:hover { stroke-opacity: .95; }
+  .selected-ring { fill: none; stroke: var(--ink); stroke-width: 2; pointer-events: none; }
+
+  .tip { position: fixed; pointer-events: none; background: var(--ink); color: var(--bg); font-size: 12px; line-height: 1.4;
+         padding: 7px 9px; border-radius: 4px; max-width: 260px; opacity: 0; transition: opacity .1s; z-index: 30; }
+  .tip b { font-weight: 600; }
+
+  footer { max-width: 720px; margin: 0 auto; padding: 48px 16px 64px; font-size: .85rem; color: var(--ink-2);
+           border-top: 1px solid var(--rule); line-height: 1.5; }
+  footer a { color: inherit; }
+
+  /* ---- top-level view tabs (top left) ---- */
+  .viewtabs { position: fixed; top: 14px; left: 16px; z-index: 15; display: inline-flex; border: 1px solid var(--rule);
+              border-radius: 999px; padding: 2px; background: var(--card); box-shadow: 0 2px 10px rgba(0,0,0,.06); }
+  .viewtabs a { font-size: .85rem; color: var(--ink-2); text-decoration: none; padding: 6px 14px; border-radius: 999px; }
+  .viewtabs a[aria-current="page"] { background: var(--ink); color: var(--bg); }
+  [hidden] { display: none !important; }
+
+  /* ---- intake view ---- */
+  .intake { max-width: 1180px; margin: 0 auto; padding: 84px 16px 48px; }
+  .intake h1 { font-family: var(--serif); font-size: clamp(1.7rem, 4vw, 2.5rem); line-height: 1.15; margin: 0 0 .35em; }
+  .intake .dek { color: var(--ink-2); font-size: 1.02rem; line-height: 1.5; margin: 0 0 28px; max-width: 64ch; }
+  .intake-grid { display: grid; grid-template-columns: 360px 1fr; gap: 36px; align-items: start; }
+  @media (max-width: 900px) { .intake-grid { grid-template-columns: minmax(0, 1fr); } }
+  .form { display: flex; flex-direction: column; gap: 18px; position: sticky; top: 72px; }
+  @media (max-width: 900px) { .form { position: static; } }
+  .field > label, .field > .flabel { display: block; font-size: .78rem; font-weight: 600; letter-spacing: .02em; margin-bottom: 6px; }
+  .field .help { font-size: .74rem; color: var(--ink-3); margin-top: 5px; line-height: 1.4; }
+  .field .thin { color: #9a6b12; }
+  .form select, .form input[type=text], .form input[type=date], .form input[type=number] {
+    width: 100%; font: inherit; font-size: .92rem; padding: 8px 10px; border: 1px solid var(--rule); border-radius: 6px; background: var(--card); color: var(--ink); }
+  .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .seg { display: flex; flex-wrap: wrap; border: 1px solid var(--rule); border-radius: 6px; overflow: hidden; background: var(--card); }
+  .seg label { flex: 1 1 auto; text-align: center; font-size: .8rem; padding: 7px 8px; cursor: pointer; color: var(--ink-2);
+               border-right: 1px solid var(--rule); user-select: none; }
+  .seg label:last-child { border-right: 0; }
+  .seg input { position: absolute; opacity: 0; pointer-events: none; }
+  .seg label:has(input:checked) { background: var(--ink); color: var(--bg); }
+  .seg label:has(input:focus-visible) { outline: 2px solid var(--ink); outline-offset: -2px; }
+  .checks { display: flex; gap: 16px; font-size: .88rem; }
+  .checks label { display: inline-flex; gap: 6px; align-items: center; cursor: pointer; }
+  .reset { align-self: flex-start; font: inherit; font-size: .8rem; color: var(--ink-2); background: none; border: 0; padding: 0;
+           text-decoration: underline; cursor: pointer; }
+
+  .results { min-width: 0; }
+  .res-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; flex-wrap: wrap;
+              border-bottom: 1px solid var(--rule); padding-bottom: 14px; margin-bottom: 18px; }
+  .big { font-family: var(--serif); font-size: clamp(1.6rem, 3.5vw, 2.3rem); line-height: 1.1; }
+  .big small { display: block; font-family: var(--sans); font-size: .82rem; color: var(--ink-3); margin-top: 6px; }
+  .closeness .flabel { font-size: .72rem; color: var(--ink-3); margin-bottom: 4px; text-transform: uppercase; letter-spacing: .06em; }
+  .outbar { display: flex; height: 12px; border-radius: 3px; overflow: hidden; gap: 2px; margin: 4px 0 6px; }
+  .outbar span { display: block; height: 100%; }
+  .outlegend { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: .78rem; color: var(--ink-2); }
+  .outlegend i { display: inline-block; width: 9px; height: 9px; border-radius: 2px; margin-right: 5px; vertical-align: -1px; }
+  .section-label { font-size: .72rem; text-transform: uppercase; letter-spacing: .07em; color: var(--ink-3); margin: 26px 0 8px; }
+
+  .heat { display: grid; grid-template-columns: minmax(140px, 1fr) repeat(4, minmax(46px, 70px)) 64px; gap: 2px; font-size: .8rem; }
+  .heat .h { font-size: .7rem; color: var(--ink-3); text-align: center; padding: 4px 2px; line-height: 1.2; align-self: end; }
+  .heat .h.left { text-align: left; }
+  .heat .rl { padding: 7px 8px 7px 0; color: var(--ink); cursor: pointer; line-height: 1.25; }
+  .heat .rl:hover { text-decoration: underline; }
+  .heat .rl.env::before { content: ""; display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--env-ink);
+                          margin-right: 6px; vertical-align: 1px; opacity: .6; }
+  .heat .c { border: 0; font: inherit; font-size: .78rem; font-variant-numeric: tabular-nums; border-radius: 3px; cursor: pointer;
+             min-height: 30px; color: var(--ink); }
+  .heat .c.zero { cursor: default; color: var(--ink-3); background: transparent; }
+  .heat .c:not(.zero):hover { outline: 2px solid var(--ink); outline-offset: -2px; }
+  .heat .lift { text-align: right; padding: 7px 0; font-variant-numeric: tabular-nums; color: var(--ink-3); font-size: .78rem; }
+  .heat .lift.up { color: var(--ink); font-weight: 600; }
+  .heatnote { font-size: .74rem; color: var(--ink-3); margin-top: 8px; line-height: 1.45; }
+  @media (max-width: 560px) {
+    .heat { grid-template-columns: minmax(0, 1fr) repeat(4, 38px) 38px; font-size: .74rem; }
+    .heat .h { font-size: .62rem; }
+    .heat .rl { padding-right: 4px; }
+    .seg label { padding: 7px 4px; font-size: .74rem; }
+  }
+
+  .crit { list-style: none; padding: 0; margin: 0; font-size: .82rem; display: grid; gap: 4px; }
+  .crit li { display: grid; grid-template-columns: 18px 1fr auto; gap: 8px; align-items: baseline; color: var(--ink-2); }
+  .crit .k { color: var(--ink); }
+  .crit .ok { color: #3a8a51; } .crit .na { color: var(--ink-3); }
+  .crit .thin { color: #9a6b12; }
+  .readall { margin-top: 18px; font: inherit; font-size: .9rem; padding: 9px 16px; border-radius: 999px; border: 1px solid var(--ink);
+             background: var(--ink); color: var(--bg); cursor: pointer; }
+  .caveat { font-size: .78rem; color: var(--ink-3); line-height: 1.5; margin-top: 26px; border-top: 1px solid var(--rule); padding-top: 12px; }
+  .empty-res { color: var(--ink-3); padding: 40px 0; font-size: .95rem; }
+
+  /* ---- scroll cues: glowing arrows, bottom while there's more below, top once you've scrolled ---- */
+  .scroll-cue { position: fixed; left: 50%; z-index: 14; width: 44px; height: 44px; margin-left: -22px; border-radius: 50%;
+                border: 1px solid var(--rule); background: var(--card); color: var(--ink); cursor: pointer; display: grid; place-items: center;
+                opacity: 0; pointer-events: none; transition: opacity .45s ease; }
+  .scroll-cue.show { opacity: 1; pointer-events: auto; }
+  .scroll-cue svg { width: 18px; height: 18px; }
+  .scroll-cue.down { bottom: 22px; animation: cue-glow 2.2s ease-in-out infinite, cue-bob-down 2.2s ease-in-out infinite; }
+  .scroll-cue.up   { top: 14px;    animation: cue-glow 2.2s ease-in-out infinite, cue-bob-up 2.2s ease-in-out infinite; }
+  .scroll-cue:hover { border-color: var(--ink-3); animation-play-state: paused; }
+  @keyframes cue-glow {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(196, 90, 28, 0), 0 2px 10px rgba(0,0,0,.06); }
+    50%      { box-shadow: 0 0 0 7px rgba(196, 90, 28, .16), 0 0 22px 4px rgba(196, 90, 28, .30); }
+  }
+  @keyframes cue-bob-down { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(5px); } }
+  @keyframes cue-bob-up   { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+  body.pane-open .scroll-cue { opacity: 0; pointer-events: none; }
+  @media (prefers-reduced-motion: reduce) { .scroll-cue.down, .scroll-cue.up { animation: none; } }
+
+  /* ---- single-page layout (scrollytelling disabled): chart is static and sized to fit the window.
+         Delete this block when re-enabling SCROLLYTELLING. ---- */
+  header.intro { max-width: 1280px; padding: 68px 16px 14px; }
+  header.intro h1 { font-size: clamp(1.6rem, 3.4vw, 2.4rem); margin-bottom: .3em; }
+  header.intro p { font-size: 1rem; max-width: 72ch; }
+  .graphic { position: static; height: auto; display: block; }
+  #chart { height: clamp(380px, calc(100vh - 290px), 720px); }
+  footer { max-width: 1280px; padding-top: 20px; }
+
+  /* ---- global search button (top right) ---- */
+  .search-all { position: fixed; top: 14px; right: 16px; z-index: 15; display: inline-flex; align-items: center; gap: 8px;
+                font: inherit; font-size: .85rem; padding: 8px 14px 8px 12px; border: 1px solid var(--rule); border-radius: 999px;
+                background: var(--card); color: var(--ink); cursor: pointer; box-shadow: 0 2px 10px rgba(0,0,0,.06);
+                transition: opacity .2s; }
+  .search-all:hover { border-color: var(--ink-3); }
+  .search-all svg { width: 15px; height: 15px; }
+  .search-all kbd { font: inherit; font-size: .72rem; color: var(--ink-3); border: 1px solid var(--rule); border-radius: 3px; padding: 0 5px; }
+  body.pane-open .search-all { opacity: 0; visibility: hidden; pointer-events: none; }
+  @media (max-width: 560px) { .search-all .lab, .search-all kbd { display: none; } .search-all { padding: 9px; } }
+
+  /* ---- incident viewer pane ---- */
+  .pane { position: fixed; top: 0; right: 0; height: 100vh; width: min(460px, 100vw); background: var(--card);
+          border-left: 1px solid var(--rule); box-shadow: -12px 0 32px rgba(0,0,0,.08); z-index: 20;
+          transform: translateX(100%); transition: transform .28s cubic-bezier(.2,.7,.2,1); display: flex; flex-direction: column; }
+  .pane.open { transform: none; }
+  .pane-head { padding: 16px 18px 12px; border-bottom: 1px solid var(--rule); }
+  .pane-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+  .pane-title { font-size: 1rem; font-weight: 600; margin: 0 0 8px; line-height: 1.3; }
+  .pane-close { font: inherit; font-size: 1.3rem; line-height: 1; border: 0; background: none; color: var(--ink-2); cursor: pointer; padding: 2px 4px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+  .chip { display: inline-flex; align-items: center; gap: 6px; font-size: .78rem; padding: 3px 4px 3px 9px; border-radius: 999px;
+          background: var(--bg); border: 1px solid var(--rule); }
+  .chip button { font: inherit; border: 0; background: none; color: var(--ink-3); cursor: pointer; padding: 0 4px; }
+  .search { width: 100%; font: inherit; font-size: .95rem; padding: 9px 12px; border: 1px solid var(--rule); border-radius: 6px; background: var(--bg); }
+  .search:focus { outline: 2px solid var(--ink); outline-offset: -1px; }
+  .count { font-size: .78rem; color: var(--ink-3); margin-top: 8px; display: flex; justify-content: space-between; gap: 8px; }
+  .pane-list { flex: 1; overflow-y: auto; margin: 0; padding: 0; list-style: none; }
+  .inc { padding: 12px 18px; border-bottom: 1px solid var(--rule); }
+  .inc-meta { display: flex; align-items: center; gap: 8px; font-size: .75rem; color: var(--ink-3); margin-bottom: 4px; }
+  .yr { font-variant-numeric: tabular-nums; color: var(--ink-2); font-weight: 600; }
+  .out-pill { color: #fff; padding: 1px 7px; border-radius: 999px; font-size: .7rem; font-weight: 600; }
+  .out-pill.none { color: var(--ink); }
+  .disc-dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+  .disc-dot.outline { border: 1.25px solid var(--ink-2); background: transparent; }
+  .disc-name { color: var(--ink-2); }
+  .inc-title { font: inherit; font-size: .9rem; line-height: 1.35; text-align: left; border: 0; background: none; padding: 0;
+               color: var(--ink); cursor: pointer; display: block; width: 100%; }
+  .inc-title:hover { text-decoration: underline; text-decoration-color: var(--ink-3); }
+  .snippet { font-size: .8rem; color: var(--ink-2); line-height: 1.45; margin-top: 4px; }
+  .badges { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 7px; }
+  .badge { font-size: .68rem; line-height: 1.2; padding: 2px 6px; border-radius: 3px; background: var(--bg); color: var(--ink-2);
+           border: 1px solid var(--rule); }
+  .badge.env { background: var(--env); color: var(--env-ink); border-color: transparent; }
+  .badge.more { border-style: dashed; }
+  .inc-text { font-size: .85rem; line-height: 1.55; color: var(--ink); white-space: pre-wrap; margin-top: 8px;
+              max-height: 340px; overflow-y: auto; padding: 10px 12px; background: var(--bg); border-radius: 4px; }
+  mark { background: var(--mark); color: inherit; padding: 0 1px; border-radius: 2px; }
+  .more-btn { display: block; margin: 14px auto 24px; font: inherit; font-size: .85rem; padding: 7px 14px; border: 1px solid var(--rule);
+              border-radius: 999px; background: var(--card); cursor: pointer; }
+  .empty { padding: 32px 18px; color: var(--ink-3); font-size: .9rem; }
+
+  /* ---- mobile ---- */
+  @media (max-width: 820px) {
+    #chart { height: 58vh; }
+  }
+</style>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<script>var t=null;try{t=localStorage.getItem('theme');}catch(e){}document.documentElement.dataset.theme=t||'light';</script>
+<style>.backlink{display:inline-block;margin:0 0 14px;font:0.8rem ui-monospace,Menlo,monospace;color:var(--ink-3);text-decoration:none}.backlink:hover{color:var(--ink)}</style>
+</head>
+<body>
+
+<nav class="viewtabs" aria-label="View">
+  <a href="#sankey" data-view="sankey" aria-current="page">Sankey</a>
+  <a href="#intake" data-view="intake">Intake</a>
+</nav>
+
+<div id="view-sankey">
+<header class="intro">
+  <a class="backlink" href="/projects/">&larr; projects</a>
+  <h1>Climbing Accidents Visualized</h1>
+  <p>2,724 climbing accident reports published by the American Alpine Club, 1990–2019, tagged by discipline, what went wrong, and how it ended.</p>
+</header>
+
+<section class="scrolly">
+  <div class="graphic">
+    <!-- SCROLLYTELLING (disabled): persistent step caption. Re-enable with the other SCROLLYTELLING blocks.
+    <div class="caption" aria-live="polite">
+      <div class="text" id="step-text"></div>
+    </div>
+    -->
+    <div class="chart-head">
+      <div>
+        <h2 id="chart-title">Discipline → <span id="mid-title"></span> → Outcome</h2>
+        <div class="sub">Climbing accidents in AAC reports, publication years 1990–2019 (n = 2,724)</div>
+        <div class="hint">Click any bar or flow to read the reports behind it.</div>
+      </div>
+      <div class="controls">
+        <div class="toggle" role="group" aria-label="Middle column">
+          <button type="button" data-mode="factors" aria-pressed="true">What contributed</button>
+          <button type="button" data-mode="activity" aria-pressed="false">What they were doing</button>
+        </div>
+        <!-- larger screens only: collapse factor families into the simple human vs. environment view (phones always get it) -->
+        <label class="simplify" title="Show human vs. environment instead of seven factor families">
+          <input type="checkbox" id="simplify"><span class="track" aria-hidden="true"></span>Simplify
+        </label>
+      </div>
+    </div>
+    <div id="chart" role="img" aria-label="Sankey diagram of climbing accidents from discipline to outcome"></div>
+  </div>
+
+  <!-- SCROLLYTELLING (disabled): scroll triggers; the text of each step is read into the caption header.
+  <div class="steps">
+    <div class="step" data-step="0"><p class="sr-only">[Placeholder] Every accident, by discipline.</p></div>
+    <div class="step" data-step="1"><p class="sr-only">[Placeholder] Where they flow.</p></div>
+    <div class="step" data-step="2"><p class="sr-only">[Placeholder] How they end.</p></div>
+    <div class="step" data-step="3"><p class="sr-only">[Placeholder] A highlighted path.</p></div>
+    <div class="step" data-step="4"><p class="sr-only">[Placeholder] Switch the middle column.</p></div>
+  </div>
+  -->
+</section>
+
+<footer>
+  <p><a href="https://github.com/ecaroom/climbing-accidents">Data: an analysis of the AAC's climbing accident reports by Eliot Caroom (CC BY 4.0)</a></p>
+  <p>Accidents tagged with more than one discipline count fractionally toward each in the chart (an accident tagged Ice + Mountaineering adds ½ to each); the report viewer lists every report carrying the tag. In the factor-families view, each report is also split across the families of factors it was tagged with (a report with gear and weather factors adds ½ to each). Outcome is the most severe outcome in the report. 46 non-climbing incidents are excluded.</p>
+</footer>
+</div>
+
+<main class="intake" id="view-intake" hidden>
+  <a class="backlink" href="/projects/">&larr; projects</a>
+  <h1>Planning a climb? Read what happened to people on similar trips.</h1>
+  <p class="dek">Describe your trip. You'll get the reported accidents that most resemble it, and a heatmap of what contributed to them and how they ended.</p>
+  <div class="intake-grid">
+    <form class="form" id="intake-form" autocomplete="off" onsubmit="return false">
+      <div class="field">
+        <label for="f-style">Style</label>
+        <select id="f-style" name="style">
+          <option value="">Choose a style…</option>
+          <option value="trad">Trad</option><option value="sport">Sport</option><option value="toprope">Top-rope</option>
+          <option value="ice">Ice</option><option value="mountaineering">Mountaineering / alpine</option><option value="bouldering">Bouldering</option>
+        </select>
+      </div>
+      <div class="field">
+        <div class="flabel">Your experience in this style</div>
+        <div class="seg" role="radiogroup">
+          <label><input type="radio" name="exp" value=""  checked>Skip</label>
+          <label><input type="radio" name="exp" value="No/Little">&lt; 1 yr</label>
+          <label><input type="radio" name="exp" value="Moderate">1–3 yrs</label>
+          <label><input type="radio" name="exp" value="Experienced">3+ yrs</label>
+        </div>
+        <div class="help">Same scale as the dataset: little, moderate, experienced (roughly &lt;1, 1–3, 3+ years; judged per report, not strictly by years).</div>
+      </div>
+      <div class="field">
+        <div class="flabel">Time since you last climbed this style</div>
+        <div class="seg" role="radiogroup">
+          <label><input type="radio" name="gap" value="" checked>Regularly</label>
+          <label><input type="radio" name="gap" value="1-6">1–6 mo</label>
+          <label><input type="radio" name="gap" value="6-12">6–12 mo</label>
+          <label><input type="radio" name="gap" value="12+">1 yr +</label>
+        </div>
+        <div class="help thin">Not tagged in the data. Matched only where a report mentions a layoff (31 reports), so it can add matches but never removes any.</div>
+      </div>
+      <div class="field">
+        <label for="f-region">Location</label>
+        <div class="row2">
+          <select id="f-region" name="region"><option value="">Anywhere</option></select>
+          <input id="f-area" name="area" type="text" placeholder="Area, e.g. Yosemite">
+        </div>
+        <div class="help">State or province (from each report's dateline). The area is matched in report titles and datelines.</div>
+      </div>
+      <div class="field">
+        <div class="flabel">New to…</div>
+        <div class="checks">
+          <label><input type="checkbox" name="newStyle"> this style</label>
+          <label><input type="checkbox" name="newArea"> this area</label>
+        </div>
+        <div class="help thin">Not tagged either. Matched from report text such as "first time on" or "unfamiliar with the area" (about 40 reports each), so it only adds matches.</div>
+      </div>
+      <div class="field">
+        <div class="row2">
+          <div><label for="f-date">Trip date</label><input id="f-date" name="date" type="date"></div>
+          <div><label for="f-tod">Time of day</label>
+            <select id="f-tod" name="tod">
+              <option value="">Any</option><option value="early">Early start</option><option value="midday">Midday</option>
+              <option value="late">Late afternoon / evening</option><option value="night">After dark</option>
+            </select></div>
+        </div>
+        <div class="help">Date matches the report's month, ±1 month. Time of day can only be matched through the Late in Day, Late Start and darkness tags.</div>
+      </div>
+      <div class="field">
+        <div class="row2">
+          <div><label for="f-party">Party size</label><input id="f-party" name="party" type="number" min="1" max="30" placeholder="e.g. 2"></div>
+          <div><label for="f-pexp">Party experience</label>
+            <select id="f-pexp" name="pexp">
+              <option value="">Skip</option><option value="No/Little">Mostly newer</option>
+              <option value="Moderate">Mixed / moderate</option><option value="Experienced">Mostly experienced</option>
+            </select></div>
+        </div>
+        <div class="help">Party size is approximated by how many climbers' ages a report gives, plus the Climbing Alone, Solo and Large Group tags.</div>
+      </div>
+      <button type="button" class="reset" id="intake-reset">Clear all</button>
+    </form>
+
+    <section class="results" id="results" aria-live="polite"></section>
+  </div>
+</main>
+
+<!-- SCROLLYTELLING (disabled): glowing up/down step arrows
+<button class="scroll-cue up" id="cue-up" type="button" aria-label="Scroll up a step">
+  <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 10l4.5-4.5 4.5 4.5"/></svg>
+</button>
+<button class="scroll-cue down" id="cue-down" type="button" aria-label="Scroll down a step">
+  <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 6l4.5 4.5 4.5-4.5"/></svg>
+</button>
+
+-->
+
+<button class="search-all" id="search-all" type="button" aria-label="Search all accident reports">
+  <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="7" cy="7" r="5"/><path d="M11 11l3.5 3.5" stroke-linecap="round"/></svg>
+  <span class="lab">Search all reports</span><kbd>/</kbd>
+</button>
+
+<aside class="pane" id="pane" aria-label="Accident reports" aria-hidden="true">
+  <div class="pane-head">
+    <div class="pane-top">
+      <h3 class="pane-title" id="pane-title">Accident reports</h3>
+      <button class="pane-close" id="pane-close" aria-label="Close">×</button>
+    </div>
+    <div class="chips" id="chips"></div>
+    <input class="search" id="search" type="search" placeholder="Search reports: rappel, “end knot”, Denali…" autocomplete="off">
+    <div class="count"><span id="count"></span><span id="text-status"></span></div>
+  </div>
+  <ul class="pane-list" id="list"></ul>
+</aside>
+
+<div class="tip" id="tip"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/d3-sankey@0.12.3/dist/d3-sankey.min.js"></script>
+<!-- SCROLLYTELLING (disabled): <script src="https://cdn.jsdelivr.net/npm/scrollama@3.2.0/build/scrollama.min.js"></script> -->
+<script>
+(async function () {
+  const [data, accidents] = await Promise.all([d3.json("sankey.json"), d3.json("accidents.json")]);
+  const discById = new Map(data.disciplines.map(d => [d.id, d]));
+  const outById = new Map(data.outcomes.map(o => [o.id, o]));
+  const VIEW_COL = { A: "factor_mix", B: "activity", C: "factor_families" };   // C is a list per accident
+  const fmt = v => Math.abs(v - Math.round(v)) < 0.05 ? d3.format(",")(Math.round(v)) : d3.format(",.1f")(v);
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  const discColor = id => discById.get(id).outline ? "#cfcdc5" : discById.get(id).ramp[2];
+
+  // Middle column: "factors" mode shows view C (seven factor families) on tablets/computers, or view A
+  // (human vs. environment) on phones or when Simplify is on. "activity" mode shows view B.
+  const PHONE = window.matchMedia("(max-width: 640px)");
+  let simplifyPref = false;
+  try { simplifyPref = localStorage.getItem("cav-simplify") === "1"; } catch (e) {}
+  const state = { mode: "factors", simplify: simplifyPref, view: "A", step: 0, filter: null };
+  const viewFor = () => state.mode === "activity" ? "B" : (PHONE.matches || state.simplify) ? "A" : "C";
+  state.view = viewFor();
+  let OUT_EXTRA = 10;
+  const chartEl = document.getElementById("chart");
+  const tip = document.getElementById("tip");
+  const svg = d3.select(chartEl).append("svg");
+  const defs = svg.append("defs");
+  defs.append("pattern").attr("id", "hatch").attr("patternUnits", "userSpaceOnUse")
+      .attr("width", 6).attr("height", 6).attr("patternTransform", "rotate(45)")
+    .append("line").attr("x1", 0).attr("y1", 0).attr("x2", 0).attr("y2", 6)
+      .attr("stroke", "#8f8e87").attr("stroke-width", 1.5);
+  const gStage = svg.append("g");
+  const gLinks = svg.append("g").attr("class", "links");
+  const gNodes = svg.append("g").attr("class", "nodes");
+  const gLabels = svg.append("g").attr("class", "labels");
+
+  const nodeKey = n => n.stage === 1 ? `mid${n.slot}` : n.id;
+  const linkKey = l => `${l.discipline}|${nodeKey(l.source)}|${nodeKey(l.target)}`;
+  const outcomeOf = n => n.id.split(":")[1];
+
+  // mid->outcome flows blend from discipline colour into outcome colour.
+  // Columns never move between views, so one gradient per (discipline, outcome) serves every middle node.
+  function updateGradients(x0, x1) {
+    const pairs = [];
+    for (const d of data.disciplines) for (const o of data.outcomes) pairs.push({ d, o });
+    defs.selectAll("linearGradient.flow").data(pairs, p => p.d.id + p.o.id).join(enter => {
+      const g = enter.append("linearGradient").attr("class", "flow")
+        .attr("id", p => `g-${p.d.id}-${p.o.id}`).attr("gradientUnits", "userSpaceOnUse");
+      g.append("stop").attr("offset", "0%").attr("stop-color", p => discColor(p.d.id));
+      g.append("stop").attr("offset", "30%").attr("stop-color", p => discColor(p.d.id));
+      g.append("stop").attr("offset", "100%").attr("stop-color", p => p.o.color);
+      return g;
+    }).attr("x1", x0).attr("x2", x1).attr("y1", 0).attr("y2", 0);
+  }
+  function linkColor(l) {
+    if (l.source.stage === 0) return discById.get(l.discipline).outline ? "url(#hatch)" : discById.get(l.discipline).ramp[2];
+    return `url(#g-${l.discipline}-${outcomeOf(l.target)})`;
+  }
+  function nodeFill(n) {
+    if (n.stage === 0) return discById.get(n.discipline).outline ? "var(--bg)" : discById.get(n.discipline).ramp[2];
+    if (n.stage === 2) return outById.get(outcomeOf(n)).color;
+    return "var(--ink)";
+  }
+
+  // measure real label widths so side margins never clip text
+  function labelWidth(strings) {
+    const t = svg.append("text").attr("class", "node-label").style("visibility", "hidden");
+    let w = 0;
+    for (const s of strings) w = Math.max(w, t.text(s).node().getComputedTextLength());
+    t.remove();
+    return Math.ceil(w) + 8;
+  }
+
+  function layout(viewKey, width, height) {
+    const view = data.views[viewKey];
+    const narrow = width < 560;
+    const m = narrow ? { top: 28, right: 14, bottom: 8, left: 2 } : { top: 28, right: labelWidth(data.outcomes.map(o => `${o.label} ${fmt(o.n)}`)) + 20,
+                bottom: 8, left: labelWidth(data.disciplines.map(d => `${d.label} ${fmt(d.n_weighted)}`)) + 12 };
+    return d3.sankey()
+      .nodeId(d => d.id)
+      .nodeAlign(n => n.stage)
+      .nodeWidth(narrow ? 10 : 14)
+      .nodePadding(narrow ? 10 : 14)
+      .nodeSort(null).linkSort(null)
+      .iterations(0)
+      .extent([[m.left, m.top], [width - m.right, height - m.bottom]])({
+        nodes: view.nodes.map(d => ({ ...d })),
+        links: view.links.map(d => ({ ...d })),
+      });
+  }
+
+  function render(animate) {
+    const width = chartEl.clientWidth, height = chartEl.clientHeight;
+    svg.attr("viewBox", [0, 0, width, height]);
+    const { nodes, links } = layout(state.view, width, height);
+    OUT_EXTRA = width < 560 ? 4 : 10;   // outcome bars drawn wider than the layout's node width
+    const t = svg.transition().duration(animate ? 900 : 0).ease(d3.easeCubicInOut);
+    document.getElementById("mid-title").textContent = data.views[state.view].title;
+
+    const mid = nodes.find(n => n.stage === 1), out = nodes.find(n => n.stage === 2);
+    updateGradients(mid.x1, out.x0);
+
+    const xs = [0, 1, 2].map(s => nodes.find(n => n.stage === s));
+    const heads = ["Discipline", data.views[state.view].title, "Worst outcome"];
+    gStage.selectAll("text").data(xs).join("text")
+      .attr("class", "stage-label")
+      .attr("text-anchor", (d, i) => width < 560 ? ["start", "middle", "end"][i] : (i === 0 ? "end" : "start"))
+      .attr("x", (d, i) => width < 560 ? [d.x0, (d.x0 + d.x1) / 2, d.x1 + OUT_EXTRA][i] : (i === 0 ? d.x1 : d.x0)).attr("y", 14)
+      .text((d, i) => heads[i]);
+
+    gLinks.selectAll("path").data(links, linkKey).join(
+      enter => enter.append("path").attr("class", "link")
+        .attr("d", d3.sankeyLinkHorizontal()).attr("stroke-width", 0)
+        .call(e => e.transition(t).attr("stroke-width", d => Math.max(0.5, d.width))),
+      update => update.call(u => u.transition(t)
+        .attr("d", d3.sankeyLinkHorizontal())
+        .attr("stroke-width", d => Math.max(0.5, d.width))),
+      exit => exit.call(x => x.transition(t).attr("stroke-width", 0).remove())
+    )
+      .attr("stroke", linkColor)
+      .on("mousemove", (ev, l) => showTip(ev,
+        `<b>${l.source.label} → ${l.target.label}</b><br>${discById.get(l.discipline).label}: ${fmt(l.value)} accidents` +
+        (Math.abs(l.value - Math.round(l.value)) > 0.05 ? "<br><span style='opacity:.7'>weighted for multi-discipline reports</span>" : "") +
+        "<br><span style='opacity:.7'>Click to read these reports</span>"))
+      .on("mouseleave", hideTip)
+      .on("click", (ev, l) => openPane(filterFromLink(l)));
+
+    gNodes.selectAll("g.node").data(nodes, nodeKey).join(enter => {
+      const g = enter.append("g").attr("class", "node");
+      g.append("rect");
+      return g;
+    })
+      .on("mousemove", (ev, n) => showTip(ev, nodeTip(n)))
+      .on("mouseleave", hideTip)
+      .on("click", (ev, n) => openPane(filterFromNode(n)))
+      .select("rect")
+      .attr("fill", nodeFill)
+      .attr("stroke", n => n.stage === 0 && discById.get(n.discipline).outline ? "var(--ink)" : "none")
+      .attr("stroke-width", 1.25)
+      .transition(t)
+      .attr("x", n => n.x0).attr("y", n => n.y0)
+      .attr("width", n => n.x1 - n.x0 + (n.stage === 2 ? OUT_EXTRA : 0)).attr("height", n => Math.max(1, n.y1 - n.y0));
+
+    const labels = gLabels.selectAll("text").data(nodes, nodeKey).join(enter => {
+      const tx = enter.append("text").attr("dy", "0.35em");
+      tx.append("tspan").attr("class", "name");
+      tx.append("tspan").attr("class", "n").attr("dx", 5);
+      return tx;
+    })
+      .attr("class", n => `node-label halo${n.stage === 2 ? " outcome" : ""}`)
+      .on("click", (ev, n) => openPane(filterFromNode(n)));
+    labels.select(".name").text(n => n.label).attr("fill", n => n.stage === 2 && outcomeOf(n) !== "none" ? outById.get(outcomeOf(n)).color : null);
+    // narrow screens: labels sit inside the chart (discipline right of its bar, outcome left of its bar)
+    const narrow = width < 560;
+    labels.style("font-size", narrow ? "10px" : null);
+    labels.select(".n").text(n => narrow && n.stage === 1 ? "" : n.stage === 0 ? fmt(discById.get(n.discipline).n_weighted) : fmt(n.value));
+    const anchor = n => narrow ? (n.stage === 2 ? "end" : "start") : (n.stage === 0 ? "end" : "start");
+    const lx = n => narrow ? (n.stage === 2 ? n.x0 - 4 : n.x1 + 4)
+                           : (n.stage === 0 ? n.x0 - 6 : n.x1 + 6 + (n.stage === 2 ? OUT_EXTRA : 0));
+    labels.transition(t)
+      .attr("text-anchor", anchor)
+      .attr("x", lx)
+      .attr("y", n => (n.y0 + n.y1) / 2);
+  }
+
+  function nodeTip(n) {
+    if (n.stage === 0) {
+      const d = discById.get(n.discipline);
+      return `<b>${d.label}</b><br>${d3.format(",")(d.n_any)} accidents tagged ${d.label.toLowerCase()}` +
+             (d.n_any !== Math.round(d.n_weighted) ? `<br>${fmt(d.n_weighted)} after splitting multi-discipline reports` : "") +
+             "<br><span style='opacity:.7'>Click to read these reports</span>";
+    }
+    const fatal = n.stage === 1 ? n.sourceLinks.filter(l => l.target.id === "o:fatal").reduce((s, l) => s + l.value, 0) : null;
+    const counted = n.n_any != null && n.n_any !== Math.round(n.value)
+      ? `${d3.format(",")(n.n_any)} accidents involve ${n.label.toLowerCase()}<br>${fmt(n.value)} after splitting reports across families`
+      : `${fmt(n.value)} accidents`;
+    return `<b>${n.label}</b><br>${counted}` + (fatal !== null ? `<br>${d3.format(".0%")(fatal / n.value)} fatal` : "") +
+           "<br><span style='opacity:.7'>Click to read these reports</span>";
+  }
+  function showTip(ev, html) {
+    tip.innerHTML = html; tip.style.opacity = 1;
+    const x = Math.min(ev.clientX + 14, window.innerWidth - tip.offsetWidth - 8);
+    tip.style.left = x + "px"; tip.style.top = (ev.clientY + 14) + "px";
+  }
+  function hideTip() { tip.style.opacity = 0; }
+
+  // ================= incident viewer pane =================
+  const pane = document.getElementById("pane"), listEl = document.getElementById("list");
+  const searchEl = document.getElementById("search"), countEl = document.getElementById("count");
+  const textStatus = document.getElementById("text-status");
+  const PAGE = 100;
+  let reports = null, reportsLoading = null, shown = PAGE, results = [];
+  const hay = new Map();   // id -> lowercase searchable string
+
+  function baseHay(a) { return (a.title + " " + a.factors.join(" ") + " " + a.pub_year).toLowerCase(); }
+  function loadReports() {
+    if (reportsLoading) return reportsLoading;
+    textStatus.textContent = "Loading full report text…";
+    reportsLoading = d3.json("reports.json").then(r => {
+      reports = r;
+      for (const a of accidents) hay.set(a.id, baseHay(a) + " " + (r[a.id] || "").toLowerCase());
+      textStatus.textContent = "";
+      refresh();
+    }).catch(() => { textStatus.textContent = "Searching titles and tags only"; });
+    return reportsLoading;
+  }
+  for (const a of accidents) hay.set(a.id, baseHay(a));
+
+  // filter = { discipline?, mid?: {view, key, label}, outcome? }
+  function filterFromNode(n) {
+    if (n.stage === 0) return { discipline: n.discipline };
+    if (n.stage === 1) return { mid: { view: state.view, key: n.id.split(":")[1], label: n.label } };
+    return { outcome: outcomeOf(n) };
+  }
+  function filterFromLink(l) {
+    const f = { discipline: l.discipline };
+    const midNode = l.source.stage === 1 ? l.source : l.target;
+    f.mid = { view: state.view, key: midNode.id.split(":")[1], label: midNode.label };
+    if (l.target.stage === 2) f.outcome = outcomeOf(l.target);
+    return f;
+  }
+  function matchesFilter(a, f) {
+    if (!f) return true;
+    if (f.discipline && !a.disciplines.includes(f.discipline)) return false;
+    if (f.mid) {
+      const v = a[VIEW_COL[f.mid.view]];
+      if (Array.isArray(v) ? !v.includes(f.mid.key) : v !== f.mid.key) return false;
+    }
+    if (f.outcome && a.worst_outcome !== f.outcome) return false;
+    if (f.ids && !f.ids.has(a.id)) return false;
+    if (f.factor && !a.factors.includes(f.factor)) return false;
+    return true;
+  }
+  function parseQuery(q) {
+    const terms = [];
+    q.toLowerCase().replace(/[“”]/g, '"').replace(/"([^"]+)"|(\S+)/g, (m, phrase, word) => { terms.push((phrase || word).trim()); });
+    return terms.filter(Boolean);
+  }
+  function highlight(text, terms) {
+    let html = esc(text);
+    if (!terms.length) return html;
+    const re = new RegExp("(" + terms.map(t => esc(t).replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|") + ")", "gi");
+    return html.replace(re, "<mark>$1</mark>");
+  }
+  function snippet(text, terms) {
+    const lower = text.toLowerCase();
+    let i = -1;
+    for (const t of terms) { i = lower.indexOf(t); if (i >= 0) break; }
+    if (i < 0) return "";
+    const s = Math.max(0, i - 70), e = Math.min(text.length, i + 110);
+    return (s > 0 ? "…" : "") + text.slice(s, e).replace(/\s+/g, " ") + (e < text.length ? "…" : "");
+  }
+
+  function renderChips() {
+    const f = state.filter, chips = [];
+    if (f && f.discipline) chips.push({ k: "discipline", label: discById.get(f.discipline).label });
+    if (f && f.mid) chips.push({ k: "mid", label: f.mid.label });
+    if (f && f.ids) chips.push({ k: "ids", label: f.idsLabel || "Selected reports" });
+    if (f && f.factor) chips.push({ k: "factor", label: f.factor });
+    if (f && f.outcome) chips.push({ k: "outcome", label: outById.get(f.outcome).label });
+    d3.select("#chips").selectAll(".chip").data(chips, c => c.k).join(enter => {
+      const s = enter.append("span").attr("class", "chip");
+      s.append("span").attr("class", "lab");
+      s.append("button").attr("aria-label", "Remove filter").text("×")
+        .on("click", (ev, c) => { delete state.filter[c.k]; renderChips(); shown = PAGE; refresh(); });
+      return s;
+    }).select(".lab").text(c => c.label);
+    document.getElementById("pane-title").textContent = chips.length ? chips.map(c => c.label).join(" · ") : "All climbing accidents";
+  }
+
+  function refresh() {
+    const terms = parseQuery(searchEl.value);
+    const pool = accidents.filter(a => matchesFilter(a, state.filter));
+    results = terms.length ? pool.filter(a => { const h = hay.get(a.id); return terms.every(t => h.includes(t)); }) : pool;
+    const rank = state.filter && state.filter.rank;
+    results.sort((a, b) => (rank ? (rank.get(a.id) - rank.get(b.id)) : 0) ||
+                           (b.pub_year || 0) - (a.pub_year || 0) || a.title.localeCompare(b.title));
+    countEl.textContent = terms.length ? `${d3.format(",")(results.length)} of ${d3.format(",")(pool.length)} reports match`
+                                       : `${d3.format(",")(pool.length)} reports`;
+    listEl.innerHTML = "";
+    if (!results.length) { listEl.innerHTML = `<li class="empty">No reports match. Try fewer or different words.</li>`; return; }
+    const frag = document.createDocumentFragment();
+    for (const a of results.slice(0, shown)) frag.appendChild(itemEl(a, terms));
+    listEl.appendChild(frag);
+    if (results.length > shown) {
+      const b = document.createElement("button");
+      b.className = "more-btn"; b.textContent = `Show more (${d3.format(",")(results.length - shown)} left)`;
+      b.onclick = () => { shown += PAGE; refresh(); };
+      const li = document.createElement("li"); li.appendChild(b); listEl.appendChild(li);
+    }
+  }
+
+  function itemEl(a, terms) {
+    const li = document.createElement("li"); li.className = "inc";
+    const o = outById.get(a.worst_outcome);
+    const dots = a.disciplines.map(d => {
+      const dd = discById.get(d);
+      return `<span class="disc-dot${dd.outline ? " outline" : ""}" style="${dd.outline ? "" : `background:${dd.ramp[2]}`}" title="${esc(dd.label)}"></span><span class="disc-name">${esc(dd.label)}</span>`;
+    }).join(" ");
+    const env = new Set(a.env_factors);
+    const MAXB = 6;
+    const badges = a.factors.slice(0, MAXB).map(t => `<span class="badge${env.has(t) ? " env" : ""}">${highlight(t, terms)}</span>`).join("") +
+      (a.factors.length > MAXB ? `<span class="badge more">+${a.factors.length - MAXB}</span>` : "");
+    const titleHit = terms.length && terms.some(t => a.title.toLowerCase().includes(t));
+    const snip = terms.length && !titleHit && reports ? snippet(reports[a.id] || "", terms) : "";
+    li.innerHTML =
+      `<div class="inc-meta"><span class="yr">${a.pub_year ?? "n.d."}</span>` +
+      `<span class="out-pill ${a.worst_outcome}" style="background:${o.color}">${esc(o.label)}</span>${dots}</div>` +
+      `<button class="inc-title" aria-expanded="false">${highlight(a.title, terms)}</button>` +
+      (snip ? `<div class="snippet">${highlight(snip, terms)}</div>` : "") +
+      (badges ? `<div class="badges">${badges}</div>` : "");
+    const btn = li.querySelector(".inc-title");
+    btn.onclick = async () => {
+      const open = btn.getAttribute("aria-expanded") === "true";
+      const existing = li.querySelector(".inc-text");
+      if (open) { existing && existing.remove(); btn.setAttribute("aria-expanded", "false"); return; }
+      btn.setAttribute("aria-expanded", "true");
+      const div = document.createElement("div"); div.className = "inc-text"; div.textContent = "Loading…";
+      li.appendChild(div);
+      await loadReports();
+      div.innerHTML = reports ? highlight(reports[a.id] || "(no text)", parseQuery(searchEl.value)) : "Report text unavailable.";
+    };
+    return li;
+  }
+
+  function openPane(filter) {
+    hideTip();
+    state.filter = filter;
+    searchEl.value = "";          // a new selection starts with a clean search
+    shown = PAGE;
+    renderChips(); refresh();
+    pane.classList.add("open"); pane.setAttribute("aria-hidden", "false"); document.body.classList.add("pane-open");
+    loadReports();
+    searchEl.focus({ preventScroll: true });
+  }
+  function closePane() { pane.classList.remove("open"); pane.setAttribute("aria-hidden", "true"); document.body.classList.remove("pane-open"); searchEl.blur(); }
+  // unfiltered search across all 2,724 reports: button top right, or press "/"
+  document.getElementById("search-all").onclick = () => openPane({});
+  document.addEventListener("keydown", e => {
+    if (e.key === "/" && !pane.classList.contains("open") && !/input|textarea/i.test(document.activeElement.tagName)) {
+      e.preventDefault(); openPane({});
+    }
+  });
+  document.getElementById("pane-close").onclick = closePane;
+  document.addEventListener("keydown", e => { if (e.key === "Escape") closePane(); });
+  let st; searchEl.addEventListener("input", () => { clearTimeout(st); st = setTimeout(() => { shown = PAGE; refresh(); }, 120); });
+
+  // ================= intake view =================
+  const form = document.getElementById("intake-form");
+  const resultsEl = document.getElementById("results");
+  const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+  const STYLE_LABEL = { trad: "trad", sport: "sport", toprope: "top-rope", ice: "ice", mountaineering: "mountaineering", bouldering: "bouldering" };
+
+  // region dropdown, most-reported first
+  const regionCounts = d3.rollups(accidents.filter(a => a.region), v => v.length, a => a.region).sort((a, b) => b[1] - a[1]);
+  d3.select("#f-region").selectAll("option.r").data(regionCounts).join("option").attr("class", "r")
+    .attr("value", d => d[0]).text(d => `${d[0]} (${d[1]})`);
+
+  function readForm() {
+    const fd = new FormData(form);
+    const date = fd.get("date");
+    return {
+      style: fd.get("style"), exp: fd.get("exp"), gap: fd.get("gap"),
+      region: fd.get("region"), area: (fd.get("area") || "").trim().toLowerCase(),
+      newStyle: fd.get("newStyle") === "on", newArea: fd.get("newArea") === "on",
+      month: date ? new Date(date + "T12:00").getMonth() : null, tod: fd.get("tod"),
+      party: +fd.get("party") || null, pexp: fd.get("pexp"),
+    };
+  }
+  const bucket = n => n == null ? null : n <= 1 ? 1 : n === 2 ? 2 : n <= 5 ? 3 : 6;
+  const BUCKET_LABEL = { 1: "solo / alone", 2: "two", 3: "3–5", 6: "6+" };
+
+  // Each answered field becomes a criterion. test(a) -> true (match) | false (mismatch) | null (report can't tell)
+  // bonus criteria (thin data) only ever return true or null.
+  function criteria(q) {
+    const C = [];
+    const expOf = a => a.experience.filter(e => e !== "Unknown");
+    if (q.region) C.push({ key: "region", label: `In ${q.region}`, test: a => a.region == null ? null : a.region === q.region });
+    if (q.area) C.push({ key: "area", label: `Mentions “${q.area}”`, bonus: true,
+                         test: a => (a.title + " " + a.location_line).toLowerCase().includes(q.area) ? true : null });
+    if (q.month != null) {
+      const near = new Set([q.month, (q.month + 11) % 12, (q.month + 1) % 12].map(i => MONTHS[i]));
+      C.push({ key: "month", label: `${MONTHS[q.month]} ±1 month`, test: a => a.months.length ? a.months.some(m => near.has(m)) : null });
+    }
+    if (q.exp) C.push({ key: "exp", label: `A climber with ${q.exp === "No/Little" ? "little" : q.exp.toLowerCase()} experience`,
+                        test: a => expOf(a).length ? expOf(a).includes(q.exp) : null });
+    if (q.pexp) C.push({ key: "pexp", label: `Party ${q.pexp === "No/Little" ? "mostly newer" : q.pexp === "Moderate" ? "mixed" : "mostly experienced"}`,
+                        test: a => expOf(a).length ? expOf(a).includes(q.pexp) : null });
+    if (q.party) {
+      const b = bucket(q.party);
+      C.push({ key: "party", label: `Party of ${BUCKET_LABEL[b]}`, test: a => {
+        if (a.is_large_group) return b === 6;
+        if (a.is_climbing_alone || a.is_solo) return b === 1;
+        return a.party_size == null ? null : bucket(a.party_size) === b;
+      }});
+    }
+    if (q.tod) {
+      const late = a => a.is_late_in_day || a.is_visibility;
+      const T = {
+        early:  { label: "Early start",            test: a => a.is_late_start ? false : null },
+        midday: { label: "Midday",                 test: a => late(a) ? false : null },
+        late:   { label: "Late in the day",        test: a => a.is_late_in_day ? true : a.is_late_start ? true : null },
+        night:  { label: "After dark",             test: a => late(a) ? true : null },
+      }[q.tod];
+      C.push({ key: "tod", ...T });
+    }
+    if (q.gap) C.push({ key: "gap", label: "Layoff mentioned", bonus: true, thin: true, test: a => a.cue_gap ? true : null });
+    if (q.newStyle) C.push({ key: "newStyle", label: "New to the style", bonus: true, thin: true,
+                             test: a => a.cue_new_style ? true : null });
+    if (q.newArea) C.push({ key: "newArea", label: "New to the area", bonus: true, thin: true, test: a => a.cue_new_area ? true : null });
+    return C;
+  }
+
+  let closeness = "close";
+  function match(q) {
+    const crit = criteria(q);
+    const styled = accidents.filter(a => a.disciplines.includes(q.style));
+    const scored = styled.map(a => {
+      let hit = 0, miss = 0;
+      const res = crit.map(c => { const r = c.test(a); if (r === true) hit++; else if (r === false) miss++; return r; });
+      return { a, hit, miss, res };
+    });
+    const strictCount = crit.filter(c => !c.bonus).length;
+    const keep = scored.filter(s => {
+      if (closeness === "broad" || !crit.length) return true;
+      if (closeness === "strict") return s.miss === 0 && (s.hit > 0 || strictCount === 0);
+      return s.miss <= 1 && (s.hit > 0 || strictCount === 0);   // close
+    });
+    keep.sort((x, y) => (y.hit - y.miss) - (x.hit - x.miss) || (y.a.pub_year || 0) - (x.a.pub_year || 0));
+    return { crit, styled, scored, keep };
+  }
+
+  function renderIntake() {
+    const q = readForm();
+    if (!q.style) {
+      resultsEl.innerHTML = `<div class="empty-res">Choose a style to start. Every other field is optional and narrows or reorders the matches.</div>`;
+      return;
+    }
+    const { crit, styled, scored, keep } = match(q);
+    const n = keep.length, sl = STYLE_LABEL[q.style];
+    const outCount = id => keep.filter(s => s.a.worst_outcome === id).length;
+    const fatalShare = n ? outCount("fatal") / n : 0;
+    const styleFatal = styled.filter(a => a.worst_outcome === "fatal").length / styled.length;
+    const pct = d3.format(".0%");
+
+    // factor x outcome heatmap
+    const fc = new Map();
+    for (const s of keep) for (const f of s.a.factors) fc.set(f, (fc.get(f) || 0) + 1);
+    const rows = [...fc].sort((a, b) => b[1] - a[1]).slice(0, 12).map(d => d[0]);
+    const cell = (f, o) => keep.filter(s => s.a.worst_outcome === o && s.a.factors.includes(f)).length;
+    const grid = rows.map(f => ({ f, env: keep.find(s => s.a.factors.includes(f))?.a.env_factors.includes(f),
+                                 cells: data.outcomes.map(o => ({ o, v: cell(f, o.id) })),
+                                 share: fc.get(f) / n,
+                                 base: styled.filter(a => a.factors.includes(f)).length / styled.length }));
+    const maxV = d3.max(grid, r => d3.max(r.cells, c => c.v)) || 1;
+    const alpha = v => v ? 0.12 + 0.88 * Math.sqrt(v / maxV) : 0;
+    const hexA = (hex, a) => { const c = d3.color(hex); c.opacity = a; return c.formatRgb(); };
+    const textOn = (o, a) => a > 0.55 && o.id !== "none" ? "#fff" : "var(--ink)";
+
+    const critRows = crit.map(c => {
+      const known = scored.filter(s => s.res[crit.indexOf(c)] !== null).length;
+      const hits = keep.filter(s => s.res[crit.indexOf(c)] === true).length;
+      return `<li><span class="${hits ? "ok" : "na"}">${hits ? "✓" : "·"}</span>
+        <span class="k${c.thin ? " thin" : ""}">${esc(c.label)}${c.bonus ? " <span class='na'>(bonus)</span>" : ""}</span>
+        <span>${d3.format(",")(hits)} of the matches${c.bonus ? "" : ` · known for ${d3.format(",")(known)} of ${d3.format(",")(styled.length)} ${sl} reports`}</span></li>`;
+    }).join("");
+
+    resultsEl.innerHTML = `
+      <div class="res-head">
+        <div class="big">${d3.format(",")(n)} similar ${sl} accidents
+          <small>${crit.length ? `out of ${d3.format(",")(styled.length)} ${sl} reports, matched on ${crit.length} trip detail${crit.length > 1 ? "s" : ""}` : `all ${sl} reports. Add trip details to narrow these`}</small></div>
+        <div class="closeness"><div class="flabel">How close</div>
+          <div class="seg" role="radiogroup" id="closeness">
+            ${[["strict", "Every detail"], ["close", "All but one"], ["broad", "Style only"]].map(([v, l]) =>
+              `<label><input type="radio" name="close" value="${v}" ${closeness === v ? "checked" : ""}>${l}</label>`).join("")}
+          </div></div>
+      </div>
+      ${n ? `
+      <div class="outbar">${data.outcomes.map(o => `<span style="width:${outCount(o.id) / n * 100}%;background:${o.color}" title="${o.label}: ${outCount(o.id)}"></span>`).join("")}</div>
+      <div class="outlegend">${data.outcomes.map(o => `<span><i style="background:${o.color}"></i>${o.label} ${outCount(o.id)}</span>`).join("")}
+        <span style="color:var(--ink-3)">· ${pct(fatalShare)} fatal vs ${pct(styleFatal)} across all ${sl} reports</span></div>
+
+      <div class="section-label">What contributed, and how it ended</div>
+      <div class="heat" role="table">
+        <div class="h left" role="columnheader">Factor tagged in the report</div>
+        ${data.outcomes.map(o => `<div class="h" role="columnheader">${o.label.replace(" reported", "")}</div>`).join("")}
+        <div class="h" role="columnheader" title="How much more common this factor is in your matches than in all ${sl} reports">vs all ${sl}</div>
+        ${grid.map((r, ri) => `
+          <div class="rl${r.env ? " env" : ""}" role="rowheader" data-row="${ri}">${esc(r.f)}</div>
+          ${r.cells.map(c => { const al = alpha(c.v); return `<button class="c${c.v ? "" : " zero"}" data-row="${ri}" data-o="${c.o.id}"
+              style="background:${c.v ? hexA(c.o.color, al) : "transparent"};color:${textOn(c.o, al)}"
+              ${c.v ? "" : "disabled"} title="${esc(r.f)} · ${c.o.label}: ${c.v}">${c.v || "·"}</button>`; }).join("")}
+          <div class="lift${r.share / r.base >= 1.25 && n >= 10 ? " up" : ""}">${n >= 10 && r.base ? d3.format(".1f")(r.share / r.base) + "×" : "–"}</div>`).join("")}
+      </div>
+      <div class="heatnote">Cells count matching reports with that factor and worst outcome; darker = more. Reports carry several factors, so rows overlap.
+        Blue-dot rows are environmental factors. "vs all" compares how often the factor appears in your matches with all ${sl} reports (shown when there are 10+ matches).
+        Click a cell or factor to read those reports.</div>
+
+      <button type="button" class="readall" id="readall">Read all ${d3.format(",")(n)} reports →</button>
+      ` : `<div class="empty-res">No ${sl} reports match that combination. Try “All but one” or “Style only”, or remove a detail.</div>`}
+
+      ${crit.length ? `<div class="section-label">How your trip details matched</div><ul class="crit">${critRows}</ul>` : ""}
+      <p class="caveat">These are reported accidents, not risk. The AAC publishes a selection of incidents and there is no count of trips that went fine,
+        so a big number here means "commonly reported", not "likely to happen to you". Read the reports for what went wrong and how others avoided it.</p>`;
+
+    // wire up
+    resultsEl.querySelectorAll("#closeness input").forEach(i => i.onchange = () => { closeness = i.value; renderIntake(); });
+    const ids = new Set(keep.map(s => s.a.id));
+    const rank = new Map(keep.map((s, i) => [s.a.id, i]));
+    const label = `Similar ${sl} trips (${d3.format(",")(n)})`;
+    const open = extra => openPane({ ids, rank, idsLabel: label, ...extra });
+    const ra = resultsEl.querySelector("#readall"); if (ra) ra.onclick = () => open({});
+    resultsEl.querySelectorAll(".heat .rl").forEach(el => el.onclick = () => open({ factor: grid[+el.dataset.row].f }));
+    resultsEl.querySelectorAll(".heat .c:not(.zero)").forEach(el =>
+      el.onclick = () => open({ factor: grid[+el.dataset.row].f, outcome: el.dataset.o }));
+  }
+  form.addEventListener("input", renderIntake);
+  form.addEventListener("change", renderIntake);
+  document.getElementById("intake-reset").onclick = () => { form.reset(); closeness = "close"; renderIntake(); };
+
+  // ================= top-level view switching (#sankey / #intake) =================
+  function setView(v) {
+    const isIntake = v === "intake";
+    document.getElementById("view-sankey").hidden = isIntake;
+    document.getElementById("view-intake").hidden = !isIntake;
+    document.querySelectorAll(".viewtabs a").forEach(a => {
+      if (a.dataset.view === v) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current");
+    });
+    window.scrollTo(0, 0);
+    if (isIntake) renderIntake();
+    else requestAnimationFrame(() => render(false));   // SCROLLYTELLING: also scroller.resize()
+  }
+  window.addEventListener("hashchange", () => setView(location.hash === "#intake" ? "intake" : "sankey"));
+
+  // ================= toggle + scroll =================
+  function applyView(animate) {
+    const v = viewFor();
+    d3.selectAll(".toggle button").attr("aria-pressed", function () { return this.dataset.mode === state.mode; });
+    simplifyEl.checked = state.simplify;
+    simplifyEl.closest(".simplify").classList.toggle("off", state.mode !== "factors");
+    if (v === state.view && animate) return;
+    state.view = v;
+    render(animate);
+  }
+  const simplifyEl = document.getElementById("simplify");
+  simplifyEl.checked = state.simplify;
+  d3.selectAll(".toggle button").on("click", function () {
+    if (this.dataset.mode === state.mode) return;
+    state.mode = this.dataset.mode;
+    applyView(true);
+  });
+  simplifyEl.addEventListener("change", () => {
+    state.simplify = simplifyEl.checked;
+    try { localStorage.setItem("cav-simplify", state.simplify ? "1" : "0"); } catch (e) {}
+    if (state.mode !== "factors") { state.mode = "factors"; }   // switching it on/off implies the factor view
+    applyView(true);
+  });
+  PHONE.addEventListener("change", () => applyView(true));   // rotating a tablet or resizing across the breakpoint
+
+  /* SCROLLYTELLING (disabled). To re-enable: uncomment this block, the SCROLLYTELLING HTML blocks
+     (caption, .steps, scroll cues, scrollama <script>), remove the "single-page layout" CSS override,
+     and restore scroller.resize() / updateCues() in setView() and the resize handler.
+
+  const stepEls = [...document.querySelectorAll(".step")];
+  const stepText = document.getElementById("step-text");
+  function setCaption(index, animate) {
+    const html = stepEls[index].querySelector("p").innerHTML;
+    if (!animate) { stepText.innerHTML = html; return; }
+    stepText.classList.add("fading");
+    setTimeout(() => { stepText.innerHTML = html; stepText.classList.remove("fading"); }, 200);
+  }
+  setCaption(0, false);
+
+  const scroller = scrollama();
+  scroller.setup({ step: ".step", offset: 0.6 })
+    .onStepEnter(({ element, index }) => {
+      d3.selectAll(".step").classed("is-active", (d, i, els) => els[i] === element);
+      if (index !== state.step) setCaption(index, true);
+      state.step = index;
+      chartEl.dataset.step = index;
+      // TODO(tomorrow): steps[index].enter(state)
+    });
+
+  // ---- scroll cues. Positions: -1 = intro (above the steps), 0..n-1 = steps, n = past the last step
+  const cueUp = document.getElementById("cue-up"), cueDown = document.getElementById("cue-down");
+  const scrollyEl = document.querySelector(".scrolly");
+  const STEP_OFFSET = 0.6;   // must match scrollama offset
+  function position() {
+    const trigger = innerHeight * STEP_OFFSET;
+    let pos = -1;
+    stepEls.forEach((el, i) => { if (el.getBoundingClientRect().top <= trigger) pos = i; });
+    if (pos === stepEls.length - 1 && scrollyEl.getBoundingClientRect().bottom < innerHeight * 0.5) pos = stepEls.length;
+    return pos;
+  }
+  function updateCues() {
+    const onSankey = !document.getElementById("view-sankey").hidden;
+    const pos = position();
+    cueDown.classList.toggle("show", onSankey && pos < stepEls.length - 1);
+    cueUp.classList.toggle("show", onSankey && scrollY > innerHeight * 0.4);
+  }
+  function scrollToPos(pos) {
+    if (pos < 0) return window.scrollTo({ top: 0, behavior: "smooth" });
+    const el = stepEls[Math.min(pos, stepEls.length - 1)];
+    const top = el.getBoundingClientRect().top + scrollY - innerHeight * STEP_OFFSET + 4;
+    window.scrollTo({ top, behavior: "smooth" });
+  }
+  cueDown.onclick = () => scrollToPos(position() + 1);
+  cueUp.onclick = () => { const p = position(); scrollToPos(p >= stepEls.length ? stepEls.length - 1 : p - 1); };
+  let cueRaf = 0;
+  window.addEventListener("scroll", () => { if (!cueRaf) cueRaf = requestAnimationFrame(() => { cueRaf = 0; updateCues(); }); }, { passive: true });
+  window.addEventListener("hashchange", () => setTimeout(updateCues, 50));
+  updateCues();
+  */
+
+  let rt;
+  window.addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(() => { render(false); /* SCROLLYTELLING: scroller.resize(); updateCues(); */ }, 150); });
+  render(false);
+  if (location.hash === "#intake") setView("intake");
+})();
+</script>
+<!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "fd264bcbb3ed4cf1b5d0f59cb473d84c"}'></script><!-- End Cloudflare Web Analytics -->
+</body>
+</html>
