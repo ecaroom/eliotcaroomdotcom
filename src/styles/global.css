@@ -75,9 +75,13 @@ body {
 main { padding-top: 3rem; }
 
 /* wide pages (Base `wide` prop): interactive apps that need more than the text measure, e.g. /climbing-accidents/ */
-.wide-page { --measure: 76rem; }
-.wide-page main { padding-top: 1rem; }
-.wide-page > .wrap { padding-bottom: 1rem; }
+.wide-page { --measure: 100rem; }   /* phones: full width like every page */
+.wide-page main { padding-top: 0.75rem; }
+.wide-page > .wrap { padding-bottom: 0.75rem; }
+@media (min-width: 720px) {
+  .wide-page { --measure: min(100rem, calc(100vw - 5rem)); }   /* nearly full width; a 2.5rem strip of the photo stays each side */
+  body.wide-page:not(.photo-page) > .wrap { padding-left: 1.25rem; padding-right: 1.25rem; }
+}
 
 /* home */
 .name {

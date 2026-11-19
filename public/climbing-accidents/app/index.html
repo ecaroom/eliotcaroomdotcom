@@ -28,7 +28,7 @@
 
   /* ---- scrolly: full-width sticky chart; steps are invisible scroll triggers whose text
          is shown in the persistent caption header above the chart ---- */
-  .scrolly { position: relative; max-width: 1280px; margin: 0 auto; padding: 0 16px; }
+  .scrolly { position: relative; max-width: 1600px; margin: 0 auto; padding: 0 16px; }
   .graphic { position: sticky; top: 0; height: 100vh; display: flex; flex-direction: column;
              justify-content: center; min-width: 0; }
   .steps { position: relative; margin-top: -100vh; pointer-events: none; }
@@ -177,12 +177,12 @@
 
   /* ---- single-page layout (scrollytelling disabled): chart is static and sized to fit the window.
          Delete this block when re-enabling SCROLLYTELLING. ---- */
-  header.intro { max-width: 1280px; padding: 68px 16px 14px; }
+  header.intro { max-width: 1600px; padding: 64px 16px 12px; }
   header.intro h1 { font-size: clamp(1.6rem, 3.4vw, 2.4rem); margin-bottom: .3em; }
   header.intro p { font-size: 1rem; max-width: 72ch; }
   .graphic { position: static; height: auto; display: block; }
-  #chart { height: clamp(380px, calc(100vh - 290px), 720px); }
-  footer { max-width: 1280px; padding-top: 20px; }
+  #chart { height: clamp(380px, calc(100vh - 250px), 860px); }
+  footer { max-width: 1600px; padding-top: 20px; }
 
   /* ---- Download HTML: sky blue with a pastel pink outline ---- */
   .dl { position: relative; display: inline-block; }
