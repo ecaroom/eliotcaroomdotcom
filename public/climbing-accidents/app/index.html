@@ -184,6 +184,32 @@
   #chart { height: clamp(380px, calc(100vh - 290px), 720px); }
   footer { max-width: 1280px; padding-top: 20px; }
 
+  /* ---- Download HTML: sky blue with a pastel pink outline ---- */
+  .dl { position: relative; display: inline-block; }
+  .dl-btn { display: inline-flex; align-items: center; gap: 7px; font: inherit; font-size: .8rem; font-weight: 600; color: #1d3a4a;
+            background: #bfe0ef; border: 2px solid #f4b6c8; border-radius: 999px; padding: 6px 14px 6px 11px; cursor: pointer;
+            box-shadow: 0 0 0 3px rgba(244, 182, 200, .25), 0 2px 8px rgba(29, 58, 74, .10); transition: background .15s, transform .15s, box-shadow .15s; }
+  .dl-btn:hover { background: #a9d4e8; transform: translateY(-1px); box-shadow: 0 0 0 4px rgba(244, 182, 200, .45), 0 4px 12px rgba(29, 58, 74, .14); }
+  .dl-btn:focus-visible { outline: 2px solid #1d3a4a; outline-offset: 2px; }
+  .dl-btn svg { width: 15px; height: 15px; }
+  .dl-btn[aria-busy="true"] { opacity: .75; cursor: progress; }
+  .dl-menu { position: absolute; right: 0; top: calc(100% + 8px); z-index: 40; width: 250px; background: var(--card);
+             border: 2px solid #f4b6c8; border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,.12); padding: 6px; }
+  .dl-menu-head { font-size: .72rem; color: var(--ink-3); padding: 6px 8px 4px; }
+  .dl-menu button { display: block; width: 100%; text-align: left; font: inherit; border: 0; background: none; padding: 8px; border-radius: 6px;
+                    cursor: pointer; color: var(--ink); }
+  .dl-menu button:hover, .dl-menu button:focus-visible { background: #e3f1f8; outline: none; }
+  .dl-menu b { display: block; font-size: .88rem; }
+  .dl-menu small { display: block; font-size: .74rem; color: var(--ink-2); margin-top: 1px; }
+  .dl-menu-foot { font-size: .7rem; color: var(--ink-3); padding: 6px 8px 4px; border-top: 1px solid var(--rule); margin-top: 4px; line-height: 1.4; }
+  .controls .dl-menu { left: 0; right: auto; }
+  .pane-top .dl { margin-left: auto; margin-right: 6px; }
+  .pane-top .dl-menu { right: -36px; }
+  html.embedded .dl { display: none; }                                   /* a downloaded copy can't re-download */
+  html.force-mobile .simplify { display: none; }
+  .dl-footer { text-align: center; font-size: .82rem; color: var(--ink-2); padding: 18px 16px 28px; border-top: 1px solid var(--rule); line-height: 1.6; }
+  .dl-footer a { color: inherit; }
+
   /* ---- global search button (top right) ---- */
   .search-all { position: fixed; top: 14px; right: 16px; z-index: 15; display: inline-flex; align-items: center; gap: 8px;
                 font: inherit; font-size: .85rem; padding: 8px 14px 8px 12px; border: 1px solid var(--rule); border-radius: 999px;
@@ -275,6 +301,18 @@ document.documentElement.classList.toggle('framed', window.CAV_FRAMED);</script>
         <div class="hint">Click any bar or flow to read the reports behind it.</div>
       </div>
       <div class="controls">
+        <div class="dl" data-context="sankey">
+          <button type="button" class="dl-btn" aria-haspopup="menu" aria-expanded="false">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2.5v7.5M4.8 7l3.2 3.2L11.2 7M3 13h10"/></svg>
+            <span class="dl-label">Download HTML</span>
+          </button>
+          <div class="dl-menu" role="menu" hidden>
+            <div class="dl-menu-head">Save this chart as one HTML file</div>
+            <button type="button" role="menuitem" data-layout="mobile"><b>For mobile</b><small>Simple human vs. environment view</small></button>
+            <button type="button" role="menuitem" data-layout="full"><b>Full screen</b><small>All seven factor families</small></button>
+            <div class="dl-menu-foot">Works offline: every report, full search, your current view.</div>
+          </div>
+        </div>
         <div class="toggle" role="group" aria-label="Middle column">
           <button type="button" data-mode="factors" aria-pressed="true">What contributed</button>
           <button type="button" data-mode="activity" aria-pressed="false">What they were doing</button>
@@ -403,6 +441,18 @@ document.documentElement.classList.toggle('framed', window.CAV_FRAMED);</script>
   <div class="pane-head">
     <div class="pane-top">
       <h3 class="pane-title" id="pane-title">Accident reports</h3>
+      <div class="dl" data-context="report">
+          <button type="button" class="dl-btn" aria-haspopup="menu" aria-expanded="false">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2.5v7.5M4.8 7l3.2 3.2L11.2 7M3 13h10"/></svg>
+            <span class="dl-label">Download HTML</span>
+          </button>
+          <div class="dl-menu" role="menu" hidden>
+            <div class="dl-menu-head">Save this report list as one HTML file</div>
+            <button type="button" role="menuitem" data-layout="mobile"><b>For mobile</b><small>Simple human vs. environment view</small></button>
+            <button type="button" role="menuitem" data-layout="full"><b>Full screen</b><small>All seven factor families</small></button>
+            <div class="dl-menu-foot">Works offline: every report, full search, your current filter and search.</div>
+          </div>
+        </div>
       <button class="pane-close" id="pane-close" aria-label="Close">×</button>
     </div>
     <div class="chips" id="chips"></div>
@@ -417,9 +467,14 @@ document.documentElement.classList.toggle('framed', window.CAV_FRAMED);</script>
 <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/d3-sankey@0.12.3/dist/d3-sankey.min.js"></script>
 <!-- SCROLLYTELLING (disabled): <script src="https://cdn.jsdelivr.net/npm/scrollama@3.2.0/build/scrollama.min.js"></script> -->
+<!-- CAV:embed -->
 <script>
 (async function () {
-  const [data, accidents] = await Promise.all([d3.json("sankey.json"), d3.json("accidents.json")]);
+  // A downloaded copy carries everything in window.CAV_EMBED (data, report text, saved view); the live app fetches.
+  const EMBED = window.CAV_EMBED || null;
+  if (EMBED) document.documentElement.classList.add("embedded", EMBED.layout === "mobile" ? "force-mobile" : "force-full");
+  const [data, accidents] = EMBED ? [EMBED.sankey, EMBED.accidents]
+                                  : await Promise.all([d3.json("sankey.json"), d3.json("accidents.json")]);
   const discById = new Map(data.disciplines.map(d => [d.id, d]));
   const outById = new Map(data.outcomes.map(o => [o.id, o]));
   const VIEW_COL = { A: "factor_mix", B: "activity", C: "factor_families" };   // C is a list per accident
@@ -433,7 +488,9 @@ document.documentElement.classList.toggle('framed', window.CAV_FRAMED);</script>
   let simplifyPref = false;
   try { simplifyPref = localStorage.getItem("cav-simplify") === "1"; } catch (e) {}
   const state = { mode: "factors", simplify: simplifyPref, view: "A", step: 0, filter: null };
-  const viewFor = () => state.mode === "activity" ? "B" : (PHONE.matches || state.simplify) ? "A" : "C";
+  // a downloaded copy fixes the layout: "mobile" always gets the simple view, "full" always offers the factor families
+  const isPhone = () => EMBED ? EMBED.layout === "mobile" : PHONE.matches;
+  const viewFor = () => state.mode === "activity" ? "B" : (isPhone() || state.simplify) ? "A" : "C";
   state.view = viewFor();
   let OUT_EXTRA = 10;
   const chartEl = document.getElementById("chart");
@@ -611,7 +668,7 @@ document.documentElement.classList.toggle('framed', window.CAV_FRAMED);</script>
   function loadReports() {
     if (reportsLoading) return reportsLoading;
     textStatus.textContent = "Loading full report text…";
-    reportsLoading = d3.json("reports.json").then(r => {
+    reportsLoading = (EMBED ? Promise.resolve(EMBED.reports) : d3.json("reports.json")).then(r => {
       reports = r;
       for (const a of accidents) hay.set(a.id, baseHay(a) + " " + (r[a.id] || "").toLowerCase());
       textStatus.textContent = "";
@@ -1031,6 +1088,149 @@ document.documentElement.classList.toggle('framed', window.CAV_FRAMED);</script>
   window.addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(() => { render(false); /* SCROLLYTELLING: scroller.resize(); updateCues(); */ }, 150); });
   render(false);
   if (location.hash === "#intake") setView("intake");
+
+  // ================= Download HTML =================
+  // Builds one self-contained file: this page's HTML + D3 inlined + all data and report text embedded,
+  // opening in the same view (Sankey mode, report filter and search, Intake answers) as when it was saved.
+  const LIB_URLS = ["https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js",
+                    "https://cdn.jsdelivr.net/npm/d3-sankey@0.12.3/dist/d3-sankey.min.js"];
+  const SITE = "https://eliotcaroom.com";
+  const REPO = "https://github.com/ecaroom/climbing-accidents-visualized";
+  const DATA_REPO = "https://github.com/ecaroom/climbing-accidents";
+
+  function serializeFilter(f) {
+    if (!f) return null;
+    const o = { ...f };
+    if (f.ids) o.ids = [...f.ids];
+    if (f.rank) o.rank = [...f.rank];
+    return o;
+  }
+  function restoreFilter(o) {
+    if (!o) return {};
+    const f = { ...o };
+    if (o.ids) f.ids = new Set(o.ids);
+    if (o.rank) f.rank = new Map(o.rank);
+    return f;
+  }
+  function captureState(context) {
+    const intakeOpen = !document.getElementById("view-intake").hidden;
+    const fd = new FormData(form), intake = {};
+    for (const [k, v] of fd) intake[k] = v;
+    return {
+      tab: intakeOpen ? "intake" : "sankey",
+      mode: state.mode, simplify: state.simplify,
+      intake: intakeOpen ? { values: intake, closeness } : null,
+      pane: context === "report" ? { filter: serializeFilter(state.filter), query: searchEl.value } : null,
+    };
+  }
+  function describe(st) {
+    if (st.pane) {
+      const f = st.pane.filter || {};
+      const parts = [f.idsLabel, f.discipline && discById.get(f.discipline).label, f.mid && f.mid.label,
+                     f.factor, f.outcome && outById.get(f.outcome).label, st.pane.query && `“${st.pane.query}”`].filter(Boolean);
+      return parts.length ? parts.join(", ") : "all reports";
+    }
+    return st.tab === "intake" ? "trip intake" : data.views[viewFor()].title;
+  }
+  const slug = t => t.toLowerCase().replace(/[“”"]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 60);
+
+  async function downloadHTML(context, layout, btn) {
+    btn.setAttribute("aria-busy", "true");
+    const label = btn.querySelector(".dl-label"), was = label.textContent;
+    label.textContent = "Preparing…";
+    try {
+      const [src, ...libs] = await Promise.all([
+        fetch(location.href.split("#")[0], { cache: "no-store" }).then(r => r.text()),
+        ...LIB_URLS.map(u => fetch(u).then(r => r.ok ? r.text() : null).catch(() => null)),
+      ]);
+      await loadReports();
+      const st = captureState(context);
+      const desc = describe(st);
+      const saved = new Date().toISOString().slice(0, 10);
+      const payload = { saved, layout, description: desc, state: st, sankey: data, accidents, reports };
+
+      let html = src;
+      // links that pointed into eliotcaroom.com become absolute; drop site analytics from the saved copy
+      html = html.replaceAll('href="/climbing-accidents/"', `href="${SITE}/climbing-accidents/"`)
+                 .replaceAll('href="/favicon.svg"', `href="${SITE}/favicon.svg"`)
+                 .replace(/\x3cscript>if \(!window\.CAV_FRAMED\)[\s\S]*?\x3c\/script>/, "")
+                 .replace(/\x3c!-- Cloudflare Web Analytics -->[\s\S]*?\x3c!-- End Cloudflare Web Analytics -->/, "");
+      html = html.replace(/<title>[^<]*<\/title>/, () => `<title>Climbing Accidents Visualized: ${esc(desc)}</title>`);
+      const footer = `<footer class="dl-footer">Saved ${saved} from <a href="${SITE}/climbing-accidents/">Climbing Accidents Visualized</a>
+        (${layout === "mobile" ? "mobile" : "full screen"} version) · <a href="${SITE}/">eliotcaroom.com</a> ·
+        <a href="${REPO}">GitHub</a><br>Data: <a href="${DATA_REPO}">an analysis of the AAC's climbing accident reports by Eliot Caroom (CC BY 4.0)</a>.
+        Not an AAC project.</footer>\n`;
+      const bodyEnd = html.lastIndexOf("</body>");
+      html = html.slice(0, bodyEnd) + footer + html.slice(bodyEnd);
+      // inline D3 so the file works offline (falls back to the CDN tags if a fetch failed)
+      LIB_URLS.forEach((u, i) => {
+        if (libs[i]) html = html.replace(`\x3cscript src="${u}">\x3c/script>`, () => `\x3cscript>${libs[i].replace(/\x3c\/script/gi, "\x3c\\/script")}\x3c/script>`);
+      });
+      const json = JSON.stringify(payload).replace(/</g, "\\u003c").replace(/\u2028/g, "\\u2028").replace(/\u2029/g, "\\u2029");
+      html = html.replace("\x3c!-- CAV:embed -->", () => `\x3cscript>window.CAV_EMBED = ${json};\x3c/script>`);
+
+      const blob = new Blob([html], { type: "text/html;charset=utf-8" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = `climbing-accidents-${slug(desc)}-${layout === "mobile" ? "mobile" : "full"}.html`;
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+      label.textContent = "Saved ✓";
+      setTimeout(() => { label.textContent = was; }, 1800);
+    } catch (e) {
+      console.error(e);
+      label.textContent = "Download failed";
+      setTimeout(() => { label.textContent = was; }, 2500);
+    } finally {
+      btn.removeAttribute("aria-busy");
+    }
+  }
+
+  // menus: click the button to choose "For mobile" or "Full screen"
+  document.querySelectorAll(".dl").forEach(box => {
+    const btn = box.querySelector(".dl-btn"), menu = box.querySelector(".dl-menu");
+    const close = () => { menu.hidden = true; btn.setAttribute("aria-expanded", "false"); };
+    btn.addEventListener("click", e => {
+      e.stopPropagation();
+      const open = menu.hidden;
+      document.querySelectorAll(".dl-menu").forEach(m => { m.hidden = true; });
+      menu.hidden = !open; btn.setAttribute("aria-expanded", String(open));
+      if (open) menu.querySelector("button").focus();
+    });
+    menu.querySelectorAll("button[data-layout]").forEach(b =>
+      b.addEventListener("click", e => { e.stopPropagation(); close(); downloadHTML(box.dataset.context, b.dataset.layout, btn); }));
+    document.addEventListener("click", e => { if (!box.contains(e.target)) close(); });
+    box.addEventListener("keydown", e => { if (e.key === "Escape") { e.stopPropagation(); close(); btn.focus(); } });
+  });
+
+  // ================= restore a saved view (downloaded copies) =================
+  if (EMBED && EMBED.state) {
+    const st = EMBED.state;
+    state.mode = st.mode || "factors";
+    state.simplify = !!st.simplify;
+    applyView(false);
+    if (st.tab === "intake") {
+      location.hash = "#intake";
+      setView("intake");
+      if (st.intake) {
+        for (const [k, v] of Object.entries(st.intake.values || {})) {
+          const el = form.elements[k];
+          if (!el) continue;
+          if (el instanceof RadioNodeList) { const r = form.querySelector(`[name="${k}"][value="${CSS.escape(v)}"]`); if (r) r.checked = true; }
+          else if (el.type === "checkbox") el.checked = v === "on";
+          else el.value = v;
+        }
+        closeness = st.intake.closeness || "close";
+        renderIntake();
+      }
+    }
+    if (st.pane) {
+      openPane(restoreFilter(st.pane.filter));
+      searchEl.value = st.pane.query || "";
+      refresh();
+      searchEl.blur();
+    }
+  }
 })();
 </script>
 <script>if (!window.CAV_FRAMED) { var s = document.createElement('script'); s.type = 'module'; s.src = 'https://static.cloudflareinsights.com/beacon.min.js'; s.setAttribute('data-cf-beacon', '{"token": "fd264bcbb3ed4cf1b5d0f59cb473d84c"}'); document.body.appendChild(s); }</script>
