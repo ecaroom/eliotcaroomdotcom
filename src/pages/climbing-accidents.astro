@@ -1,0 +1,36 @@
+---
+import Base from '../layouts/Base.astro';
+// The app itself is built in github.com/ecaroom/climbing-accidents-visualized and copied to
+// public/climbing-accidents/app/ by that repo's scripts/publish_to_site.py. Edit it there, not here.
+// This page keeps the site's header band and back link and frames the app.
+---
+<Base
+  title="Climbing Accidents Visualized"
+  description="An interactive look at 2,724 American Alpine Club climbing accident reports, 1990 to 2019: discipline to outcome, similar trips, and full report search."
+  wide
+>
+  <h1 class="visually-hidden">Climbing Accidents Visualized</h1>
+  <iframe class="app-frame" src="/climbing-accidents/app/" title="Climbing Accidents Visualized: interactive chart and report search"></iframe>
+  <p class="app-links">
+    <a href="/climbing-accidents/app/">open full screen</a> ·
+    <a href="https://github.com/ecaroom/climbing-accidents-visualized" target="_blank" rel="noopener">source ↗</a> ·
+    <a href="https://github.com/ecaroom/climbing-accidents" target="_blank" rel="noopener">data ↗</a>
+  </p>
+</Base>
+
+<style>
+  .visually-hidden {
+    position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap;
+  }
+  .app-frame {
+    display: block;
+    width: 100%;
+    height: calc(100vh - 7.5rem);
+    min-height: 560px;
+    border: 2px solid var(--head);
+    border-radius: 10px;
+    background: #fbfaf7;
+  }
+  .app-links { margin: 0.6rem 0 0; font: 0.75rem var(--mono); color: var(--muted); }
+  .app-links a { color: var(--muted); }
+</style>

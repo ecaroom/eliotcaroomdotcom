@@ -74,6 +74,11 @@ body {
 
 main { padding-top: 3rem; }
 
+/* wide pages (Base `wide` prop): interactive apps that need more than the text measure, e.g. /climbing-accidents/ */
+.wide-page { --measure: 76rem; }
+.wide-page main { padding-top: 1rem; }
+.wide-page > .wrap { padding-bottom: 1rem; }
+
 /* home */
 .name {
   padding-left: 1rem;
@@ -196,9 +201,9 @@ blockquote {
 /* about */
 .about-line { font-size: 1.4rem; line-height: 1.45; color: var(--head); }
 
-/* home badges (Common Sense Solar Savings, Wait Until 8th) */
+/* home badges (Common Sense Solar Savings, Wait Until 8th, Climbing Accidents Visualized): three equal columns on wide screens, wrapping on phones */
 .badges { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 2rem; }
-.badges .badge { flex: 0 0 15rem; max-width: 100%; }
+.badges .badge { flex: 1 1 9.5rem; max-width: 100%; }
 .badge {
   display: inline-flex;
   flex-direction: column;
