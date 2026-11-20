@@ -53,8 +53,15 @@
   .simplify input:checked + .track { background: var(--ink); }
   .simplify input:checked + .track::after { transform: translateX(11px); }
   .simplify input:focus-visible + .track { outline: 2px solid var(--ink); outline-offset: 2px; }
-  .simplify.off { opacity: .4; }
+  .simplify.off { display: none; }   /* only relevant to "What contributed" */
   @media (max-width: 640px) { .simplify { display: none; } }   /* phones: always simple, no switch */
+  .units { display: inline-flex; border: 1px solid var(--rule); border-radius: 999px; padding: 2px; background: var(--card); }
+  .units label { cursor: pointer; }
+  .units input { position: absolute; opacity: 0; pointer-events: none; }
+  .units span { display: block; min-width: 26px; text-align: center; font-size: .8rem; font-weight: 600; line-height: 1;
+                padding: 5px 7px; border-radius: 999px; color: var(--ink-2); }
+  .units input:checked + span { background: var(--ink); color: var(--bg); }
+  .units input:focus-visible + span { outline: 2px solid var(--ink); outline-offset: 1px; }
   .toggle { display: inline-flex; border: 1px solid var(--rule); border-radius: 999px; padding: 2px; background: var(--card); }
   .toggle button { font: inherit; font-size: .8rem; border: 0; background: transparent; color: var(--ink-2);
                    padding: 5px 12px; border-radius: 999px; cursor: pointer; }
@@ -346,6 +353,11 @@ document.documentElement.classList.toggle('framed', window.CAV_FRAMED);</script>
         <label class="simplify" title="Show human vs. environment instead of seven factor families">
           <input type="checkbox" id="simplify"><span class="track" aria-hidden="true"></span>Simplify
         </label>
+        <!-- chart numbers as counts (#) or percent of all climbing accidents (%); % by default -->
+        <div class="units" role="radiogroup" aria-label="Show numbers as">
+          <label title="Counts"><input type="radio" name="units" value="count"><span>#</span></label>
+          <label title="Percent of all 2,724 climbing accidents"><input type="radio" name="units" value="pct" checked><span>%</span></label>
+        </div>
       </div>
     </div>
     <div class="vlegend" id="vlegend" hidden aria-label="Disciplines"></div>
@@ -513,7 +525,14 @@ document.documentElement.classList.toggle('framed', window.CAV_FRAMED);</script>
   const PHONE = window.matchMedia("(max-width: 640px)");
   let simplifyPref = false;
   try { simplifyPref = localStorage.getItem("cav-simplify") === "1"; } catch (e) {}
-  const state = { mode: "factors", simplify: simplifyPref, view: "A", step: 0, filter: null };
+  const state = { mode: "factors", simplify: simplifyPref, units: "pct", view: "A", step: 0, filter: null };
+  // chart numbers: counts, or percent of all climbing accidents (one decimal under 10% so small groups don't read 0%)
+  const TOTAL = data.meta.n_accidents;
+  function num(v) {
+    if (state.units !== "pct") return fmt(v);
+    const p = v / TOTAL;
+    return p > 0 && p < 0.001 ? "<0.1%" : d3.format(p < 0.1 ? ".1%" : ".0%")(p);
+  }
   // a downloaded copy fixes the layout: "mobile" always gets the simple view, "full" always offers the factor families
   const isPhone = () => EMBED ? EMBED.layout === "mobile" : PHONE.matches;
   const viewFor = () => state.mode === "activity" ? "B" : (isPhone() || state.simplify) ? "A" : "C";
@@ -630,12 +649,12 @@ document.documentElement.classList.toggle('framed', window.CAV_FRAMED);</script>
     if (!vertical) return;
     d3.select(legendEl).selectAll("button").data(data.disciplines, d => d.id).join(enter => enter.append("button")
       .attr("type", "button").attr("class", "vl-item")
-      .html(d => `<span class="vl-sw${d.outline ? " outline" : ""}" style="${d.outline ? "" : `background:${d.ramp[2]}`}"></span>` +
-                 `<span class="vl-name">${esc(d.label)}</span><span class="vl-n">${fmt(d.n_weighted)}</span>`)
       .on("click", (ev, d) => {
         const n = { id: `d:${d.id}`, stage: 0, discipline: d.id };
         activate(ev, n.id, nodeTip(n), () => openPane({ discipline: d.id }));
-      }));
+      }))
+      .html(d => `<span class="vl-sw${d.outline ? " outline" : ""}" style="${d.outline ? "" : `background:${d.ramp[2]}`}"></span>` +
+                 `<span class="vl-name">${esc(d.label)}</span><span class="vl-n">${num(d.n_weighted)}</span>`);
   }
 
   function render(animate) {
@@ -719,7 +738,7 @@ document.documentElement.classList.toggle('framed', window.CAV_FRAMED);</script>
     const narrow = width < 560;
     labels.style("font-size", narrow ? "10px" : null);
     labels.select(".n").attr("x", null).attr("dy", null).attr("dx", 5)
-      .text(n => narrow && n.stage === 1 ? "" : n.stage === 0 ? fmt(discById.get(n.discipline).n_weighted) : fmt(n.value));
+      .text(n => narrow && n.stage === 1 ? "" : n.stage === 0 ? num(discById.get(n.discipline).n_weighted) : num(n.value));
     const anchor = n => narrow ? (n.stage === 2 ? "end" : "start") : (n.stage === 0 ? "end" : "start");
     const lx = n => narrow ? (n.stage === 2 ? n.x0 - 4 : n.x1 + 4)
                            : (n.stage === 0 ? n.x0 - 6 : n.x1 + 6 + (n.stage === 2 ? OUT_EXTRA : 0));
@@ -734,7 +753,7 @@ document.documentElement.classList.toggle('framed', window.CAV_FRAMED);</script>
   function renderVerticalLabels(nodes, width, t) {
     const shown = nodes.filter(n => n.stage > 0);
     const name = n => SHORT[n.label] || n.label;
-    const count = n => fmt(n.value);
+    const count = n => num(n.value);
     const place = new Map();
     for (const stage of [1, 2]) {
       const row = shown.filter(n => n.stage === stage);
@@ -768,23 +787,27 @@ document.documentElement.classList.toggle('framed', window.CAV_FRAMED);</script>
            lines.filter(Boolean).map(l => `<div>${l}</div>`).join("") +
            `<div class="tip-hint">${tap ? "Tap again to read these reports" : "Click to read these reports"}</div>`;
   }
+  // "of all accidents (898)" in % mode, "accidents" in # mode
+  const ofAll = (count, what) => state.units === "pct" ? `of all accidents${what ? " " + what : ""} (${fmt(count)})`
+                                                       : `accidents${what ? " " + what : ""}`;
   function linkTip(l) {
     const frac = Math.abs(l.value - Math.round(l.value)) > 0.05;
-    return tipHtml(`${l.source.label} → ${l.target.label}`, fmt(l.value),
-      [`${discById.get(l.discipline).label} accidents`, frac ? "<span style='opacity:.7'>weighted for multi-tag reports</span>" : ""]);
+    return tipHtml(`${l.source.label} → ${l.target.label}`, num(l.value),
+      [ofAll(l.value, `in ${discById.get(l.discipline).label.toLowerCase()}`),
+       frac ? "<span style='opacity:.7'>weighted for multi-tag reports</span>" : ""]);
   }
   function nodeTip(n) {
     if (n.stage === 0) {
       const d = discById.get(n.discipline);
-      return tipHtml(d.label, d3.format(",")(d.n_any), [`accidents tagged ${d.label.toLowerCase()}`,
-        d.n_any !== Math.round(d.n_weighted) ? `${fmt(d.n_weighted)} after splitting multi-discipline reports` : ""]);
+      return tipHtml(d.label, num(d.n_any), [ofAll(d.n_any, `tagged ${d.label.toLowerCase()}`),
+        d.n_any !== Math.round(d.n_weighted) ? `${num(d.n_weighted)} after splitting multi-discipline reports` : ""]);
     }
     const fatal = n.stage === 1 ? n.sourceLinks.filter(l => l.target.id === "o:fatal").reduce((s, l) => s + l.value, 0) : null;
     const split = n.n_any != null && n.n_any !== Math.round(n.value);
-    return tipHtml(n.label, split ? d3.format(",")(n.n_any) : fmt(n.value), [
-      split ? `accidents involve ${n.label.toLowerCase()}` : "accidents",
-      split ? `${fmt(n.value)} after splitting reports across families` : "",
-      fatal !== null ? `${d3.format(".0%")(fatal / n.value)} fatal` : ""]);
+    return tipHtml(n.label, num(split ? n.n_any : n.value), [
+      ofAll(split ? n.n_any : n.value, split ? `involve ${n.label.toLowerCase()}` : ""),
+      split ? `${num(n.value)} after splitting reports across families` : "",
+      fatal !== null ? `${d3.format(".0%")(fatal / n.value)} of these were fatal` : ""]);
   }
   function showTip(ev, html, tappable) {
     tip.innerHTML = html; tip.style.opacity = 1;
@@ -1179,7 +1202,10 @@ document.documentElement.classList.toggle('framed', window.CAV_FRAMED);</script>
     if (state.mode !== "factors") { state.mode = "factors"; }   // switching it on/off implies the factor view
     applyView(true);
   });
-  PHONE.addEventListener("change", () => applyView(true));   // rotating a tablet or resizing across the breakpoint
+  PHONE.addEventListener("change", () => applyView(true));
+  document.querySelectorAll('.units input').forEach(r => r.addEventListener("change", () => {
+    state.units = r.value; hideTip(); render(false);
+  }));   // rotating a tablet or resizing across the breakpoint
 
   /* SCROLLYTELLING (disabled). To re-enable: uncomment this block, the SCROLLYTELLING HTML blocks
      (caption, .steps, scroll cues, scrollama <script>), remove the "single-page layout" CSS override,
@@ -1270,7 +1296,7 @@ document.documentElement.classList.toggle('framed', window.CAV_FRAMED);</script>
     for (const [k, v] of fd) intake[k] = v;
     return {
       tab: intakeOpen ? "intake" : "sankey",
-      mode: state.mode, simplify: state.simplify,
+      mode: state.mode, simplify: state.simplify, units: state.units,
       intake: intakeOpen ? { values: intake, closeness } : null,
       pane: context === "report" ? { filter: serializeFilter(state.filter), query: searchEl.value } : null,
     };
@@ -1360,6 +1386,8 @@ document.documentElement.classList.toggle('framed', window.CAV_FRAMED);</script>
     const st = EMBED.state;
     state.mode = st.mode || "factors";
     state.simplify = !!st.simplify;
+    state.units = st.units || "pct";
+    document.querySelectorAll('.units input').forEach(r => { r.checked = r.value === state.units; });
     applyView(false);
     if (st.tab === "intake") {
       location.hash = "#intake";
