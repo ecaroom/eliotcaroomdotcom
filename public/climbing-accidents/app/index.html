@@ -196,18 +196,20 @@
   #treemap svg { display: block; width: 100%; height: 100%; }
   @media (max-width: 640px) { #treemap { height: clamp(420px, calc(100vh - 250px), 640px); } }
   .tm-leaf, .tm-mid, .tm-head, .tm-label { cursor: pointer; }
-  .tm-leaf { stroke: var(--bg); stroke-width: 0; transition: opacity .12s; }
+  .tm-leaf { transition: opacity .12s; }
   .tm-leaves:hover .tm-leaf { opacity: .55; }
   .tm-leaves .tm-leaf:hover { opacity: 1; }
   .tm-label { font-size: 11px; font-variant-numeric: tabular-nums; pointer-events: none; }
   .tm-label.head { font-size: 12px; font-weight: 600; }
   .tm-label.mid { fill: var(--ink-2); }
-  .tlegend { display: flex; flex-wrap: wrap; gap: 4px 14px; margin: 2px 0 8px; }
+  .tlegend { display: flex; flex-direction: column; gap: 2px; margin: 2px 0 8px; }
+  .tl-row { display: flex; flex-wrap: wrap; gap: 2px 14px; }
   .tlegend[hidden] { display: none; }
   .tl-item { display: inline-flex; align-items: center; gap: 6px; font: inherit; font-size: .78rem; border: 0; background: none;
              padding: 3px 2px; color: var(--ink); cursor: pointer; border-radius: 4px; }
   .tl-item:hover { background: var(--rule); }
   .tl-sw { width: 12px; height: 12px; border-radius: 3px; flex: none; }
+  .tl-sw.out { width: 14px; height: 14px; border: 2.5px solid; border-radius: 2px; }
   .tl-n { color: var(--ink-3); font-variant-numeric: tabular-nums; }
 
   /* ---- phones: vertical Sankey with a discipline legend above it ---- */
@@ -868,6 +870,19 @@ document.documentElement.classList.toggle('framed', window.CAV_FRAMED);</script>
   const OUT_ORDER = new Map(data.outcomes.map((o, i) => [o.id, i]));
   const darkText = c => d3.lab(c).l < 60 ? "#ffffff" : "#22221f";
   const midKey = m => m.id.split(":")[1];
+  // Treemap colour: the middle column is the dominant hue (kept clear of the outcome reds/oranges/golds);
+  // within it, each outcome is a shade (fatal darkest) with an outline in that outcome's colour.
+  const MID_COLOR = {
+    gear: "#4f7cc4", rope: "#2a9d8f", decisions: "#7b6cc2", movement: "#6aa84f", body: "#c06c9a",
+    weather: "#8a9a3a", hazards: "#5f7584", nofactor: "#a9a59a",
+    human: "#7b6cc2", both: "#2a9d8f", env: "#4f7cc4",
+    roped: "#2a9d8f", descent: "#4f7cc4", unroped: "#c06c9a", unclear: "#a9a59a",
+  };
+  const OUT_SHADE = { fatal: c => d3.lab(c).darker(1.1).formatHex(), serious: c => c,
+                      minor: c => d3.interpolateLab(c, "#ffffff")(0.42), none: c => d3.interpolateLab(c, "#ffffff")(0.72) };
+  const leafFill = n => OUT_SHADE[n.data.o.id](MID_COLOR[midKey(n.data.m)] || "#a9a59a");
+  const midTint = n => d3.interpolateLab(MID_COLOR[midKey(n.data.m)] || "#a9a59a", "#ffffff")(0.8);
+  const leafStroke = n => Math.min(n.x1 - n.x0, n.y1 - n.y0) >= 10 ? 2.5 : 1;
 
   function tmHierarchy(viewKey) {
     const view = data.views[viewKey];
@@ -909,11 +924,18 @@ document.documentElement.classList.toggle('framed', window.CAV_FRAMED);</script>
 
   function renderTreemap(animate) {
     tlegendEl.hidden = false;
-    d3.select(tlegendEl).selectAll("button").data(data.outcomes, o => o.id).join(enter => enter.append("button")
-      .attr("type", "button").attr("class", "tl-item")
+    const mids = data.views[state.view].nodes.filter(n => n.stage === 1);
+    const legendRows = d3.select(tlegendEl).selectAll("div.tl-row").data(["mid", "out"]).join("div").attr("class", "tl-row");
+    legendRows.filter(r => r === "mid").selectAll("button").data(mids, m => m.id).join(enter => enter.append("button")
+      .attr("type", "button").attr("class", "tl-item"))
+      .on("click", (ev, m) => activate(ev, `m:${m.id}`, tipHtml(m.label, num(m.n_any ?? m.value ?? m.n), [ofAll(m.n_any ?? m.n)]),
+                                        () => openPane({ mid: { view: state.view, key: midKey(m), label: m.label } })))
+      .html(m => `<span class="tl-sw" style="background:${MID_COLOR[midKey(m)]}"></span>${esc(m.label)}`);
+    legendRows.filter(r => r === "out").selectAll("button").data(data.outcomes, o => o.id).join(enter => enter.append("button")
+      .attr("type", "button").attr("class", "tl-item"))
       .on("click", (ev, o) => activate(ev, `o:${o.id}`, nodeTip({ id: `o:${o.id}`, stage: 2, label: o.label, value: o.n }),
-                                       () => openPane({ outcome: o.id }))))
-      .html(o => `<span class="tl-sw" style="background:${o.color}"></span>${esc(o.label)} <span class="tl-n">${num(o.n)}</span>`);
+                                       () => openPane({ outcome: o.id })))
+      .html(o => `<span class="tl-sw out" style="background:${OUT_SHADE[o.id]("#8f8e87")};border-color:${o.color}"></span>${esc(o.label)} <span class="tl-n">${num(o.n)}</span>`);
     document.querySelector(".hint").textContent = tapMode()
       ? "Tap any box for a summary; tap again to read the reports."
       : "Click any box to read the reports behind it.";
@@ -942,11 +964,14 @@ document.documentElement.classList.toggle('framed', window.CAV_FRAMED);</script>
       .attr("stroke", n => n.data.d.outline ? "var(--ink)" : "none").attr("stroke-width", 1)
       .transition(t).call(place).attr("opacity", 1);
     join(tmMids, root.descendants().filter(n => n.depth === 2), "tm-mid").call(tmOn)
-      .attr("fill", "var(--bg)")
+      .attr("fill", midTint)
       .transition(t).call(place).attr("opacity", 1);
+    // leaves: shade of the middle column's hue, outlined (inset) in the outcome colour
+    const placeLeaf = sel => sel.attr("x", n => n.x0 + leafStroke(n) / 2).attr("y", n => n.y0 + leafStroke(n) / 2)
+      .attr("width", n => Math.max(0, n.x1 - n.x0 - leafStroke(n))).attr("height", n => Math.max(0, n.y1 - n.y0 - leafStroke(n)));
     join(tmLeaves, root.leaves().filter(n => n.value > 0), "tm-leaf").call(tmOn)
-      .attr("fill", n => n.data.o.color)
-      .transition(t).call(place).attr("opacity", 1);
+      .attr("fill", leafFill).attr("stroke", n => n.data.o.color).attr("stroke-width", leafStroke)
+      .transition(t).call(placeLeaf).attr("opacity", 1);
 
     // labels: discipline name in its header band, middle-column name over its boxes, numbers inside boxes that fit
     const labels = [
@@ -957,7 +982,7 @@ document.documentElement.classList.toggle('framed', window.CAV_FRAMED);</script>
         .map(n => ({ n, cls: "mid", x: n.x0 + 4, y: n.y0 + 11, w: n.x1 - n.x0 - 6, fill: null,
           opts: [`${n.data.m.label} ${num(n.value)}`, n.data.m.label, SHORT[n.data.m.label]] })),
       ...root.leaves().filter(n => n.x1 - n.x0 > 30 && n.y1 - n.y0 > 17)
-        .map(n => ({ n, cls: "leaf", x: n.x0 + 4, y: n.y0 + 13, w: n.x1 - n.x0 - 7, fill: darkText(n.data.o.color),
+        .map(n => ({ n, cls: "leaf", x: n.x0 + 4, y: n.y0 + 13, w: n.x1 - n.x0 - 7, fill: darkText(leafFill(n)),
           opts: [n.x1 - n.x0 > 110 && n.y1 - n.y0 > 34 ? `${n.data.o.label} ${num(n.value)}` : "", num(n.value)] })),
     ];
     tmText.selectAll("text").data(labels, l => l.cls + tmKey(l.n)).join("text")
