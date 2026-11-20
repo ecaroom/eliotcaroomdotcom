@@ -184,6 +184,31 @@
   #chart { height: clamp(380px, calc(100vh - 250px), 860px); }
   footer { max-width: 1600px; padding-top: 20px; }
 
+  /* ---- phones: vertical Sankey with a discipline legend above it ---- */
+  #chart.vertical { max-width: 520px; margin: 0 auto; height: clamp(440px, calc(100vh - 230px), 640px); }
+  .vlegend { display: grid; grid-template-columns: 1fr 1fr; gap: 0 12px; max-width: 520px; margin: 4px auto 6px; }
+  .vlegend[hidden] { display: none; }
+  .vl-item { display: flex; align-items: center; gap: 6px; font: inherit; font-size: .78rem; border: 0; background: none;
+             padding: 4px 2px; color: var(--ink); cursor: pointer; text-align: left; border-radius: 4px; }
+  .vl-item:active { background: var(--rule); }
+  .vl-sw { width: 11px; height: 11px; border-radius: 2px; flex: none; }
+  .vl-sw.outline { border: 1.25px solid var(--ink); background: repeating-linear-gradient(45deg, transparent 0 2px, #8f8e87 2px 3px); }
+  .vl-n { color: var(--ink-3); font-variant-numeric: tabular-nums; margin-left: auto; }
+  .leader { stroke: var(--ink-3); stroke-width: 1; fill: none; }
+
+  /* ---- touch: first tap previews (tooltip + throbbing hand), second tap opens the reports ---- */
+  .tip.tappable { pointer-events: auto; cursor: pointer; }
+  .tip-head { display: flex; align-items: center; gap: 6px; }
+  .tip-n { opacity: .85; font-variant-numeric: tabular-nums; }
+  .tip-hint { opacity: .72; margin-top: 3px; }
+  .tap-hand { width: 17px; height: 17px; flex: none; color: #fff; transform-origin: 50% 60%;
+              animation: hand-throb 1.3s ease-in-out infinite; }
+  @keyframes hand-throb {
+    0%, 100% { transform: scale(1);    filter: drop-shadow(0 0 2px rgba(244, 182, 200, .55)); }
+    50%      { transform: scale(1.2);  filter: drop-shadow(0 0 7px rgba(244, 182, 200, 1)); }
+  }
+  @media (prefers-reduced-motion: reduce) { .tap-hand { animation: none; } }
+
   /* ---- Download HTML: sky blue with a pastel pink outline ---- */
   .dl { position: relative; display: inline-block; }
   .dl-btn { display: inline-flex; align-items: center; gap: 7px; font: inherit; font-size: .8rem; font-weight: 600; color: #1d3a4a;
@@ -323,6 +348,7 @@ document.documentElement.classList.toggle('framed', window.CAV_FRAMED);</script>
         </label>
       </div>
     </div>
+    <div class="vlegend" id="vlegend" hidden aria-label="Disciplines"></div>
     <div id="chart" role="img" aria-label="Sankey diagram of climbing accidents from discipline to outcome"></div>
   </div>
 
@@ -504,6 +530,7 @@ document.documentElement.classList.toggle('framed', window.CAV_FRAMED);</script>
   const gStage = svg.append("g");
   const gLinks = svg.append("g").attr("class", "links");
   const gNodes = svg.append("g").attr("class", "nodes");
+  const gLeaders = svg.append("g").attr("class", "leaders");
   const gLabels = svg.append("g").attr("class", "labels");
 
   const nodeKey = n => n.stage === 1 ? `mid${n.slot}` : n.id;
@@ -512,7 +539,7 @@ document.documentElement.classList.toggle('framed', window.CAV_FRAMED);</script>
 
   // mid->outcome flows blend from discipline colour into outcome colour.
   // Columns never move between views, so one gradient per (discipline, outcome) serves every middle node.
-  function updateGradients(x0, x1) {
+  function updateGradients(a, b, vertical) {
     const pairs = [];
     for (const d of data.disciplines) for (const o of data.outcomes) pairs.push({ d, o });
     defs.selectAll("linearGradient.flow").data(pairs, p => p.d.id + p.o.id).join(enter => {
@@ -522,7 +549,7 @@ document.documentElement.classList.toggle('framed', window.CAV_FRAMED);</script>
       g.append("stop").attr("offset", "30%").attr("stop-color", p => discColor(p.d.id));
       g.append("stop").attr("offset", "100%").attr("stop-color", p => p.o.color);
       return g;
-    }).attr("x1", x0).attr("x2", x1).attr("y1", 0).attr("y2", 0);
+    }).attr("x1", vertical ? 0 : a).attr("x2", vertical ? 0 : b).attr("y1", vertical ? a : 0).attr("y2", vertical ? b : 0);
   }
   function linkColor(l) {
     if (l.source.stage === 0) return discById.get(l.discipline).outline ? "url(#hatch)" : discById.get(l.discipline).ramp[2];
@@ -535,97 +562,164 @@ document.documentElement.classList.toggle('framed', window.CAV_FRAMED);</script>
   }
 
   // measure real label widths so side margins never clip text
-  function labelWidth(strings) {
+  function labelWidth(strings, size) {
     const t = svg.append("text").attr("class", "node-label").style("visibility", "hidden");
+    if (size) t.style("font-size", size);
     let w = 0;
     for (const s of strings) w = Math.max(w, t.text(s).node().getComputedTextLength());
     t.remove();
     return Math.ceil(w) + 8;
   }
 
+  // Phones get a vertical Sankey: disciplines across the top (named in the legend above), outcomes along the bottom.
+  // d3-sankey only lays out left to right, so the layout runs in swapped coordinates and is turned 90 degrees here.
+  const isVertical = () => isPhone();
+  const SHORT = { "Human + environment": "Human + env.", "Environment only": "Environment", "No factor tagged": "No factor",
+                  "Unroped / solo ascent": "Unroped / solo", "Serious injury": "Serious", "Minor injury": "Minor",
+                  "No injury reported": "No injury" };
+  const V = { top: 4, bottom: 36, side: 3 };   // vertical margins; the bottom holds the outcome labels
+
   function layout(viewKey, width, height) {
     const view = data.views[viewKey];
-    const narrow = width < 560;
-    const m = narrow ? { top: 28, right: 14, bottom: 8, left: 2 } : { top: 28, right: labelWidth(data.outcomes.map(o => `${o.label} ${fmt(o.n)}`)) + 20,
-                bottom: 8, left: labelWidth(data.disciplines.map(d => `${d.label} ${fmt(d.n_weighted)}`)) + 12 };
-    return d3.sankey()
+    const vertical = isVertical(), narrow = width < 560;
+    let ext;
+    if (vertical) {
+      ext = [[V.top, V.side], [height - V.bottom, width - V.side]];   // [depth, breadth] = [real y, real x]
+    } else {
+      const m = narrow ? { top: 28, right: 14, bottom: 8, left: 2 }
+                       : { top: 28, right: labelWidth(data.outcomes.map(o => `${o.label} ${fmt(o.n)}`)) + 20,
+                           bottom: 8, left: labelWidth(data.disciplines.map(d => `${d.label} ${fmt(d.n_weighted)}`)) + 12 };
+      ext = [[m.left, m.top], [width - m.right, height - m.bottom]];
+    }
+    const g = d3.sankey()
       .nodeId(d => d.id)
       .nodeAlign(n => n.stage)
-      .nodeWidth(narrow ? 10 : 14)
-      .nodePadding(narrow ? 10 : 14)
+      .nodeWidth(narrow || vertical ? 10 : 14)
+      .nodePadding(vertical ? 7 : narrow ? 10 : 14)
       .nodeSort(null).linkSort(null)
       .iterations(0)
-      .extent([[m.left, m.top], [width - m.right, height - m.bottom]])({
+      .extent(ext)({
         nodes: view.nodes.map(d => ({ ...d })),
         links: view.links.map(d => ({ ...d })),
       });
+    if (vertical) for (const n of g.nodes) [n.x0, n.x1, n.y0, n.y1] = [n.y0, n.y1, n.x0, n.x1];
+    return g;
+  }
+  // vertical links run from the bottom of the source bar to the top of the target bar
+  // (link.y0 / link.y1 are positions across the bar, which become x once the layout is turned)
+  const linkV = l => {
+    const x0 = l.y0, y0 = l.source.y1, x1 = l.y1, y1 = l.target.y0, ym = (y0 + y1) / 2;
+    return `M${x0},${y0}C${x0},${ym} ${x1},${ym} ${x1},${y1}`;
+  };
+
+  // spread labels along one row so they never overlap: [{c: center, w: width}] -> left edges
+  function dodge(items, lo, hi, gap = 6) {
+    const order = items.map((d, i) => i).sort((a, b) => items[a].c - items[b].c);
+    const x = new Array(items.length);
+    let prev = lo - gap;
+    for (const i of order) { x[i] = Math.max(items[i].c - items[i].w / 2, prev + gap, lo); prev = x[i] + items[i].w; }
+    let next = hi + gap;
+    for (const i of [...order].reverse()) { x[i] = Math.min(x[i], next - gap - items[i].w); next = x[i]; }
+    return x;
+  }
+
+  // ---- discipline legend (vertical only) ----
+  const legendEl = document.getElementById("vlegend");
+  function renderLegend(vertical) {
+    legendEl.hidden = !vertical;
+    if (!vertical) return;
+    d3.select(legendEl).selectAll("button").data(data.disciplines, d => d.id).join(enter => enter.append("button")
+      .attr("type", "button").attr("class", "vl-item")
+      .html(d => `<span class="vl-sw${d.outline ? " outline" : ""}" style="${d.outline ? "" : `background:${d.ramp[2]}`}"></span>` +
+                 `<span class="vl-name">${esc(d.label)}</span><span class="vl-n">${fmt(d.n_weighted)}</span>`)
+      .on("click", (ev, d) => {
+        const n = { id: `d:${d.id}`, stage: 0, discipline: d.id };
+        activate(ev, n.id, nodeTip(n), () => openPane({ discipline: d.id }));
+      }));
   }
 
   function render(animate) {
+    const vertical = isVertical();
+    chartEl.classList.toggle("vertical", vertical);
+    renderLegend(vertical);
+    document.querySelector(".hint").textContent = tapMode()
+      ? "Tap any bar or flow for a summary; tap again to read the reports."
+      : "Click any bar or flow to read the reports behind it.";
     const width = chartEl.clientWidth, height = chartEl.clientHeight;
     svg.attr("viewBox", [0, 0, width, height]);
     const { nodes, links } = layout(state.view, width, height);
-    OUT_EXTRA = width < 560 ? 4 : 10;   // outcome bars drawn wider than the layout's node width
+    OUT_EXTRA = vertical || width < 560 ? 4 : 10;   // outcome bars drawn thicker than the layout's node width
     const t = svg.transition().duration(animate ? 900 : 0).ease(d3.easeCubicInOut);
     document.getElementById("mid-title").textContent = data.views[state.view].title;
 
     const mid = nodes.find(n => n.stage === 1), out = nodes.find(n => n.stage === 2);
-    updateGradients(mid.x1, out.x0);
+    if (vertical) updateGradients(mid.y1, out.y0, true); else updateGradients(mid.x1, out.x0, false);
 
     const xs = [0, 1, 2].map(s => nodes.find(n => n.stage === s));
     const heads = ["Discipline", data.views[state.view].title, "Worst outcome"];
-    gStage.selectAll("text").data(xs).join("text")
+    gStage.selectAll("text").data(vertical ? [] : xs).join("text")
       .attr("class", "stage-label")
       .attr("text-anchor", (d, i) => width < 560 ? ["start", "middle", "end"][i] : (i === 0 ? "end" : "start"))
       .attr("x", (d, i) => width < 560 ? [d.x0, (d.x0 + d.x1) / 2, d.x1 + OUT_EXTRA][i] : (i === 0 ? d.x1 : d.x0)).attr("y", 14)
       .text((d, i) => heads[i]);
 
+    const linkPath = vertical ? linkV : d3.sankeyLinkHorizontal();
     gLinks.selectAll("path").data(links, linkKey).join(
       enter => enter.append("path").attr("class", "link")
-        .attr("d", d3.sankeyLinkHorizontal()).attr("stroke-width", 0)
+        .attr("d", linkPath).attr("stroke-width", 0)
         .call(e => e.transition(t).attr("stroke-width", d => Math.max(0.5, d.width))),
       update => update.call(u => u.transition(t)
-        .attr("d", d3.sankeyLinkHorizontal())
+        .attr("d", linkPath)
         .attr("stroke-width", d => Math.max(0.5, d.width))),
       exit => exit.call(x => x.transition(t).attr("stroke-width", 0).remove())
     )
       .attr("stroke", linkColor)
-      .on("mousemove", (ev, l) => showTip(ev,
-        `<b>${l.source.label} → ${l.target.label}</b><br>${discById.get(l.discipline).label}: ${fmt(l.value)} accidents` +
-        (Math.abs(l.value - Math.round(l.value)) > 0.05 ? "<br><span style='opacity:.7'>weighted for multi-discipline reports</span>" : "") +
-        "<br><span style='opacity:.7'>Click to read these reports</span>"))
-      .on("mouseleave", hideTip)
-      .on("click", (ev, l) => openPane(filterFromLink(l)));
+      .on("mousemove", (ev, l) => hover(ev, linkTip(l)))
+      .on("mouseleave", unhover)
+      .on("click", (ev, l) => activate(ev, `l:${linkKey(l)}`, linkTip(l), () => openPane(filterFromLink(l))));
 
     gNodes.selectAll("g.node").data(nodes, nodeKey).join(enter => {
       const g = enter.append("g").attr("class", "node");
       g.append("rect");
       return g;
     })
-      .on("mousemove", (ev, n) => showTip(ev, nodeTip(n)))
-      .on("mouseleave", hideTip)
-      .on("click", (ev, n) => openPane(filterFromNode(n)))
+      .on("mousemove", (ev, n) => hover(ev, nodeTip(n)))
+      .on("mouseleave", unhover)
+      .on("click", (ev, n) => activate(ev, `n:${n.id}`, nodeTip(n), () => openPane(filterFromNode(n))))
       .select("rect")
       .attr("fill", nodeFill)
       .attr("stroke", n => n.stage === 0 && discById.get(n.discipline).outline ? "var(--ink)" : "none")
       .attr("stroke-width", 1.25)
       .transition(t)
       .attr("x", n => n.x0).attr("y", n => n.y0)
-      .attr("width", n => n.x1 - n.x0 + (n.stage === 2 ? OUT_EXTRA : 0)).attr("height", n => Math.max(1, n.y1 - n.y0));
+      .attr("width", n => Math.max(1, n.x1 - n.x0 + (!vertical && n.stage === 2 ? OUT_EXTRA : 0)))
+      .attr("height", n => Math.max(1, n.y1 - n.y0 + (vertical && n.stage === 2 ? OUT_EXTRA : 0)));
 
-    const labels = gLabels.selectAll("text").data(nodes, nodeKey).join(enter => {
-      const tx = enter.append("text").attr("dy", "0.35em");
+    if (vertical) renderVerticalLabels(nodes, width, t);
+    else renderHorizontalLabels(nodes, width, t);
+  }
+
+  function labelJoin(nodes) {
+    return gLabels.selectAll("text").data(nodes, nodeKey).join(enter => {
+      const tx = enter.append("text");
       tx.append("tspan").attr("class", "name");
-      tx.append("tspan").attr("class", "n").attr("dx", 5);
+      tx.append("tspan").attr("class", "n");
       return tx;
     })
       .attr("class", n => `node-label halo${n.stage === 2 ? " outcome" : ""}`)
-      .on("click", (ev, n) => openPane(filterFromNode(n)));
-    labels.select(".name").text(n => n.label).attr("fill", n => n.stage === 2 && outcomeOf(n) !== "none" ? outById.get(outcomeOf(n)).color : null);
+      .on("click", (ev, n) => activate(ev, `n:${n.id}`, nodeTip(n), () => openPane(filterFromNode(n))));
+  }
+
+  function renderHorizontalLabels(nodes, width, t) {
+    gLeaders.selectAll("line").remove();
+    const labels = labelJoin(nodes).attr("dy", "0.35em");
+    labels.select(".name").text(n => n.label).attr("x", null).attr("dy", null)
+      .attr("fill", n => n.stage === 2 && outcomeOf(n) !== "none" ? outById.get(outcomeOf(n)).color : null);
     // narrow screens: labels sit inside the chart (discipline right of its bar, outcome left of its bar)
     const narrow = width < 560;
     labels.style("font-size", narrow ? "10px" : null);
-    labels.select(".n").text(n => narrow && n.stage === 1 ? "" : n.stage === 0 ? fmt(discById.get(n.discipline).n_weighted) : fmt(n.value));
+    labels.select(".n").attr("x", null).attr("dy", null).attr("dx", 5)
+      .text(n => narrow && n.stage === 1 ? "" : n.stage === 0 ? fmt(discById.get(n.discipline).n_weighted) : fmt(n.value));
     const anchor = n => narrow ? (n.stage === 2 ? "end" : "start") : (n.stage === 0 ? "end" : "start");
     const lx = n => narrow ? (n.stage === 2 ? n.x0 - 4 : n.x1 + 4)
                            : (n.stage === 0 ? n.x0 - 6 : n.x1 + 6 + (n.stage === 2 ? OUT_EXTRA : 0));
@@ -635,26 +729,84 @@ document.documentElement.classList.toggle('framed', window.CAV_FRAMED);</script>
       .attr("y", n => (n.y0 + n.y1) / 2);
   }
 
+  // vertical: middle labels sit above their bars, outcome labels below theirs; both rows are spread out with dodge()
+  // and get a thin leader line when a label had to move away from its bar
+  function renderVerticalLabels(nodes, width, t) {
+    const shown = nodes.filter(n => n.stage > 0);
+    const name = n => SHORT[n.label] || n.label;
+    const count = n => fmt(n.value);
+    const place = new Map();
+    for (const stage of [1, 2]) {
+      const row = shown.filter(n => n.stage === stage);
+      const items = row.map(n => ({ c: (n.x0 + n.x1) / 2, w: labelWidth([name(n), count(n)], "10px") - 4 }));
+      const left = dodge(items, 2, width - 2, 5);
+      row.forEach((n, i) => place.set(n, { x: left[i] + items[i].w / 2, c: items[i].c }));
+    }
+    const lineY = n => n.stage === 1 ? [n.y0 - 25, n.y0 - 13] : [n.y1 + OUT_EXTRA + 14, n.y1 + OUT_EXTRA + 26];
+    const labels = labelJoin(shown).attr("dy", null).style("font-size", "10px").attr("text-anchor", "middle");
+    labels.select(".name").text(name)
+      .attr("fill", n => n.stage === 2 && outcomeOf(n) !== "none" ? outById.get(outcomeOf(n)).color : null);
+    labels.select(".n").text(count).attr("dx", null);
+    labels.transition(t).attr("x", n => place.get(n).x).attr("y", n => lineY(n)[0]);
+    labels.select(".name").attr("x", n => place.get(n).x);
+    labels.select(".n").attr("x", n => place.get(n).x).attr("dy", "1.15em");
+
+    const moved = shown.filter(n => Math.abs(place.get(n).x - place.get(n).c) > 3);
+    gLeaders.selectAll("line").data(moved, nodeKey).join("line").attr("class", "leader")
+      .attr("x1", n => place.get(n).x).attr("x2", n => place.get(n).c)
+      .attr("y1", n => n.stage === 1 ? n.y0 - 9 : n.y1 + OUT_EXTRA + 4)
+      .attr("y2", n => n.stage === 1 ? n.y0 - 1 : n.y1 + OUT_EXTRA + 1);
+  }
+
+  // ---- summaries: hover on desktop; on touch screens the first tap previews and the second tap opens the reports ----
+  const HAND = `<svg class="tap-hand" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 11.5V4.8a1.6 1.6 0 0 1 3.2 0V10"/><path d="M12.2 9.6a1.6 1.6 0 0 1 3.2 0v1.2"/><path d="M15.4 10.4a1.6 1.6 0 0 1 3.2 0v3.8a6.2 6.2 0 0 1-6.2 6.2h-.9a5.4 5.4 0 0 1-4.4-2.3L4.3 14a1.5 1.5 0 0 1 2.3-1.9L9 14.6"/></svg>`;
+  const HOVER = window.matchMedia("(hover: hover) and (pointer: fine)");
+  function tapMode() { return isPhone() || !HOVER.matches; }
+  function tipHtml(title, n, lines) {
+    const tap = tapMode();
+    return `<div class="tip-head"><b>${title}</b>${n ? `<span class="tip-n">${n}</span>` : ""}${tap ? HAND : ""}</div>` +
+           lines.filter(Boolean).map(l => `<div>${l}</div>`).join("") +
+           `<div class="tip-hint">${tap ? "Tap again to read these reports" : "Click to read these reports"}</div>`;
+  }
+  function linkTip(l) {
+    const frac = Math.abs(l.value - Math.round(l.value)) > 0.05;
+    return tipHtml(`${l.source.label} → ${l.target.label}`, fmt(l.value),
+      [`${discById.get(l.discipline).label} accidents`, frac ? "<span style='opacity:.7'>weighted for multi-tag reports</span>" : ""]);
+  }
   function nodeTip(n) {
     if (n.stage === 0) {
       const d = discById.get(n.discipline);
-      return `<b>${d.label}</b><br>${d3.format(",")(d.n_any)} accidents tagged ${d.label.toLowerCase()}` +
-             (d.n_any !== Math.round(d.n_weighted) ? `<br>${fmt(d.n_weighted)} after splitting multi-discipline reports` : "") +
-             "<br><span style='opacity:.7'>Click to read these reports</span>";
+      return tipHtml(d.label, d3.format(",")(d.n_any), [`accidents tagged ${d.label.toLowerCase()}`,
+        d.n_any !== Math.round(d.n_weighted) ? `${fmt(d.n_weighted)} after splitting multi-discipline reports` : ""]);
     }
     const fatal = n.stage === 1 ? n.sourceLinks.filter(l => l.target.id === "o:fatal").reduce((s, l) => s + l.value, 0) : null;
-    const counted = n.n_any != null && n.n_any !== Math.round(n.value)
-      ? `${d3.format(",")(n.n_any)} accidents involve ${n.label.toLowerCase()}<br>${fmt(n.value)} after splitting reports across families`
-      : `${fmt(n.value)} accidents`;
-    return `<b>${n.label}</b><br>${counted}` + (fatal !== null ? `<br>${d3.format(".0%")(fatal / n.value)} fatal` : "") +
-           "<br><span style='opacity:.7'>Click to read these reports</span>";
+    const split = n.n_any != null && n.n_any !== Math.round(n.value);
+    return tipHtml(n.label, split ? d3.format(",")(n.n_any) : fmt(n.value), [
+      split ? `accidents involve ${n.label.toLowerCase()}` : "accidents",
+      split ? `${fmt(n.value)} after splitting reports across families` : "",
+      fatal !== null ? `${d3.format(".0%")(fatal / n.value)} fatal` : ""]);
   }
-  function showTip(ev, html) {
+  function showTip(ev, html, tappable) {
     tip.innerHTML = html; tip.style.opacity = 1;
-    const x = Math.min(ev.clientX + 14, window.innerWidth - tip.offsetWidth - 8);
-    tip.style.left = x + "px"; tip.style.top = (ev.clientY + 14) + "px";
+    tip.classList.toggle("tappable", !!tappable);
+    const w = tip.offsetWidth, h = tip.offsetHeight;
+    let x = Math.min(ev.clientX + 14, window.innerWidth - w - 8), y = ev.clientY + 14;
+    if (y + h > window.innerHeight - 8) y = Math.max(8, ev.clientY - h - 12);
+    tip.style.left = Math.max(8, x) + "px"; tip.style.top = y + "px";
   }
-  function hideTip() { tip.style.opacity = 0; }
+  function hideTip() { tip.style.opacity = 0; tip.classList.remove("tappable"); pending = null; }
+  function hover(ev, html) { if (!tapMode()) showTip(ev, html); }
+  function unhover() { if (!tapMode()) hideTip(); }
+  let pending = null;   // { key, open } for the element tapped once
+  function activate(ev, key, html, open) {
+    ev.stopPropagation();
+    if (!tapMode()) { hideTip(); open(); return; }
+    if (pending && pending.key === key) { hideTip(); open(); return; }
+    showTip(ev, html, true);
+    pending = { key, open };
+  }
+  tip.addEventListener("click", e => { e.stopPropagation(); if (pending) { const p = pending; hideTip(); p.open(); } });
+  document.addEventListener("click", () => { if (pending) hideTip(); });
 
   // ================= incident viewer pane =================
   const pane = document.getElementById("pane"), listEl = document.getElementById("list");
@@ -1010,7 +1162,7 @@ document.documentElement.classList.toggle('framed', window.CAV_FRAMED);</script>
     d3.selectAll(".toggle button").attr("aria-pressed", function () { return this.dataset.mode === state.mode; });
     simplifyEl.checked = state.simplify;
     simplifyEl.closest(".simplify").classList.toggle("off", state.mode !== "factors");
-    if (v === state.view && animate) return;
+    if (v === state.view && animate && chartEl.classList.contains("vertical") === isVertical()) return;
     state.view = v;
     render(animate);
   }
