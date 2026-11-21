@@ -297,15 +297,15 @@
   .pane { position: fixed; left: 50%; bottom: 0; height: 60vh; height: 60dvh; width: min(1040px, 100vw); background: var(--card);
           border: 1px solid var(--rule); border-bottom: 0; border-radius: 16px 16px 0 0;
           box-shadow: 0 -14px 40px rgba(0,0,0,.16); z-index: 20; overflow: hidden;
-          transform: translate(-50%, 104%); transition: transform .38s cubic-bezier(.2,.7,.2,1); display: flex; flex-direction: column; }
+          transform: translate(-50%, 104%); transition: transform 1.15s cubic-bezier(.22,.61,.24,1); display: flex; flex-direction: column; }
   .pane.open { transform: translate(-50%, 0); }
   .pane::before { content: ""; display: block; width: 44px; height: 5px; border-radius: 3px; background: var(--rule);
                   margin: 8px auto -4px; flex: none; }
   .pane-backdrop { position: fixed; inset: 0; z-index: 19; background: rgba(251,250,247,.12); opacity: 0; pointer-events: none;
-                   transition: opacity .3s; cursor: zoom-out; }
+                   transition: opacity .9s; cursor: zoom-out; }
   body.pane-open .pane-backdrop { opacity: 1; pointer-events: auto; }
   body.pane-open { overflow: hidden; }
-  #view-sankey, #view-intake { transition: transform .5s cubic-bezier(.2,.7,.2,1), filter .35s; }
+  #view-sankey, #view-intake { transition: transform 1.5s cubic-bezier(.22,.61,.24,1), filter 1.05s; }
   .lifted { filter: blur(1.8px) saturate(.85); }
   @media (prefers-reduced-motion: reduce) { .pane, #view-sankey, #view-intake { transition: none; } }
   .pane-head { padding: 16px 18px 12px; border-bottom: 1px solid var(--rule); }
