@@ -192,6 +192,19 @@
   footer { max-width: 1600px; padding-top: 20px; }
 
   /* ---- treemap tab ---- */
+  .tm-bar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin: 0 0 8px; }
+  .tm-bar[hidden] { display: none; }
+  .tm-back { display: inline-flex; align-items: center; gap: 4px; font: inherit; font-size: .85rem; font-weight: 600;
+             border: 1px solid var(--ink); background: var(--ink); color: var(--bg); padding: 5px 12px 5px 8px;
+             border-radius: 999px; cursor: pointer; }
+  .tm-back svg { width: 15px; height: 15px; }
+  .tm-crumbs { font-size: .88rem; color: var(--ink-2); display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .tm-crumbs button { font: inherit; border: 0; background: none; padding: 2px 0; color: var(--ink-2); cursor: pointer;
+                      text-decoration: underline; text-underline-offset: 2px; }
+  .tm-crumbs b { color: var(--ink); }
+  .tm-read { margin-left: auto; font: inherit; font-size: .8rem; border: 1px solid var(--rule); background: var(--card);
+             color: var(--ink); padding: 5px 12px; border-radius: 999px; cursor: pointer; }
+  .tm-read:hover { border-color: var(--ink-3); }
   #treemap { width: 100%; height: clamp(380px, calc(100vh - 270px), 860px); }
   #treemap svg { display: block; width: 100%; height: 100%; }
   @media (max-width: 640px) { #treemap { height: clamp(420px, calc(100vh - 250px), 640px); } }
@@ -390,6 +403,13 @@ document.documentElement.classList.toggle('framed', window.CAV_FRAMED);</script>
     <div id="chart" role="img" aria-label="Sankey diagram of climbing accidents from discipline to outcome"></div>
     <!-- Treemap tab: same data and controls, nested discipline > middle column > worst outcome -->
     <div class="tlegend" id="tlegend" hidden aria-label="Worst outcome"></div>
+    <div class="tm-bar" id="tm-bar" hidden>
+      <button type="button" class="tm-back" id="tm-back" aria-label="Back out of this part of the treemap">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 3.5 5.5 8l4.5 4.5"/></svg>Back
+      </button>
+      <nav class="tm-crumbs" id="tm-crumbs" aria-label="Treemap location"></nav>
+      <button type="button" class="tm-read" id="tm-read">Read these reports</button>
+    </div>
     <div id="treemap" hidden role="img" aria-label="Treemap of climbing accidents by discipline, middle column and outcome"></div>
   </div>
 
@@ -811,11 +831,11 @@ document.documentElement.classList.toggle('framed', window.CAV_FRAMED);</script>
   const HAND = `<svg class="tap-hand" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 11.5V4.8a1.6 1.6 0 0 1 3.2 0V10"/><path d="M12.2 9.6a1.6 1.6 0 0 1 3.2 0v1.2"/><path d="M15.4 10.4a1.6 1.6 0 0 1 3.2 0v3.8a6.2 6.2 0 0 1-6.2 6.2h-.9a5.4 5.4 0 0 1-4.4-2.3L4.3 14a1.5 1.5 0 0 1 2.3-1.9L9 14.6"/></svg>`;
   const HOVER = window.matchMedia("(hover: hover) and (pointer: fine)");
   function tapMode() { return isPhone() || !HOVER.matches; }
-  function tipHtml(title, n, lines) {
+  function tipHtml(title, n, lines, hint) {
     const tap = tapMode();
     return `<div class="tip-head"><b>${title}</b>${n ? `<span class="tip-n">${n}</span>` : ""}${tap ? HAND : ""}</div>` +
            lines.filter(Boolean).map(l => `<div>${l}</div>`).join("") +
-           `<div class="tip-hint">${tap ? "Tap again to read these reports" : "Click to read these reports"}</div>`;
+           `<div class="tip-hint">${hint ? (tap ? "Tap again to " : "Click to ") + hint : tap ? "Tap again to read these reports" : "Click to read these reports"}</div>`;
   }
   // "of all accidents (898)" in % mode, "accidents" in # mode
   const ofAll = (count, what) => state.units === "pct" ? `of all accidents${what ? " " + what : ""} (${fmt(count)})`
@@ -907,9 +927,11 @@ document.documentElement.classList.toggle('framed', window.CAV_FRAMED);</script>
   const weightedNote = v => Math.abs(v - Math.round(v)) > 0.05 ? "<span style='opacity:.7'>weighted for multi-tag reports</span>" : "";
   function tmTip(n) {
     const { d, m, o } = n.data;
-    if (n.data.type === "d") return nodeTip({ stage: 0, discipline: d.id });
+    if (isFocus(n)) return tipHtml(`${d.label}${m ? " · " + m.label : ""}`, num(n.value), [ofAll(n.value)]);
+    if (n.data.type === "d") return tipHtml(d.label, num(n.value), [ofAll(n.value, `in ${d.label.toLowerCase()}`),
+      d.n_any !== Math.round(n.value) ? `${num(d.n_any)} tagged ${d.label.toLowerCase()} before splitting multi-discipline reports` : ""], "zoom in");
     if (n.data.type === "m") return tipHtml(`${d.label} · ${m.label}`, num(n.value),
-      [ofAll(n.value, `in ${d.label.toLowerCase()}`), `${d3.format(".0%")(fatalShare(n))} of these were fatal`, weightedNote(n.value)]);
+      [ofAll(n.value, `in ${d.label.toLowerCase()}`), `${d3.format(".0%")(fatalShare(n))} of these were fatal`, weightedNote(n.value)], "zoom in");
     return tipHtml(`${d.label} · ${m.label} → ${o.label}`, num(n.value), [ofAll(n.value, `in ${d.label.toLowerCase()}`), weightedNote(n.value)]);
   }
   function tmFilter(n) {
@@ -918,14 +940,56 @@ document.documentElement.classList.toggle('framed', window.CAV_FRAMED);</script>
     if (o) f.outcome = o.id;
     return f;
   }
+  // zoom: null (everything), { d } (one discipline) or { d, m } (one middle-column group within it; m = node id)
+  let tmFocus = null;
+  const isFocus = n => !!tmFocus && (n.data.type === "d" || n.data.type === "m") && n.data.d.id === tmFocus.d &&
+                       (n.data.type === "d" ? !tmFocus.m : n.data.m.id === tmFocus.m);
+  function zoomTo(f) { tmFocus = f; hideTip(); renderTreemap(true); }
   function tmOn(sel) {
     return sel.on("mousemove", (ev, n) => hover(ev, tmTip(n))).on("mouseleave", unhover)
-      .on("click", (ev, n) => activate(ev, `t:${tmKey(n)}`, tmTip(n), () => openPane(tmFilter(n))));
+      .on("click", (ev, n) => activate(ev, `t:${tmKey(n)}`, tmTip(n),
+        () => n.data.type === "o" || isFocus(n) ? openPane(tmFilter(n))
+            : zoomTo(n.data.type === "d" ? { d: n.data.d.id } : { d: n.data.d.id, m: n.data.m.id })));
+  }
+  document.getElementById("tm-back").addEventListener("click", () => zoomTo(tmFocus && tmFocus.m ? { d: tmFocus.d } : null));
+  document.getElementById("tm-read").addEventListener("click", () => {
+    const f = { discipline: tmFocus.d };
+    if (tmFocus.m) { const m = data.views[state.view].nodes.find(x => x.id === tmFocus.m); f.mid = { view: state.view, key: midKey(m), label: m.label }; }
+    openPane(f);
+  });
+  document.addEventListener("keydown", e => {
+    if (e.key === "Escape" && tmFocus && state.chart === "treemap" && !document.body.classList.contains("pane-open"))
+      zoomTo(tmFocus.m ? { d: tmFocus.d } : null);
+  });
+  // label candidates, longest first: "Weather & conditions 6.1%", "Weather & conditions", "Weather…", "Weath…"
+  function shrinkOpts(label, n) {
+    const first = label.split(/[\s&/]+/)[0];
+    return [n != null ? `${label} ${num(n)}` : "", label, SHORT[label], first !== label ? first + "…" : "",
+            label.length > 6 ? label.slice(0, 5) + "…" : ""];
   }
   // set a label to the longest of the candidates that fits in w, or hide it
   function fitText(el, options, w) {
     for (const t of options) { el.textContent = t; if (t && el.getComputedTextLength() <= w) return; }
     el.textContent = "";
+  }
+
+  function renderTmBar() {
+    const bar = document.getElementById("tm-bar");
+    bar.hidden = !tmFocus;
+    document.querySelector(".hint").textContent = tmFocus
+      ? (tapMode() ? "Tap a box for a summary; tap again to read it. Back zooms out." : "Click a box to read its reports. Back zooms out.")
+      : (tapMode() ? "Tap a discipline or group to zoom in, or an outcome box for its reports."
+                   : "Click a discipline or group to zoom in, or an outcome box to read its reports.");
+    if (!tmFocus) return;
+    const d = discById.get(tmFocus.d), m = tmFocus.m && data.views[state.view].nodes.find(x => x.id === tmFocus.m);
+    const crumbs = d3.select("#tm-crumbs").html("");
+    crumbs.append("button").attr("type", "button").text("All").on("click", () => zoomTo(null));
+    crumbs.append("span").attr("aria-hidden", "true").text("›");
+    if (m) {
+      crumbs.append("button").attr("type", "button").text(d.label).on("click", () => zoomTo({ d: d.id }));
+      crumbs.append("span").attr("aria-hidden", "true").text("›");
+      crumbs.append("b").text(m.label);
+    } else crumbs.append("b").text(d.label);
   }
 
   function renderTreemap(animate) {
@@ -942,19 +1006,24 @@ document.documentElement.classList.toggle('framed', window.CAV_FRAMED);</script>
       .on("click", (ev, o) => activate(ev, `o:${o.id}`, nodeTip({ id: `o:${o.id}`, stage: 2, label: o.label, value: o.n }),
                                        () => openPane({ outcome: o.id })))
       .html(o => `<span class="tl-sw" style="background:${OUT_SHADE[o.id]("#8f8e87")}"></span><b style="color:${OUT_TEXT[o.id]}">${OUT_SHORT[o.id]}</b> <span class="tl-n">${num(o.n)}</span>`);
-    document.querySelector(".hint").textContent = tapMode()
-      ? "Tap any box for a summary; tap again to read the reports."
-      : "Click any box to read the reports behind it.";
     document.getElementById("mid-title").textContent = data.views[state.view].title;
 
     const width = tmEl.clientWidth, height = tmEl.clientHeight;
     if (!width || !height) return;
     tmSvg.attr("viewBox", [0, 0, width, height]);
-    const big = n => n.x1 - n.x0 > 60 && n.y1 - n.y0 > 44;
+    const big = n => n.x1 - n.x0 > 40 && n.y1 - n.y0 > 40;
+    const midHead = n => n.x1 - n.x0 > 30 && n.y1 - n.y0 > 32;
+    let full = tmHierarchy(state.view);
+    // a zoomed middle group that doesn't exist in this view (the toggle changed) falls back to its discipline
+    if (tmFocus && tmFocus.m && !full.descendants().some(n => n.data.type === "m" && n.data.d.id === tmFocus.d && n.data.m.id === tmFocus.m))
+      tmFocus = { d: tmFocus.d };
+    if (tmFocus && !full.children.some(n => n.data.d.id === tmFocus.d && n.value > 0)) tmFocus = null;
+    const focus = tmFocus ? full.descendants().find(isFocus).copy() : full;
     const root = d3.treemap().size([width, height]).round(true).tile(d3.treemapSquarify.ratio(1.4))
-      .paddingInner(n => n.depth === 0 ? 5 : n.depth === 1 ? 2 : 1.5)
-      .paddingTop(n => n.depth === 1 ? (big(n) ? 20 : 4) : n.depth === 2 ? (n.x1 - n.x0 > 70 && n.y1 - n.y0 > 40 ? 15 : 0) : 0)
-      (tmHierarchy(state.view));
+      .paddingInner(n => n.data.type === "root" ? 5 : n.data.type === "d" ? 2 : 1.5)
+      .paddingTop(n => n.data.type === "d" ? (big(n) ? 20 : 4) : n.data.type === "m" ? (midHead(n) ? 15 : 0) : 0)
+      (focus);
+    renderTmBar();
     const t = tmSvg.transition().duration(animate ? 700 : 0).ease(d3.easeCubicInOut);
     const place = sel => sel.attr("x", n => n.x0).attr("y", n => n.y0)
       .attr("width", n => Math.max(0, n.x1 - n.x0)).attr("height", n => Math.max(0, n.y1 - n.y0));
@@ -963,13 +1032,13 @@ document.documentElement.classList.toggle('framed', window.CAV_FRAMED);</script>
       update => update,
       exit => exit.transition(t).attr("opacity", 0).remove());
 
-    const discs = root.children.filter(n => n.value > 0);
+    const discs = root.descendants().filter(n => n.data.type === "d" && n.value > 0);
     // a discipline is its colour (hatched outline for Unspecified): the header band and the gaps between its boxes
     join(tmDiscs, discs, "tm-head").call(tmOn)
       .attr("fill", n => n.data.d.outline ? "url(#tm-hatch)" : n.data.d.ramp[2])
       .attr("stroke", n => n.data.d.outline ? "var(--ink)" : "none").attr("stroke-width", 1)
       .transition(t).call(place).attr("opacity", 1);
-    join(tmMids, root.descendants().filter(n => n.depth === 2), "tm-mid").call(tmOn)
+    join(tmMids, root.descendants().filter(n => n.data.type === "m"), "tm-mid").call(tmOn)
       .attr("fill", midTint)
       .transition(t).call(place).attr("opacity", 1);
     // leaves: a shade of the middle column's hue (fatal darkest); the outcome is named in its colour on a small pill
@@ -979,12 +1048,12 @@ document.documentElement.classList.toggle('framed', window.CAV_FRAMED);</script>
 
     // labels: discipline name in its header band, middle-column name over its boxes, numbers inside boxes that fit
     const labels = [
-      ...discs.filter(n => n.y1 - n.y0 > 44).map(n => ({ n, cls: "head", x: n.x0 + 6, y: n.y0 + 14, w: n.x1 - n.x0 - 10,
+      ...discs.filter(big).map(n => ({ n, cls: "head", x: n.x0 + 6, y: n.y0 + 14, w: n.x1 - n.x0 - 10,
         fill: n.data.d.outline ? "var(--ink)" : darkText(n.data.d.ramp[2]),
-        opts: [`${n.data.d.label} ${num(n.value)}`, n.data.d.label] })),
-      ...root.descendants().filter(n => n.depth === 2 && n.x1 - n.x0 > 70 && n.y1 - n.y0 > 40)
+        opts: shrinkOpts(n.data.d.label, n.value) })),
+      ...root.descendants().filter(n => n.data.type === "m" && midHead(n))
         .map(n => ({ n, cls: "mid", x: n.x0 + 4, y: n.y0 + 11, w: n.x1 - n.x0 - 6, fill: null,
-          opts: [`${n.data.m.label} ${num(n.value)}`, n.data.m.label, SHORT[n.data.m.label]] })),
+          opts: shrinkOpts(n.data.m.label, n.value) })),
     ];
     tmText.selectAll("text").data(labels, l => l.cls + tmKey(l.n)).join("text")
       .attr("class", l => `tm-label ${l.cls}`).style("fill", l => l.fill)
@@ -1356,7 +1425,7 @@ document.documentElement.classList.toggle('framed', window.CAV_FRAMED);</script>
     if (!isIntake) {
       state.chart = v;
       chartEl.hidden = v === "treemap"; tmEl.hidden = v !== "treemap";
-      if (v === "treemap") legendEl.hidden = true; else tlegendEl.hidden = true;
+      if (v === "treemap") legendEl.hidden = true; else { tlegendEl.hidden = true; document.getElementById("tm-bar").hidden = true; }
     }
     document.getElementById("view-sankey").hidden = isIntake;
     document.getElementById("view-intake").hidden = !isIntake;
