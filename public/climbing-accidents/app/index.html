@@ -292,9 +292,9 @@
   @media (max-width: 560px) { .search-all .lab, .search-all kbd { display: none; } .search-all { padding: 9px; } }
 
   /* ---- incident viewer pane ---- */
-  /* bottom sheet: rises 60% of the way up; the chart above it slides the selection to the centre of the
+  /* bottom sheet: rises 80% of the way up; the chart above it slides the selection to the centre of the
      remaining space and goes slightly soft until the sheet closes */
-  .pane { position: fixed; left: 50%; bottom: 0; height: 60vh; height: 60dvh; width: min(1040px, 100vw); background: var(--card);
+  .pane { position: fixed; left: 50%; bottom: 0; height: 80vh; height: 80dvh; width: min(1040px, 100vw); background: var(--card);
           border: 1px solid var(--rule); border-bottom: 0; border-radius: 16px 16px 0 0;
           box-shadow: 0 -14px 40px rgba(0,0,0,.16); z-index: 20; overflow: hidden;
           transform: translate(-50%, 104%); transition: transform 1.15s cubic-bezier(.22,.61,.24,1); display: flex; flex-direction: column; }
@@ -1250,7 +1250,7 @@ document.documentElement.classList.toggle('framed', window.CAV_FRAMED);</script>
     if (!a) { v.style.transform = ""; return; }
     v.style.transition = "none"; v.style.transform = ""; void v.offsetWidth; v.style.transition = "";
     const r = a.getBoundingClientRect(), vr = v.getBoundingClientRect();
-    const room = innerHeight * 0.4, top = 52;                       // space above the sheet, below the tabs
+    const room = innerHeight * 0.2, top = 52;                       // space above the sheet, below the tabs
     const s = Math.max(0.5, Math.min(1, (room - top - 16) / Math.max(1, r.height), (innerWidth - 32) / Math.max(1, r.width)));
     const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
     v.style.transformOrigin = `${cx - vr.left}px ${cy - vr.top}px`;
